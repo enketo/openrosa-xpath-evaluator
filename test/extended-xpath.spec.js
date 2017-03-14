@@ -161,6 +161,8 @@ define(['src/extended-xpath', 'chai', 'lodash'], function(ExtendedXpathEvaluator
         'ancestor::book[author][1]',
         'ancestor::author[parent::book][1]',
         '../../some-path',
+        '/model/instance[1]/*//*[@template]',
+        '/model/instance[1]/*//*[@jr:template]',
       ],
       trickyStandardXpath_unsupported = [
         '*/*',
@@ -232,6 +234,19 @@ define(['src/extended-xpath', 'chai', 'lodash'], function(ExtendedXpathEvaluator
             extendedXpathEvaluator.evaluate(expr).stringValue,
             expected);
         }
+      });
+    });
+
+    describe('union operator', function() {
+      it('should delegate union calculations to the underlying evaluator', function() {
+        // given
+        var expr = '/some/path | /other/path';
+
+        // when
+        var actual = extendedXpathEvaluator.evaluate(expr).stringValue;
+
+        // then
+        assert.equal(actual, '<xpath:<xpath:/some/path>|<xpath:/other/path>>');
       });
     });
 

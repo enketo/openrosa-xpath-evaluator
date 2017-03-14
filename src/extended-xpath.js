@@ -4,6 +4,7 @@
  */
 var OP_PRECEDENCE = [
   ['|'],
+  ['v'],
   ['&'],
   ['=', '!='],
   ['<', '<=', '>=', '>'],
@@ -107,7 +108,8 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           case '>=': return lhs.v >= rhs.v;
           case '!=': return lhs.v != rhs.v;
           case '&':  return lhs.v && rhs.v;
-          case '|':  return lhs.v || rhs.v;
+          case 'v':  return lhs.v || rhs.v;
+          case '|':  return toInternalResult(wrapped(lhs.v + '|' + rhs.v)).v;
         }
       },
       evalOpAt = function(tokens, opIndex) {
@@ -272,13 +274,16 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           }
           peek().tokens.push({ t:'op', v:c });
           break;
+        case '|':
+          peek().tokens.push({ t:'op', v:c });
+          break;
         case ' ':
           switch(cur.v) {
             case '': break; // trim leading whitespace
             case 'mod': pushOp('%'); break;
             case 'div': pushOp('/'); break;
             case 'and': pushOp('&'); break;
-            case 'or':  pushOp('|'); break;
+            case 'or':  pushOp('v'); break;
             default: if(!FUNCTION_NAME.test(cur.v)) handleXpathExpr();
           }
           break;
