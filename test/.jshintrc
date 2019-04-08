@@ -1,9 +1,10 @@
 {
   "esversion": 6,
-  "undef": true,
+  "undef": false,
   "unused": true,
   "globals": {
     "console": true,
+    "jasmine": true,
 
     "assert": true,
     "beforeEach": true,
