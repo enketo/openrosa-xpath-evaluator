@@ -143,6 +143,7 @@ var openrosa_xpath_extensions = function(translate) {
       now_and_today = function() { return XPR.date(ret._now()); };
 
   func = {
+    abs: function(r) { return XPR.number(Math.abs(r.v)); },
     'boolean-from-string': function(string) {
       string = _str(string);
       return XPR.boolean(string === '1' || string === 'true');
@@ -165,6 +166,11 @@ var openrosa_xpath_extensions = function(translate) {
     'format-date': function(date, format) {
         return XPR.string(format_date(date, format)); },
     'if': function(con, a, b) { return XPR.string(_bool(con)? a.v: b.v); },
+    'ends-with': function(a, b) {
+      if(arguments.length > 2) throw TOO_MANY_ARGS;
+      if(arguments.length < 2) throw TOO_FEW_ARGS;
+      return XPR.boolean(a.v.endsWith(b.v));
+    },
     int: function(v) { return XPR.number(parseInt(_str(v), 10)); },
     join: function(delim, arr) { return XPR.string(arr.v.join(_str(delim))); },
     max: function(r) {
