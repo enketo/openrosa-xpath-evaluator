@@ -1,43 +1,30 @@
 describe('#round()', () => {
   describe('with a single argument', () => {
-    _.forEach({
-      '1': 1,
-      '1.1': 1,
-      '1.5': 2,
-      '-1': -1,
-      '-1.1': -1,
-      '-1.5': -2,
-    }, function(expected, input) {
-      // when
-      var expr = 'round("{1}")'
-          .replace('{1}', input);
-
-      it('should evaluate ' + expr + ' to ' + expected, () => {
-        // expect
-        assertNumber(expr, expected);
-      });
+    it('with a single argument', () => {
+      assertNumber('round(1)', 1);
+      assertNumber('round(1.1)', 1);
+      assertNumber('round(1.5)', 2);
+      assertNumber('round(-1)', -1);
+      assertNumber('round(-1.1)', -1);
+      assertNumber('round(-1.5)', -2);
+      assertNumber('round(-1.55)', -2);
+      assertNumber('round(2.44)', 2);
+      assertNumber('round(0.001)', 0);
+      assertNumber('round(1.5)', 2);
+      assertNumber('round(5)', 5);
+      assertNumber('round(1.000)', 1);
+      assertNumber('round(-1.05)', -1);
     });
   });
 
   describe('with two arguments', () => {
-    describe('with num_digits = 0', () => {
-      _.forEach({
-        '1': 1,
-        '1.1': 1,
-        '1.5': 2,
-        '-1': -1,
-        '-1.1': -1,
-        '-1.5': -2,
-      }, function(expected, input) {
-        // given
-        var expr = 'round("{1}", "0")'
-            .replace('{1}', input);
-
-        it('should evaluate ' + expr + ' to ' + expected, () => {
-          // expect
-          assertNumber(expr, expected);
-        });
-      });
+    it('with num_digits = 0', () => {
+      assertNumber('round(1, 0)', 1);
+      assertNumber('round(1.1, 0)', 1);
+      assertNumber('round(1.5, 0)', 2);
+      assertNumber('round(-1, 0)', -1);
+      assertNumber('round(-1.1, 0)', -1);
+      assertNumber('round(-1.5, 0)', -2);
     });
 
     describe('with num_digits > 0', () => {
@@ -107,5 +94,9 @@ describe('#round()', () => {
         });
       });
     });
+  });
+
+  it( 'round() fails when too few arguments are provided', () => {
+      assert.throw(() => xEval("round()"), Error);
   });
 });

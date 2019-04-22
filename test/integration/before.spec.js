@@ -10,12 +10,12 @@ let doc, xEval, evaluator;
 function initDoc(xml) {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
   evaluator = new ExtendedXpathEvaluator(
-      v => {
-        const result = doc.evaluate.call(doc, v, doc, null, XPathResult.ANY_TYPE, null);
-        //console.log(`${v} => ${result.resultType}`);
-        return result;
-      },
-      openRosaXpathExtensions(translate, doc));
+    v => {
+      const result = doc.evaluate.call(doc, v, doc, null, XPathResult.ANY_TYPE, null);
+      //console.log(`${v} => ${result.resultType}`);
+      return result;
+    },
+    openRosaXpathExtensions(translate, doc));
   xEval = function(e) {
     return evaluator.evaluate(e);
   };
@@ -43,10 +43,18 @@ const assertFalse = (...args) => {
   assert.isFalse(xEval(regex).booleanValue);
 };
 
+const assertBoolean = (regex, value) => {
+  if(value) {
+    assertTrue(regex);
+  } else {
+    assertFalse(regex);
+  }
+};
+
 const assertString = (...args) => {
   const expected = args[args.length -1];
   const regex = args[args.length - 2];
-  if(args.length>2) {
+  if(args.length > 2) {
     simpleValueIs(args[0]);
   }
   assert.equal(xEval(regex).stringValue, expected);
@@ -55,7 +63,7 @@ const assertString = (...args) => {
 const assertNumber = (...args) => {
   const expected = args[args.length -1];
   const regex = args[args.length - 2];
-  if(args.length>2) {
+  if(args.length > 2) {
     simpleValueIs(args[0]);
   }
   assert.equal(xEval(regex).numberValue, expected);

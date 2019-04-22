@@ -1,5 +1,7 @@
 var openrosa_xpath_extensions = function(translate) {
   var
+      TOO_MANY_ARGS = new Error('too many args'),
+      TOO_FEW_ARGS = new Error('too few args'),
       MILLIS_PER_DAY = 1000 * 60 * 60 * 24,
       RAW_NUMBER = /^(-?[0-9]+)(\.[0-9]+)?$/,
       DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d(?:Z|[+-]\d\d:\d\d))?$/,
@@ -157,7 +159,7 @@ var openrosa_xpath_extensions = function(translate) {
     'decimal-date': function(date) {
         return XPR.number(Date.parse(_str(date)) / MILLIS_PER_DAY); },
     'false': function(arg) {
-      if(arg) throw new Error('Too many args');
+      if(arg) throw TOO_MANY_ARGS;
       return XPR.boolean(false);
     },
     'format-date': function(date, format) {
@@ -189,7 +191,11 @@ var openrosa_xpath_extensions = function(translate) {
      * XPath implementation.  The following method is supplied as a workaround,
      * and ideally would be unnecessary.
      */
-    not: function(r) { return XPR.boolean(!r.v); },
+    not: function(r) {
+      if(arguments.length === 0) throw TOO_FEW_ARGS;
+      if(arguments.length > 1) throw TOO_MANY_ARGS;
+      return XPR.boolean(!r.v);
+    },
     now: now_and_today,
     pow: function(x, y) { return XPR.number(Math.pow(_float(x), _float(y))); },
     random: function() { return XPR.number(Math.random()); },
@@ -222,7 +228,7 @@ var openrosa_xpath_extensions = function(translate) {
     },
     today: now_and_today,
     'true': function(arg) {
-      if(arg) throw new Error('Too many args');
+      if(arg) throw TOO_MANY_ARGS;
       return XPR.boolean(true);
     },
     uuid: function() { return XPR.string(uuid()); },
