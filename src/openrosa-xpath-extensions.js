@@ -156,7 +156,10 @@ var openrosa_xpath_extensions = function(translate) {
     date: date,
     'decimal-date': function(date) {
         return XPR.number(Date.parse(_str(date)) / MILLIS_PER_DAY); },
-    'false': function() { return XPR.boolean(false); },
+    'false': function(arg) {
+      if(arg) throw new Error('Too many args');
+      return XPR.boolean(false);
+    },
     'format-date': function(date, format) {
         return XPR.string(format_date(date, format)); },
     'if': function(con, a, b) { return XPR.string(_bool(con)? a.v: b.v); },
@@ -218,7 +221,10 @@ var openrosa_xpath_extensions = function(translate) {
           endIndex && _int(endIndex)));
     },
     today: now_and_today,
-    'true': function() { return XPR.boolean(true); },
+    'true': function(arg) {
+      if(arg) throw new Error('Too many args');
+      return XPR.boolean(true);
+    },
     uuid: function() { return XPR.string(uuid()); },
   };
 
