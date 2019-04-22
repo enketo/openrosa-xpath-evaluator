@@ -192,38 +192,3 @@ describe('#now() and #today()', function() {
     assert.equal(f.now, f.today);
   });
 });
-
-describe('medic mobile extensions', function() {
-  // TODO these should NOT be in here - please move them to a separate
-  // extensions file
-
-  describe('#difference-in-months', function() {
-    [
-      [ "2015-10-01", "2015-10-01", 0, ],
-      [ "2015-09-01", "2015-10-01", 1, ],
-      [ "2015-09-02", "2015-10-01", 0, ],
-      [ "2015-10-01", "2015-11-01", 1, ],
-      [ "2015-10-02", "2015-11-01", 0, ],
-      [ "2014-10-01", "2015-10-01", 12, ],
-      [ "2014-10-02", "2015-10-01", 11, ],
-      [ "2015-10-01", "2014-10-01", -12, ],
-    ].forEach(function(example) {
-      var d1 = { t:'str', v:example[0] },
-          d2 = { t:'str', v:example[1] },
-          expectedDifference = example[2];
-
-      it('should report difference between ' + d1 + ' and ' + d2 + ' as ' + expectedDifference, function() {
-        assert.equal(f['difference-in-months'](d1, d2).v, expectedDifference);
-      });
-    });
-
-    it('should return an empty string when the difference cannot be calculated', function() {
-      // given
-      const d1 = { t:'str', v:'nonsense' };
-      const d2 = { t:'str', v:'2015-09-22' };
-
-      // expect
-      assert.equal(f['difference-in-months'](d1, d2).v, '');
-    });
-  });
-});
