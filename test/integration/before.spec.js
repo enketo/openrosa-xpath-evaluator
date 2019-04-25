@@ -9,14 +9,16 @@ let doc, xEval, evaluator;
 
 function initDoc(xml) {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
+  node = null
   evaluator = new ExtendedXpathEvaluator(
     v => {
-      const result = doc.evaluate.call(doc, v, doc, null, XPathResult.ANY_TYPE, null);
-      //console.log(`${v} => ${result.resultType}`);
+      const result = doc.evaluate.call(doc, v, node || doc, null, XPathResult.ANY_TYPE, null);
+      // console.log(`${v} => ${result.resultType}`);
       return result;
     },
     openRosaXpathExtensions(translate, doc));
-  xEval = function(e) {
+  xEval = function(e, xnode) {
+    node = xnode;
     return evaluator.evaluate(e);
   };
 }
@@ -55,18 +57,25 @@ const assertString = (...args) => {
   const expected = args[args.length -1];
   const regex = args[args.length - 2];
   if(args.length > 2) {
-    simpleValueIs(args[0]);
+    simpleValueIs(args[args.length - 3]);
   }
-  assert.equal(xEval(regex).stringValue, expected);
+  const node = args.length > 3 ? args[args.length - 4] : null;
+  assert.equal(xEval(regex, node).stringValue, expected);
 };
 
 const assertNumber = (...args) => {
   const expected = args[args.length -1];
   const regex = args[args.length - 2];
-  if(args.length > 2) {
-    simpleValueIs(args[0]);
+  if(args.length > 2 && args[1]) {
+    simpleValueIs(args[args.length - 3]);
   }
-  assert.equal(xEval(regex).numberValue, expected);
+  const node = args.length > 3 ? args[args.length - 4] : null;
+  const actual = xEval(regex, node).numberValue;
+  if(isNaN(expected)) {
+    assert.isNaN(actual)
+  } else {
+    assert.equal(actual, expected);
+  }
 };
 
 beforeEach(function() {

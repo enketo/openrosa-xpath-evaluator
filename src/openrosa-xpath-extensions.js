@@ -172,18 +172,34 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.boolean(a.v.endsWith(b.v));
     },
     int: function(v) { return XPR.number(parseInt(_str(v), 10)); },
-    join: function(delim, arr) { return XPR.string(arr.v.join(_str(delim))); },
-    max: function(r) {
+    join: function(delim, ...arr) {
+      if(arr.length===0) return XPR.string('');
+      if(arr.length>1) {
+        var out = [];
+        for (var i = 0; i < arr.length; i++){
+          out.push(arr[i].v);
+        }
+        return XPR.string(out.join(_str(delim)));
+      }
+      return XPR.string(arr[0].v.join(_str(delim)));
+    },
+    max: function(...args) {
+      if(args.length > 1) {
+        return XPR.number(Math.max.apply(null, args.map(r => r.v)));
+      }
       var max, i;
-      r = r.v;
+      var r = args[0].v;
       if(!(i=r.length)) return XPR.number(NaN);
       max = parseFloat(r[0]);
       while(--i) max = Math.max(max, parseFloat(r[i]));
       return XPR.number(max);
     },
-    min: function(r) {
+    min: function(...args) {
+      if(args.length > 1) {
+        return XPR.number(Math.min.apply(null, args.map(r => r.v)));
+      }
       var min, i;
-      r = r.v;
+      var r = args[0].v;
       if(!(i=r.length)) return XPR.number(NaN);
       min = parseFloat(r[0]);
       while(--i) min = Math.min(min, parseFloat(r[i]));
@@ -231,6 +247,15 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.string(_str(string).slice(
           _int(startIndex),
           endIndex && _int(endIndex)));
+    },
+    sum: function(r) {
+      if(arguments.length > 1) throw TOO_MANY_ARGS;
+      var out = 0;
+      for (var i = 0; i < r.v.length; i++) {
+        if(!RAW_NUMBER.test(r.v[i])) XPR.number(NaN);
+        out += parseInt(r.v[i], 10);
+      }
+      return XPR.number(out);
     },
     today: now_and_today,
     'true': function(arg) {
