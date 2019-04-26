@@ -172,34 +172,43 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.boolean(a.v.endsWith(b.v));
     },
     int: function(v) { return XPR.number(parseInt(_str(v), 10)); },
-    join: function(delim, ...arr) {
-      if(arr.length===0) return XPR.string('');
-      if(arr.length>1) {
+    join: function() {
+      var delim = arguments[0];
+      if(arguments.length<2) return XPR.string('');
+      if(arguments.length>2) {
         var out = [];
-        for (var i = 0; i < arr.length; i++){
-          out.push(arr[i].v);
+        for (var i = 1; i < arguments.length; i++){
+          out.push(arguments[i].v);
         }
         return XPR.string(out.join(_str(delim)));
       }
-      return XPR.string(arr[0].v.join(_str(delim)));
+      return XPR.string(arguments[1].v.join(_str(delim)));
     },
-    max: function(...args) {
-      if(args.length > 1) {
-        return XPR.number(Math.max.apply(null, args.map(r => r.v)));
+    max: function() {
+      if(arguments.length > 1) {
+        var out = [];
+        for (var j = 0; j < arguments.length; j++){
+          out.push(arguments[j].v);
+        }
+        return XPR.number(Math.max.apply(null, out));
       }
       var max, i;
-      var r = args[0].v;
+      var r = arguments[0].v;
       if(!(i=r.length)) return XPR.number(NaN);
       max = parseFloat(r[0]);
       while(--i) max = Math.max(max, parseFloat(r[i]));
       return XPR.number(max);
     },
-    min: function(...args) {
-      if(args.length > 1) {
-        return XPR.number(Math.min.apply(null, args.map(r => r.v)));
+    min: function() {
+      if(arguments.length > 1) {
+        var out = [];
+        for (var j = 0; j < arguments.length; j++){
+          out.push(arguments[j].v);
+        }
+        return XPR.number(Math.min.apply(null, out));
       }
       var min, i;
-      var r = args[0].v;
+      var r = arguments[0].v;
       if(!(i=r.length)) return XPR.number(NaN);
       min = parseFloat(r[0]);
       while(--i) min = Math.min(min, parseFloat(r[i]));

@@ -1,5 +1,4 @@
 describe('#floor()', () => {
-
   it('should convert', () => {
     assertNumber("floor('3')", 3);
     assertNumber('floor(12.5)', 12);

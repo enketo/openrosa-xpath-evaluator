@@ -14,4 +14,11 @@ describe('#random()', () => {
     // check the numbers are a bit random
     assert.equal(_.uniq(vals).length, vals.length);
   });
+
+  it('random()', () => {
+    TODO();
+  //     const result = g.doc.evaluate( 'random()', g.doc, null, g.win.XPathResult.NUMBER_TYPE, null );
+  //     expect( result.numberValue ).to.match( /0\.[0-9]{15}/ );
+  } );
+
 });

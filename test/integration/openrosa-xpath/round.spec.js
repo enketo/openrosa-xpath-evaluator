@@ -99,4 +99,30 @@ describe('#round()', () => {
   it( 'round() fails when too few arguments are provided', () => {
       assert.throw(() => xEval("round()"), Error);
   });
+
+  it('round()', () => {
+    TODO();
+  //     let result;
+  //     [
+  //         [ "round(1.234)", 1 ],
+  //         [ "round(1.234, 2)", 1.23 ],
+  //         [ "round(1.234, 5)", 1.234 ],
+  //         [ "round(1.234, 0)", 1 ],
+  //         [ "round(33.33, -1)", 30 ],
+  //         [ "round(1 div 47999799999)", 0 ], //(2.08e-11)
+  //     ].forEach( t => {
+  //         result = g.doc.evaluate( t[ 0 ], g.doc, null, g.win.XPathResult.NUMBER_TYPE, null );
+  //         expect( result.numberValue ).to.equal( t[ 1 ] );
+  //     } );
+  //
+  //     result = g.doc.evaluate( "round('a')", g.doc, null, g.win.XPathResult.NUMBER_TYPE, null );
+  //     expect( result.numberValue ).to.deep.equal( NaN );
+  // } );
+  //
+  // it( 'round() with too many args throws exception', () => {
+  //     const test = () => {
+  //         g.doc.evaluate( "round(1, 2, 3)", g.doc, helpers.getXhtmlResolver( g.doc ), g.win.XPathResult.NUMBER_TYPE, null );
+  //     };
+  //     expect( test ).to.throw( g.win.Error );
+  } );
 });
