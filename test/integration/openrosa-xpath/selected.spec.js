@@ -18,29 +18,28 @@ describe('#selected()', () => {
     assert.notOk(xEval('selected(/simple/xpath/to/node, "four")').booleanValue);
   });
 
-  it('selected()', () => {
+  xit('selected()', () => {
     TODO();
-  //     [
-  //         [ "selected(self::node(), '')", g.doc.getElementById( 'FunctionSelectedCaseEmpty' ), true ],
-  //         [ "selected(self::node(), 'ab')", g.doc.getElementById( 'FunctionSelectedCaseEmpty' ), false ],
-  //         [ "selected(self::node(), 'bc')", g.doc.getElementById( 'FunctionSelectedCaseSingle' ), false ],
-  //         [ "selected(self::node(), 'ab')", g.doc.getElementById( 'FunctionSelectedCaseSingle' ), true ],
-  //         [ "selected(self::node(), 'kl')", g.doc.getElementById( 'FunctionSelectedCaseMultiple' ), false ],
-  //         [ "selected(self::node(), 'ab')", g.doc.getElementById( 'FunctionSelectedCaseMultiple' ), true ],
-  //         [ "selected(self::node(), 'cd')", g.doc.getElementById( 'FunctionSelectedCaseMultiple' ), true ],
-  //         [ "selected(self::node(), 'ij')", g.doc.getElementById( 'FunctionSelectedCaseMultiple' ), false ],
-  //         [ "selected('apple baby crimson', 'apple')", g.doc, true ],
-  //         [ "selected('apple baby crimson', 'baby')", g.doc, true ],
-  //         [ "selected('apple baby crimson', 'crimson')", g.doc, true ],
-  //         [ "selected('apple baby crimson', '  baby  ')", g.doc, true ],
-  //         [ "selected('apple baby crimson', 'babby')", g.doc, false ],
-  //         [ "selected('apple baby crimson', 'bab')", g.doc, false ],
-  //         [ "selected('apple', 'apple')", g.doc, true ],
-  //         [ "selected('apple', 'ovoid')", g.doc, false ],
-  //         [ "selected('', 'apple')", g.doc, false ]
-  //     ].forEach( t => {
-  //         const result = g.doc.evaluate( t[ 0 ], t[ 1 ], null, g.win.XPathResult.BOOLEAN_TYPE, null );
-  //         expect( t[ 2 ] ).to.equal( result.booleanValue );
-  //     } );
-  } );
+    [
+      [ "selected(self::node(), '')", doc.getElementById( 'FunctionSelectedCaseEmpty' ), true ],
+      [ "selected(self::node(), 'ab')", doc.getElementById( 'FunctionSelectedCaseEmpty' ), false ],
+      [ "selected(self::node(), 'bc')", doc.getElementById( 'FunctionSelectedCaseSingle' ), false ],
+      [ "selected(self::node(), 'ab')", doc.getElementById( 'FunctionSelectedCaseSingle' ), true ],
+      [ "selected(self::node(), 'kl')", doc.getElementById( 'FunctionSelectedCaseMultiple' ), false ],
+      [ "selected(self::node(), 'ab')", doc.getElementById( 'FunctionSelectedCaseMultiple' ), true ],
+      [ "selected(self::node(), 'cd')", doc.getElementById( 'FunctionSelectedCaseMultiple' ), true ],
+      [ "selected(self::node(), 'ij')", doc.getElementById( 'FunctionSelectedCaseMultiple' ), false ],
+      [ "selected('apple baby crimson', 'apple')", doc, true ],
+      [ "selected('apple baby crimson', 'baby')", doc, true ],
+      [ "selected('apple baby crimson', 'crimson')", doc, true ],
+      [ "selected('apple baby crimson', '  baby  ')", doc, true ],
+      [ "selected('apple baby crimson', 'babby')", doc, false ],
+      [ "selected('apple baby crimson', 'bab')", doc, false ],
+      [ "selected('apple', 'apple')", doc, true ],
+      [ "selected('apple', 'ovoid')", doc, false ],
+      [ "selected('', 'apple')", doc, false ]
+    ].forEach( t => {
+      assertBoolean(t[1], null, t[0], t[2]);
+    });
+  });
 });

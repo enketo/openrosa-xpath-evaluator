@@ -1,4 +1,23 @@
 describe('#date()', () => {
+
+  TODO()
+  xit('invalid dates', () => {
+    [
+      "date('1983-09-31')",
+      "date('not a date')",
+      "date('opv_3')",
+      "date(true())"
+      //"date(convertible())"
+    ].forEach( t => {
+      let expr = t[ 0 ];
+      assertFalse(expr)
+      // do the same tests for the alias date-time()
+      expr = expr.replace( 'date(', 'date-time(' );
+      assertFalse(expr);
+    });
+  });
+
+
   describe('valid date string', () => {
     it('should be left alone', () => {
       assertString("date('1970-01-01')", '1970-01-01');
@@ -225,20 +244,3 @@ describe('#date()', () => {
 //     } );
 // } );
 //
-// it( 'invalid dates', () => {
-//     [
-//         "date('1983-09-31')",
-//         "date('not a date')",
-//         "date('opv_3')",
-//         "date(true())"
-//         //"date(convertible())"
-//     ].forEach( t => {
-//         let expr = t[ 0 ];
-//         let result = g.doc.evaluate( expr, g.doc, helpers.getXhtmlResolver( g.doc ), g.win.XPathResult.BOOLEAN_TYPE, null );
-//         expect( result.booleanValue ).to.equal( false );
-//         // do the same tests for the alias date-time()
-//         expr = expr.replace( 'date(', 'date-time(' );
-//         result = g.doc.evaluate( expr, g.doc, helpers.getXhtmlResolver( g.doc ), g.win.XPathResult.BOOLEAN_TYPE, null );
-//         expect( result.booleanValue ).to.equal( false );
-//     } );
-// } );

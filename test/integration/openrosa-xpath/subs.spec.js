@@ -6,18 +6,13 @@ describe('#substr()', () => {
     assertString('0123456789', 'substr(/simple/xpath/to/node, 2, 4)', '23');
   });
   it('substr()', () => {
-    TODO();
-  //     [
-  //         [ "substr('hello',0)", "hello" ],
-  //         [ "substr('hello',0,5)", "hello" ],
-  //         [ "substr('hello',1)", "ello" ],
-  //         [ "substr('hello',1,5)", "ello" ],
-  //         [ "substr('hello',1,4)", "ell" ],
-  //         [ "substr('hello',-2)", "lo" ],
-  //         [ "substr('hello',0,-1)", "hell" ]
-  //     ].forEach( t => {
-  //         const result = g.doc.evaluate( t[ 0 ], g.doc, null, g.win.XPathResult.STRING_TYPE, null );
-  //         expect( result.stringValue ).to.equal( t[ 1 ] );
-  //     } );
+    assertString("substr('hello',0)", "hello");
+    assertString("substr('hello',0,5)", "hello");
+    assertString("substr('hello',1)", "ello");
+    assertString("substr('hello',1,5)", "ello");
+    assertString("substr('hello',1,4)", "ell");
+    TODO()
+    // assertString("substr('hello',-2)", "lo");
+    // assertString("substr('hello',0,-1)", "hell");
   });
 });

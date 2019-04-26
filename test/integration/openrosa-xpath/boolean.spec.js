@@ -19,21 +19,22 @@ describe( 'native boolean functions', () => {
 
   it( 'boolean() conversion of nodeset', () => {
     TODO();
-  //   // assertTrue("boolean(/xhtml:html)");
-  //   assertFalse("boolean(/asdf)");
-  //   // assertFalse("boolean(//xhtml:article)");//helpers.getXhtmlResolver( g.doc )
+    // assertTrue("boolean(/xhtml:html)");
+    // assertFalse("boolean(/asdf)");
+    // assertFalse("boolean(//xhtml:article)");
   });
 
   it('boolean(self::node())', () => {
+    initDoc(`
+      <root>
+        <div id="FunctionBooleanEmptyNode">
+          <div></div>
+        </div>
+      </root>`);
+    const node = doc.getElementById('FunctionBooleanEmptyNode');
     TODO();
-  //   initDoc(`
-  //     <root>
-  //       <div id="FunctionBooleanEmptyNode">
-  //         <div></div>
-  //       </div>
-  //     </root>`);
-  //   assertTrue("boolean(self::node())");//g.doc.getElementById( 'FunctionBooleanEmptyNode' )
-  })
+    // assertTrue("boolean(self::node())");
+  });
 
   it( 'boolean() fails when too few arguments are provided', () => {
     assert.throw(() => xEval("boolean()"), Error);

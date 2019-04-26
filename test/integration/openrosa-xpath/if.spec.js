@@ -11,8 +11,16 @@
       assertString('if("", 5, "abc")', "abc" );
     });
 
-    it('should evaluate node', () => {
-      TODO();
-      // "if(self::node(), 'exists', 'does not exist')", g.doc.getElementById( 'FunctionChecklistCaseEmpty' ), 'exists'
+    TODO()
+    xit('should evaluate node', () => {
+      initDoc(`
+        <div id="FunctionChecklistCase">
+    			<div id="FunctionChecklistCaseNo">no</div>
+    			<div id="FunctionChecklistCaseEmpty"></div>
+    			<div id="FunctionChecklistCase0">0</div>
+    		</div>`);
+
+      const node = doc.getElementById('FunctionChecklistCaseEmpty');
+      it(node, null, "if(self::node(), 'exists', 'does not exist')", 'exists');
     });
 });

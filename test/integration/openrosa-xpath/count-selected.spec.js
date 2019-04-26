@@ -1,12 +1,22 @@
 describe( '#count-selected()', () => {
+
   it( 'count-selected()', () => {
-    TODO()
-    //         [ "count-selected(self::node())", g.doc.getElementById( 'FunctionSelectedCaseEmpty' ), 0 ],
-    //         [ "count-selected(self::node())", g.doc.getElementById( 'FunctionSelectedCaseSingle' ), 1 ],
-    //         [ "count-selected(self::node())", g.doc.getElementById( 'FunctionSelectedCaseMultiple' ), 4 ]
-    //     ].forEach( t => {
-    //         const result = g.doc.evaluate( t[ 0 ], t[ 1 ], null, g.win.XPathResult.NUMBER_TYPE, null );
-    //         expect( t[ 2 ] ).to.equal( result.numberValue );
-    //     } );
+    initDoc(`
+      <div id="FunctionSelectedCase">
+  			<div id="FunctionSelectedCaseEmpty"></div>
+  			<div id="FunctionSelectedCaseSingle">ab</div>
+  			<div id="FunctionSelectedCaseMultiple">ab cd ef gh</div>
+  			<div id="FunctionSelectedCaseMultiple">ij</div>
+  		</div>
+      `);
+
+    let node = doc.getElementById('FunctionSelectedCaseEmpty');
+    assertNumber(node, null, 'count-selected(self::node())', 0);
+
+    node = doc.getElementById('FunctionSelectedCaseSingle');
+    assertNumber(node, null, 'count-selected(self::node())', 1);
+
+    node = doc.getElementById('FunctionSelectedCaseMultiple');
+    assertNumber(node, null, 'count-selected(self::node())', 4);
   });
 });

@@ -18,13 +18,7 @@ describe('#regex()', () => {
   });
 
   it('regex()', () => {
-    TODO();
-  //     [
-  //         [ "regex('12345','[0-9]+')", g.doc, true ],
-  //         [ "regex('abcde','[0-9]+')", g.doc, false ]
-  //     ].forEach( t => {
-  //         const result = g.doc.evaluate( t[ 0 ], t[ 1 ], null, g.win.XPathResult.BOOLEAN_TYPE, null );
-  //         expect( t[ 2 ] ).to.equal( result.booleanValue );
-  //     } );
+    assertTrue("regex('12345', '[0-9]+')");
+    assertFalse("regex('abcde', '[0-9]+')");
   });
 });

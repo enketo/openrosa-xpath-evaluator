@@ -81,26 +81,31 @@ describe('#number()', () => {
       });
     });
 
-    it('number() conversion of nodesets', () => {
-      TODO()
-    //   [
-    //     [ "number(self::node())", g.doc.getElementById( 'FunctionNumberCaseNumber' ), 123 ],
-    //     [ "number(*)", g.doc.getElementById( 'FunctionNumberCaseNumberMultiple' ), -10 ],
-    //     [ "number()", g.doc.getElementById( 'FunctionNumberCaseNumber' ), 123 ]
-    //   ].forEach( t => {
-    //     TODO();
-    // //     const result = g.doc.evaluate( t[ 0 ], t[ 1 ], null, g.win.XPathResult.NUMBER_TYPE, null );
-    // //     expect( result.numberValue ).to.equal( t[ 2 ] );
-    //   } );
-    //
-    //   [
-    //     [ "number()", g.doc.getElementById( 'FunctionNumberCaseNotNumber' ) ]
-    //   ].forEach( t => {
-    //     TODO();
-    //     // const result = g.doc.evaluate( t[ 0 ], t[ 1 ], null, g.win.XPathResult.NUMBER_TYPE, null );
-    //     // expect( result.numberValue ).to.be.a( 'number' );
-    //     // expect( result.numberValue ).to.deep.equal( NaN );
-    //   });
+    xit('number() conversion of nodesets', () => {
+      initDoc(`
+        <div id="FunctionNumberCase">
+    			<div id="FunctionNumberCaseNumber">123</div>
+    			<div id="FunctionNumberCaseNotNumber">  a a  </div>
+    			<div id="FunctionNumberCaseNumberMultiple">
+    				<div>-10</div>
+    				<div>11</div>
+    				<div>99</div>
+    			</div>
+    			<div id="FunctionNumberCaseNotNumberMultiple">
+    				<div>-10</div>
+    				<div>11</div>
+    				<div>a</div>
+    			</div>
+    		</div>`);
+      let node = doc.getElementById('FunctionNumberCaseNumberMultiple');
+      assertNumber(node, null, "number(self::node())", -10);
+
+      node = doc.getElementById('FunctionNumberCaseNumber');
+      assertNumber(node, null, "number()", 123);
+      assertNumber(node, null, "number(self::node())", 123);
+
+      node = doc.getElementById('FunctionNumberCaseNotNumber');
+      assertNumber(node, null, "number()", 123);
     });
 
     it( 'number() conversion fails when too many arguments are provided', () => {

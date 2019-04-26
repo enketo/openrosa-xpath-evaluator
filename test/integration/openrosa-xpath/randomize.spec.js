@@ -1,20 +1,21 @@
 describe('randomize() shuffles nodesets', () => {
   TODO();
-//     const SELECTOR = '//xhtml:div[@id="FunctionRandomize"]/xhtml:div';
-//
-//     it( 'without a seed', () => {
-//         const result = g.doc.evaluate( `randomize(${SELECTOR})`, g.doc, helpers.getXhtmlResolver( g.doc ), g.win.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
-//         const nodes = [];
-//         let text = '';
-//         for ( let j = 0; j < result.snapshotLength; j++ ) {
-//             const node = result.snapshotItem( j );
-//             nodes.push( node );
-//             text += node.textContent;
-//         }
-//         expect( nodes.length ).to.equal( 6 );
-//         expect( text.length ).to.equal( 6 );
-//         expect( text ).not.to.equal( 'ABCDEF' );
-//     } );
+  const SELECTOR = '//xhtml:div[@id="FunctionRandomize"]/xhtml:div';
+
+  // xit( 'without a seed', () => {
+  //   const result = doc.evaluate(`randomize(${SELECTOR})`, g.doc, helpers.getXhtmlResolver( g.doc ), g.win.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+  //   const nodes = [];
+  //   let text = '';
+  //   for ( let j = 0; j < result.snapshotLength; j++ ) {
+  //       const node = result.snapshotItem( j );
+  //       nodes.push( node );
+  //       text += node.textContent;
+  //   }
+  //   expect( nodes.length ).to.equal( 6 );
+  //   expect( text.length ).to.equal( 6 );
+  //   expect( text ).not.to.equal( 'ABCDEF' );
+  // });
+
 //
 //     [
 //         [ 42, 'AFCBDE' ],
@@ -36,17 +37,10 @@ describe('randomize() shuffles nodesets', () => {
 //         } );
 //     } );
 //
-//     [
-//         'randomize()',
-//         `randomize(${SELECTOR}, 'a')`,
-//         `randomize(${SELECTOR}, 1, 2)`,
-//     ].forEach( t => {
-//         it( `with invalid args (${t}), throws an error`, () => {
-//             const test = () => {
-//                 g.doc.evaluate( t, g.doc, helpers.getXhtmlResolver( g.doc ), g.win.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
-//             };
-//             expect( test ).to.throw( g.win.Error );
-//         } );
-//     } );
-//
+  xit(`with invalid args, throws an error`, () => {
+    // g.doc.evaluate(XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+    assert.throw(() => 'randomize()', Error);
+    assert.throw(() => `randomize(${SELECTOR}, 'a')`, Error);
+    assert.throw(() => `randomize(${SELECTOR}, 1, 2)`, Error);
+  });
 });

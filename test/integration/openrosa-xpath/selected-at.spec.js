@@ -10,20 +10,29 @@ describe('#selected-at()', () => {
     });
   });
 
-  it( 'selected-at()', () => {
+  xit('selected-at()', () => {
     TODO();
-  //     [
-  //         [ "selected-at(self::node(), 0)", g.doc.getElementById( 'FunctionSelectedCaseEmpty' ), '' ],
-  //         [ "selected-at(self::node(), 0)", g.doc.getElementById( 'FunctionSelectedCaseSingle' ), 'ab' ],
-  //         [ "selected-at(self::node(), 1)", g.doc.getElementById( 'FunctionSelectedCaseSingle' ), '' ],
-  //         [ "selected-at(self::node(), 2)", g.doc.getElementById( 'FunctionSelectedCaseMultiple' ), 'ef' ],
-  //         [ "selected-at(self::node(), -1)", g.doc.getElementById( 'FunctionSelectedCaseMultiple' ), '' ],
-  //         [ "selected-at('apple baby crimson', 2)", g.doc, 'crimson' ],
-  //         [ "selected-at('apple baby crimson', -1)", g.doc, '' ],
-  //         [ "selected-at('', 1)", g.doc, '' ]
-  //     ].forEach( t => {
-  //         const result = g.doc.evaluate( t[ 0 ], t[ 1 ], null, g.win.XPathResult.STRING_TYPE, null );
-  //         expect( t[ 2 ] ).to.equal( result.stringValue );
-  //     } );
+    initDoc(`
+      <div id="FunctionSelectedCase">
+  			<div id="FunctionSelectedCaseEmpty"></div>
+  			<div id="FunctionSelectedCaseSingle">ab</div>
+  			<div id="FunctionSelectedCaseMultiple">ab cd ef gh</div>
+  			<div id="FunctionSelectedCaseMultiple">ij</div>
+  		</div>`);
+    let node = doc.getElementById('FunctionSelectedCaseEmpty');
+    assertString("selected-at(self::node(), 0)",  '');
+
+    node = doc.getElementById('FunctionSelectedCaseSingle');
+    assertString("selected-at(self::node(), 0)", 'ab');
+
+    node = doc.getElementById( 'FunctionSelectedCaseSingle');
+    assertString("selected-at(self::node(), 1)", '');
+
+    node = doc.getElementById('FunctionSelectedCaseMultiple');
+    assertString("selected-at(self::node(), 2)", 'ef');
+    assertString("selected-at(self::node(), -1)", '');
+    assertString("selected-at('apple baby crimson', 2)", 'crimson');
+    assertString("selected-at('apple baby crimson', -1)", '');
+    assertString("selected-at('', 1)", '');
   });
 });

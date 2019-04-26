@@ -12,13 +12,9 @@ describe('#date-time()', () => {
   });
 
   describe('positive number', () => {
-    _.forEach({
-      'date-time(0)': '1970-01-01',
-      'date-time(1)': '1970-01-02',
-    }, function(expected, expr) {
-      it(expr + ' should be converted to ' + expected, () => {
-        assertString(expr, expected);
-      });
+    it('should be converted', () => {
+      assertString('date-time(0)', '1970-01-01');
+      assertString('date-time(1)', '1970-01-02');
     });
   });
 

@@ -19,7 +19,7 @@ describe('#coalesce()', () => {
     assertString('', 'coalesce(/simple/xpath/to/node, "SECOND")', 'SECOND');
   });
 
-  it( 'coalesce(self::*)', () => {
+  it('coalesce(self::*)', () => {
     initDoc(`
       <div id="FunctionSelectedCase">
         <div id="FunctionSelectedCaseEmpty"></div>

@@ -1,14 +1,28 @@
-describe('#position()', () => { it('should have tests', () => { TODO(); }); });
+describe('#position()', () => {
+  TODO();
 
+  xit('position(node) with an argument', () => {
+    initDoc(`
+      <div id="FunctionNumberCase">
+  			<div id="FunctionNumberCaseNumber">123</div>
+  			<div id="FunctionNumberCaseNotNumber">  a a  </div>
+  			<div id="FunctionNumberCaseNumberMultiple">
+  				<div>-10</div>
+  				<div>11</div>
+  				<div>99</div>
+  			</div>
+  			<div id="FunctionNumberCaseNotNumberMultiple">
+  				<div>-10</div>
+  				<div>11</div>
+  				<div>a</div>
+  			</div>
+  		</div>`);
 
-// //test only the use of position(node) with an argument
-// it( 'position(node)', () => {
-//     [
-//         [ 'position(..)', g.doc.getElementById( 'FunctionNumberCaseNumberMultiple' ), 6 ],
-//         [ 'position(.)', g.doc.getElementById( 'FunctionNumberCaseNumberMultiple' ), 3 ],
-//         [ 'position(../..)', g.doc.getElementById( 'testFunctionNodeset3NodeP' ), 2 ]
-//     ].forEach( t => {
-//         const result = g.doc.evaluate( t[ 0 ], t[ 1 ], null, g.win.XPathResult.NUMBER_TYPE, null );
-//         expect( t[ 2 ] ).to.equal( result.numberValue );
-//     } );
-// } );
+    let node = doc.getElementById('FunctionNumberCaseNumberMultiple');
+    assertNumber(node, null, 'position(..)', 6);
+    assertNumber(node, null, 'position(.)', 3);
+
+    node = doc.getElementById('testFunctionNodeset3NodeP');
+    assertNumber(node, null, 'position(../..)', 2);
+  });
+});
