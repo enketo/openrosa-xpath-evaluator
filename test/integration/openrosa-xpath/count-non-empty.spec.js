@@ -1,5 +1,4 @@
 describe( 'count-non-empty', () => {
-  TODO()
   xit('count-non-empty', () => {
     initDoc(`
       <div id="FunctionCountNonEmpty">

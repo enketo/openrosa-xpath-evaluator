@@ -11,7 +11,6 @@
       assertString('if("", 5, "abc")', "abc" );
     });
 
-    TODO()
     xit('should evaluate node', () => {
       initDoc(`
         <div id="FunctionChecklistCase">

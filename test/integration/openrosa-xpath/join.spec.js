@@ -24,8 +24,8 @@ describe('#join()', () => {
         </root>`);
     assertString("join(', ', //item)", "1, 2, 3, 4")
     assertString("join(', ', /root/*)", "1, 2, 3, 4")
-    // TODO
-    // const node = doc.getElementById('xroot');
-    // assertString(node, null, "join(', ', *)", "1, 2, 3, 4")
+
+    const node = doc.getElementById('xroot');
+    assertString(node, null, "join(', ', *)", "1, 2, 3, 4")
   })
 });

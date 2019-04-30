@@ -155,7 +155,7 @@ var openrosa_xpath_extensions = function(translate) {
         if(arguments[j].t === 'arr') {
           out.push(arguments[j].v.join(''));
         } else {
-          out.push(arguments[j].v)
+          out.push(arguments[j].v);
         }
       }
       return XPR.string(out.join(''));

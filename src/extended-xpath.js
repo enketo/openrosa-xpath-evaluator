@@ -234,6 +234,9 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         case '*':
           if(c === '*' && (cur.v !== '' || peek().tokens.length === 0)) {
             cur.v += c;
+          } else if(cur.v === '' && nextChar() === ')'){
+            cur.v = c;
+            handleXpathExpr();
           } else {
             pushOp(c);
           }
