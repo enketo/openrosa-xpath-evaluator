@@ -149,6 +149,17 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.boolean(string === '1' || string === 'true');
     },
     coalesce: function(a, b) { return XPR.string(_str(a) || _str(b)); },
+    concat: function() {
+      var out = [];
+      for (var j = 0; j < arguments.length; j++){
+        if(arguments[j].t === 'arr') {
+          out.push(arguments[j].v.join(''));
+        } else {
+          out.push(arguments[j].v)
+        }
+      }
+      return XPR.string(out.join(''));
+    },
     'count-selected': function(s) {
       var parts = _str(s).split(' '),
           i = parts.length,

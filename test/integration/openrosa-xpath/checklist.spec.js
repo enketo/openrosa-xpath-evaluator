@@ -1,5 +1,5 @@
 describe('#checklist()', () => {
-  TODO();
+
   xit('checklist()', () => {
     assertBoolean("checklist(-1, 2, 2>1)", true);
     assertBoolean("checklist(-1, 2, 1=1, 2=2, 3=3)", false);

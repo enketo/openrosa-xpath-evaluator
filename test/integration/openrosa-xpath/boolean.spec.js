@@ -18,7 +18,6 @@ describe( 'native boolean functions', () => {
   });
 
   xit( 'boolean() conversion of nodeset', () => {
-    TODO();
     assertTrue("boolean(/xhtml:html)");
     assertFalse("boolean(/asdf)");
     assertFalse("boolean(//xhtml:article)");
@@ -32,7 +31,6 @@ describe( 'native boolean functions', () => {
         </div>
       </root>`);
     const node = doc.getElementById('FunctionBooleanEmptyNode');
-    TODO();
     assertTrue("boolean(self::node())");
   });
 

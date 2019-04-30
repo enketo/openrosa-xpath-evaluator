@@ -112,8 +112,8 @@ describe( 'and/or operators', () => {
       [ "true() or true() and false()", true ],
       [ "true() and false() or true()", true ],
       [ "false() and false() or false()", false ],
-      // [ "0 or 1 and 0", false ],
-      // [ "0 or 1 and 0+1", true ]
+      [ "0 or 1 and 0", false ],
+      [ "0 or 1 and 0+1", true ]
     ].forEach( t => {
       assertBoolean(t[0], t[1]);
     } );

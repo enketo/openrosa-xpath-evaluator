@@ -21,6 +21,7 @@ function initDoc(xml) {
     node = xnode;
     return evaluator.evaluate(e);
   };
+  return doc;
 }
 function simpleValueIs(textValue) {
   initDoc(`<simple><xpath><to>
