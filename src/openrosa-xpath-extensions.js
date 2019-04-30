@@ -233,6 +233,7 @@ var openrosa_xpath_extensions = function(translate) {
     regex: function(haystack, pattern) {
         return XPR.boolean(new RegExp(_str(pattern)).test(_str(haystack))); },
     round: function(number, num_digits) {
+      if(arguments.length > 2) throw TOO_MANY_ARGS;
       number = _float(number);
       if(!num_digits) {
         return XPR.number(_round(number));

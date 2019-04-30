@@ -112,8 +112,8 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           case '<=': return lhs.v <= rhs.v;
           case '>=': return lhs.v >= rhs.v;
           case '!=': return lhs.v != rhs.v;
-          case '&':  return lhs.v && rhs.v;
-          case '|':  return lhs.v || rhs.v;
+          case '&':  return Boolean(lhs.v && rhs.v);
+          case '|':  return Boolean(lhs.v || rhs.v);
         }
       },
       evalOpAt = function(tokens, opIndex) {

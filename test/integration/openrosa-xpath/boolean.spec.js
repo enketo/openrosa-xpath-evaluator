@@ -17,14 +17,14 @@ describe( 'native boolean functions', () => {
     assertFalse("boolean(number(''))");
   });
 
-  it( 'boolean() conversion of nodeset', () => {
+  xit( 'boolean() conversion of nodeset', () => {
     TODO();
-    // assertTrue("boolean(/xhtml:html)");
-    // assertFalse("boolean(/asdf)");
-    // assertFalse("boolean(//xhtml:article)");
+    assertTrue("boolean(/xhtml:html)");
+    assertFalse("boolean(/asdf)");
+    assertFalse("boolean(//xhtml:article)");
   });
 
-  it('boolean(self::node())', () => {
+  xit('boolean(self::node())', () => {
     initDoc(`
       <root>
         <div id="FunctionBooleanEmptyNode">
@@ -33,7 +33,7 @@ describe( 'native boolean functions', () => {
       </root>`);
     const node = doc.getElementById('FunctionBooleanEmptyNode');
     TODO();
-    // assertTrue("boolean(self::node())");
+    assertTrue("boolean(self::node())");
   });
 
   it( 'boolean() fails when too few arguments are provided', () => {

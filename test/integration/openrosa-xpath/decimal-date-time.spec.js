@@ -11,8 +11,7 @@ describe('#decimal-date-time()', () => {
     });
   });
 
-  it(`with invalid args, throws an error`, () => {
-    TODO()
-    // assert.throw(() => xEval('decimal-date-time("1970-01-01T00:00:00.000Z", 2)'), Error);
+  xit(`with invalid args, throws an error`, () => {
+    assert.throw(() => xEval('decimal-date-time("1970-01-01T00:00:00.000Z", 2)'), Error);
   });
 });

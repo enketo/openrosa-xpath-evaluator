@@ -31,7 +31,6 @@ describe('#concat', () => {
 			  </div>
 			</div>`);
     const node = doc.getElementById('testFunctionNodeset2');
-    // TODO
     // assertString(node, null, "concat(*, 'a')", '1234a');
     // assertString(node, null, "concat(*)", '1234');
     // assertString(node, null, "concat()", '');
