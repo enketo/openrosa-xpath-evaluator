@@ -143,7 +143,11 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         }
       },
       handleXpathExpr = function() {
-        var evaluated = toInternalResult(wrapped(cur.v));
+        var expr = cur.v;
+        while(expr.indexOf('xhtml:') >= 0){
+          expr = expr.replace('xhtml:', '');
+        }
+        var evaluated = toInternalResult(wrapped(expr));
         peek().tokens.push(evaluated);
         newCurrent();
       },

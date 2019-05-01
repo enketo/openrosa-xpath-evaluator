@@ -1,6 +1,5 @@
-describe( '#count-selected()', () => {
-
-  it( 'count-selected()', () => {
+describe('#count-selected()', () => {
+  it('count-selected()', () => {
     const doc = initDoc(`
       <div id="FunctionSelectedCase">
   			<div id="FunctionSelectedCaseEmpty"></div>

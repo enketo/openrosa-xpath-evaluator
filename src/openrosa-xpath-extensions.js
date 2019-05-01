@@ -160,6 +160,14 @@ var openrosa_xpath_extensions = function(translate) {
       }
       return XPR.string(out.join(''));
     },
+    'count-non-empty': function(r) {
+      if(arguments.length === 0 || r.t !== 'arr') throw TOO_FEW_ARGS;
+      var counter = 0;
+      for (var j = 0; j < r.v.length; j++){
+        counter += r.v[j] === '' ? 0 : 1;
+      }
+      return XPR.number(counter);
+    },
     'count-selected': function(s) {
       var parts = _str(s).split(' '),
           i = parts.length,
