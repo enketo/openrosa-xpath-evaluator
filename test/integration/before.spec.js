@@ -3,11 +3,11 @@ const FULL_DATE_MATCH = /(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|
 const assert = chai.assert;
 const openRosaXpathExtensions = openrosa_xpath_extensions;
 
-function TODO() { if(false) assert.notOk('TODO'); }
+const TODO = () => { if(false) assert.notOk('TODO'); }
 
 let doc, xEval, evaluator;
 
-function initDoc(xml) {
+const initDoc = (xml) => {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
   node = null
   evaluator = new ExtendedXpathEvaluator(
@@ -22,12 +22,14 @@ function initDoc(xml) {
     return evaluator.evaluate(e);
   };
   return doc;
-}
-function simpleValueIs(textValue) {
+};
+
+const simpleValueIs = (textValue) => {
   initDoc(`<simple><xpath><to>
              <node>${textValue}</node>
            </to></xpath><empty/></simple>`);
-}
+};
+
 const initBasicXmlDoc = () => simpleValueIs('');
 
 const assertTrue = (...args) => {
@@ -82,3 +84,11 @@ const assertNumber = (...args) => {
 beforeEach(function() {
   initBasicXmlDoc();
 });
+
+// const nsResolver = (prefix) => {
+//   var ns = {
+//     'xhtml' : 'http://www.w3.org/1999/xhtml',
+//     'mathml': 'http://www.w3.org/1998/Math/MathML'
+//   };
+//   return ns[prefix] || null;
+// };
