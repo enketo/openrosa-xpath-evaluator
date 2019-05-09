@@ -1,6 +1,31 @@
 describe('Union operator', () => {
+  beforeEach(() => {
+    initDoc(`
+      <div id="UnionOperatorTestCase">
+  			<div id="eee10">
+  				<div id="eee20">
+  					<div>
+  						<div id="eee25"></div>
+  					</div>
+  				</div>
+  				<div id="eee30">
+  					<div id="eee35"></div>
+  					<div id="eee40" class="sss"></div>
+  				</div>
+  			</div>
+  			<div id="eee50"></div>
 
-  xit('combines elements', () => {
+  			<div id="nss10">
+  				<div id="nss20">
+  					<div id="nss25" xmlns:asdf="http://asdf.com/" align="right"></div>
+  					<div xmlns:asdf="http://asdf.com/" id="nss30"></div>
+  				</div>
+  				<div id="nss40" xmlns:asdf="sss" xmlns:asdf2="sdfsdf"></div>
+  			</div>
+  		</div>`);
+  });
+
+  it('combines elements', () => {
     checkNodeResult("id('eee40') | id('eee20') | id('eee25') | id('eee10') | id('eee30') | id('eee50')", doc, [
       doc.getElementById('eee10'),
       doc.getElementById('eee20'),
@@ -11,36 +36,36 @@ describe('Union operator', () => {
     ]);
   });
 
-  xit('combines elements and attributes', () => {
+  it('combines elements and attributes', () => {
     checkNodeResult("id('eee40')/attribute::*[1] | id('eee30')", doc, [
       doc.getElementById('eee30'),
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
-  xit('combines elements and attributes if they refer to the same element', () => {
+  it('combines elements and attributes if they refer to the same element', () => {
     checkNodeResult("id('eee40')/attribute::*[1] | id('eee40')", doc, [
       doc.getElementById('eee40'),
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
-  xit('combines elements and attributs if they refer to different trees', () => {
+  it('combines elements and attributs if they refer to different trees', () => {
     checkNodeResult("id('eee40')/attribute::*[1] | id('eee20')", doc, [
       doc.getElementById('eee20'),
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
-  xit('combines elements and attributes if the attribute is on a parent element in the same tree', () => {
+  it('combines elements and attributes if the attribute is on a parent element in the same tree', () => {
     checkNodeResult("id('eee40') | id('eee30')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee30').attributes)[0],
       doc.getElementById('eee40')
     ]);
   });
 
-  xit('combines elements and attributes if both are (on) elements under the same parent', () => {
-    checkNodeResult( "id('eee40') | id('eee35')/attribute::*[1]", doc, [
+  it('combines elements and attributes if both are (on) elements under the same parent', () => {
+    checkNodeResult("id('eee40') | id('eee35')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee35').attributes )[0],
       doc.getElementById('eee40')
     ]);
@@ -53,7 +78,7 @@ describe('Union operator', () => {
     ]);
   });
 
-  xit('combines attributes that live on descendent elements', () => {
+  it('combines attributes that live on descendent elements', () => {
     checkNodeResult( "id('eee30')/attribute::*[1] | id('eee40')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee30').attributes)[0],
       filterAttributes(doc.getElementById('eee40').attributes)[0]
@@ -74,8 +99,8 @@ describe('Union operator', () => {
     ]);
   });
 
-  xit('combines a namespace and attribute on the same element', () => {
-    const result = doc.evaluate( "id('nss25')/namespace::*", doc, null, win.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+  it('combines a namespace and attribute on the same element', () => {
+    const result = doc.evaluate( "id('nss25')/namespace::*", doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
 
     checkNodeResult("id('nss25')/namespace::* | id('nss25')/attribute::*", doc,
       snapshotToArray(result).concat(

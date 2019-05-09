@@ -67,8 +67,8 @@ describe('location path', () => {
   });
 
   xit('root node', () => {
-    checkNodeResult("/html", doc, [], helpers.getXhtmlResolver(doc));
-    checkNodeResult("/xhtml:html", doc, [doc.documentElement], getXhtmlResolver( doc ) );
+    checkNodeResult("/html", doc, [], getXhtmlResolver(doc));
+    checkNodeResult("/xhtml:html", doc, [doc.documentElement], getXhtmlResolver(doc));
     checkNodeResult("/xhtml:html", doc.getElementById('LocationPathCase'), [doc.documentElement], getXhtmlResolver(doc));
     checkNodeResult("/htmlnot", doc.getElementById('LocationPathCase'), [], getXhtmlResolver(doc));
   });
