@@ -320,6 +320,34 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
   };
 };
 
+XPathException = function(code, message) {
+  var err;
+  this.code = code;
+  switch(this.code) {
+    case XPathException.INVALID_EXPRESSION_ERR:
+      this.name = 'INVALID_EXPRESSION_ERR';
+      break;
+    case XPathException.TYPE_ERR:
+      this.name = 'TYPE_ERR';
+      break;
+    default:
+      err = new Error('Unsupported XPathException code: ' + this.code);
+      err.name = 'XPathExceptionInternalError';
+      throw err;
+  }
+  this.message = (message || '');
+};
+
+XPathException.prototype.toString = function() {
+  return 'XPathException: "' + this.message + '"'
+    + ', code: "' + this.code + '"'
+    + ', name: "' + this.name + '"'
+  ;
+};
+
+XPathException.INVALID_EXPRESSION_ERR = 51;
+XPathException.TYPE_ERR = 52;
+
 if(typeof define === 'function') {
   define(function() { return ExtendedXpathEvaluator; });
 } else if(typeof module === 'object' && typeof module.exports === 'object') {

@@ -1,36 +1,36 @@
 describe('xpath exceptions', () => {
 
-  xit('Exception constants have expected values', () => {
-    expect(doc.XPathException.INVALID_EXPRESSION_ERR).to.equal(51);
-    expect(doc.XPathException.TYPE_ERR).to.equal(52);
+  it('Exception constants have expected values', () => {
+    assert.equal(XPathException.INVALID_EXPRESSION_ERR, 51);
+    assert.equal(XPathException.TYPE_ERR, 52);
   });
 
-  xit('Constructor is constructing nicely with a message', () => {
+  it('Constructor is constructing nicely with a message', () => {
     const message = 'here is the message';
-    const ex = new doc.XPathException(doc.XPathException.INVALID_EXPRESSION_ERR, message);
+    const ex = new XPathException(XPathException.INVALID_EXPRESSION_ERR, message);
 
     // check code
-    expect(ex.code).to.equal(doc.XPathException.INVALID_EXPRESSION_ERR);
-    expect(ex.code).to.equal(51);
+    assert.equal(ex.code, XPathException.INVALID_EXPRESSION_ERR);
+    assert.equal(ex.code, 51);
 
     // check message
-    expect(ex.message).to.equal(message);
+    assert.equal(ex.message, message);
 
     // check toString
-    expect(ex.toString).to.be.an.instanceOf(doc.Function);
-    expect(ex.toString()).to.equal(`XPathException: "${ex.message}", code: "${ex.code}", name: "INVALID_EXPRESSION_ERR"`);
+    assert.instanceOf(ex.toString, Function);
+    assert.equal(ex.toString(), `XPathException: "${ex.message}", code: "${ex.code}", name: "INVALID_EXPRESSION_ERR"`);
   });
 
-  xit('Constructor is constructing nicely without a message', () => {
-    const ex = new doc.XPathException(doc.XPathException.INVALID_EXPRESSION_ERR);
-    expect(ex.message).to.equal("");
+  it('Constructor is constructing nicely without a message', () => {
+    const ex = new XPathException(XPathException.INVALID_EXPRESSION_ERR);
+    assert.equal(ex.message, "");
   });
 
-  xit('Constructor throws exception when wrong arguments provided', () => {
+  it('Constructor throws exception when wrong arguments provided', () => {
     const test = () => {
-      new doc.XPathException(99, 'message goes here');
+      new XPathException(99, 'message goes here');
     };
-    expect(test).to.throw(doc.Error, /Unsupported XPathException code: 99/);
+    assert.throws(test, Error, /Unsupported XPathException code: 99/);
   });
 
 });
