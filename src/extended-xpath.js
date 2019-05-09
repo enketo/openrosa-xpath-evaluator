@@ -320,7 +320,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
   };
 };
 
-XPathException = function(code, message) {
+var XPathException = function(code, message) {
   var err;
   this.code = code;
   switch(this.code) {
@@ -339,9 +339,9 @@ XPathException = function(code, message) {
 };
 
 XPathException.prototype.toString = function() {
-  return 'XPathException: "' + this.message + '"'
-    + ', code: "' + this.code + '"'
-    + ', name: "' + this.name + '"'
+  return 'XPathException: "' + this.message + '"' +
+    ', code: "' + this.code + '"' +
+    ', name: "' + this.name + '"'
   ;
 };
 
