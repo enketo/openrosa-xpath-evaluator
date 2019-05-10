@@ -3,32 +3,41 @@ describe('node name for', () => {
 
   beforeEach(() => {
     initDoc(`
-      <div id="StepNodeTestCaseNameTest">
-  			<div id="StepNodeTestCaseNameTestAttribute" ev:attrib1="value" ev:attrib2="value2" xml:attrib2="something" xml:sss="something2" attrib3="asdf" xmlns:ns2="http://asdf/" ns2:attrib4="Hello world"></div>
-  			<div id="StepNodeTestCaseNameTestNamespace" xmlns:ns1="test-123" xmlns:ns2="http://asdf/" ev:attrib1="value" xml:attrib2="something" attrib3="asdf"></div>
-  			<div id="StepNodeTestCaseNameTestChild"><div xmlns="http://asdf/"></div><ev:div xmlns:ev="http://asdf/"></ev:div><ev:span xmlns:ev="http://asdf/"></ev:span>
-  				<div></div>
-  				asdf
-  				<!-- asdf -->
-  				asdf
-  				<div></div>
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
+          <div id="StepNodeTestCaseNameTest">
+      			<div id="StepNodeTestCaseNameTestAttribute" ev:attrib1="value" ev:attrib2="value2" xml:attrib2="something" xml:sss="something2" attrib3="asdf" xmlns:ns2="http://asdf/" ns2:attrib4="Hello world"></div>
+      			<div id="StepNodeTestCaseNameTestNamespace" xmlns:ns1="test-123" xmlns:ns2="http://asdf/" ev:attrib1="value" xml:attrib2="something" attrib3="asdf"></div>
+      			<div id="StepNodeTestCaseNameTestChild"><div xmlns="http://asdf/"></div><ev:div xmlns:ev="http://asdf/"></ev:div><ev:span xmlns:ev="http://asdf/"></ev:span>
+      				<div></div>
+      				asdf
+      				<!-- asdf -->
+      				asdf
+      				<div></div>
 
-  				<div></div>
-  				asas
-  				<div></div>
-  			</div>
+      				<div></div>
+      				asas
+      				<div></div>
+      			</div>
 
-  			<div id="StepNodeTestCaseNameTest1">
-  				<div id="StepNodeTestCaseNameTest2">
-  					<div id="StepNodeTestCaseNameTest3"></div>
-  				</div>
-  			</div>
+      			<div id="StepNodeTestCaseNameTest1">
+      				<div id="StepNodeTestCaseNameTest2">
+      					<div id="StepNodeTestCaseNameTest3"></div>
+      				</div>
+      			</div>
 
-  			<div id="StepNodeTestCaseNameTestNoNamespace"><div xmlns=""><div><div></div></div></div></div>
-  		</div>`);
+      			<div id="StepNodeTestCaseNameTestNoNamespace"><div xmlns=""><div><div></div></div></div></div>
+  		    </div>
+        </body>
+      </html>`);
 
     h = {
-      filterElementNodes( nodes ) {
+      filterElementNodes(nodes) {
         const elementNodes = [];
         let i;
         for(i = 0; i < nodes.length; i++) {
@@ -41,31 +50,31 @@ describe('node name for', () => {
     };
   });
 
-  xit('any attribute', () => {
-    const node = doc.getElementById( 'StepNodeTestCaseNameTestAttribute');
+  it('any attribute', () => {
+    const node = doc.getElementById('StepNodeTestCaseNameTestAttribute');
     checkNodeResult("attribute::*", node, filterAttributes(node.attributes));
   });
 
   xit('any namespace', () => {
-    const node = doc.getElementById( 'StepNodeTestCaseNameTestNamespace' ),
+    const node = doc.getElementById('StepNodeTestCaseNameTestNamespace'),
       namespaces = [];
 
     namespaces.push(['', 'http://www.w3.org/1999/xhtml']);
-    parseNamespacesFromAttributes( node.attributes, namespaces);
+    parseNamespacesFromAttributes(node.attributes, namespaces);
     namespaces.push(['ev', 'http://some-namespace.com/nss']);
     namespaces.push(['xml', 'http://www.w3.org/XML/1998/namespace']);
 
     checkNodeResultNamespace("namespace::*", node, namespaces);
   });
 
-  xit('any child', () => {
+  it('any child', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestChild');
     checkNodeResult("child::*", node, h.filterElementNodes(node.childNodes));
   });
 
-  xit('any ancestor-or-self', () => {
-    const node = doc.getElementById( 'StepNodeTestCaseNameTestAttribute' ),
-      attributes = filterAttributes( node.attributes );
+  it('any ancestor-or-self', () => {
+    const node = doc.getElementById('StepNodeTestCaseNameTestAttribute'),
+      attributes = filterAttributes(node.attributes);
 
     checkNodeResult("ancestor-or-self::*", attributes[0], [
       doc.documentElement,
@@ -75,9 +84,9 @@ describe('node name for', () => {
     ]);
   });
 
-  xit('any attribute with specific namespace', () => {
+  it('any attribute with specific namespace', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestAttribute');
-    const attributes = filterAttributes( node.attributes);
+    const attributes = filterAttributes(node.attributes);
     let i;
     let name;
 
@@ -93,12 +102,12 @@ describe('node name for', () => {
     checkNodeResult("attribute::ev:*", node, attributes, getXhtmlResolver(doc));
   });
 
-  xit('any namespace with a specific namespace (?)', () => {
+  it('any namespace with a specific namespace (?)', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestNamespace');
     checkNodeResultNamespace("namespace::ns2:*", node, [], getXhtmlResolver(doc));
   });
 
-  xit('any child with specific namespace', () => {
+  it('any child with specific namespace', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestChild');
     let nodesFinal = [];
 
@@ -111,7 +120,7 @@ describe('node name for', () => {
     checkNodeResult("child::ns2:*", node, nodesFinal, getXhtmlResolver(doc));
   });
 
-  xit('attribute with a specific name and namespace', () => {
+  it('attribute with a specific name and namespace', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestAttribute');
     const attributes = filterAttributes(node.attributes);
     let i;
@@ -120,20 +129,20 @@ describe('node name for', () => {
     for (i = attributes.length - 1; i >= 0; i--) {
       name = attributes[ i ].nodeName.split(':');
       if (name[ 0 ] != 'ev' || name[ 1 ] != 'attrib2') {
-        attributes.splice( i, 1 );
+        attributes.splice(i, 1);
       }
     }
 
     assert.equal(attributes.length, 1);
-    checkNodeResult( "attribute::ev:attrib2", node, attributes, getXhtmlResolver(doc));
+    checkNodeResult("attribute::ev:attrib2", node, attributes, getXhtmlResolver(doc));
   });
 
-  xit('specific namespace with a specific namespace', () => {
+  it('specific namespace with a specific namespace', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestNamespace');
     checkNodeResultNamespace("namespace::ns2:ns2", node, [], getXhtmlResolver(doc));
   });
 
-  xit( 'specific child name with a specific namespace', () => {
+  it('specific child name with a specific namespace', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestChild');
     let nodesFinal = [];
 
@@ -145,9 +154,9 @@ describe('node name for', () => {
     checkNodeResult("child::ns2:div", node, nodesFinal, getXhtmlResolver(doc));
   });
 
-  xit('attribute with a specific name', () => {
+  it('attribute with a specific name', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestAttribute');
-    const attributes = filterAttributes( node.attributes );
+    const attributes = filterAttributes(node.attributes);
     let i;
     let name;
 
@@ -174,12 +183,12 @@ describe('node name for', () => {
     ], getXhtmlResolver(doc));
   });
 
-  xit('child with specific (namespaced) name', () => {
+  it('child with specific (namespaced) name', () => {
     checkNodeResult("child::html", doc, [], getXhtmlResolver(doc));
     checkNodeResult("child::xhtml:html", doc, [doc.documentElement], getXhtmlResolver(doc));
   });
 
-  xit( 'ancestor with specific name and namespace', () => {
+  it('ancestor with specific name and namespace', () => {
     checkNodeResult("ancestor::xhtml:div", doc.getElementById('StepNodeTestCaseNameTest3'), [
       doc.getElementById('StepNodeTestCaseNameTest'),
       doc.getElementById('StepNodeTestCaseNameTest1'),
@@ -187,7 +196,7 @@ describe('node name for', () => {
     ], getXhtmlResolver(doc));
   });
 
-  xit('ancestor with specific name without a default namespace', () => {
+  it('ancestor with specific name without a default namespace', () => {
     checkNodeResult("ancestor::div", doc.getElementById('StepNodeTestCaseNameTestNoNamespace').firstChild.firstChild.firstChild, [
       doc.getElementById('StepNodeTestCaseNameTestNoNamespace').firstChild,
       doc.getElementById('StepNodeTestCaseNameTestNoNamespace').firstChild.firstChild

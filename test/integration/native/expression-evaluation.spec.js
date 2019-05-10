@@ -1,15 +1,24 @@
 describe('XPath expression evaluation', () => {
   beforeEach(() => {
     initDoc(`
-      <div id="XPathExpressionEvaluateCase">
-  			<div id="testContextNodeParameter" style="display:block;">
-  				<div id="testContextNodeParameterText">some text</div>
-  				<div id="testContextNodeParameterCData"><![CDATA[aa<strong>some text</strong>]]></div>
-  				<div id="testContextNodeParameterComment"><!-- here is comment --></div>
-  				<div id="testContextNodeParameterProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
-  				<div id="testContextNodeParameterNamespace" xmlns:asdf="http://some-namespace/"></div>
-  			</div>
-  		</div>`);
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
+          <div id="XPathExpressionEvaluateCase">
+      			<div id="testContextNodeParameter" style="display:block;">
+      				<div id="testContextNodeParameterText">some text</div>
+      				<div id="testContextNodeParameterCData"><![CDATA[aa<strong>some text</strong>]]></div>
+      				<div id="testContextNodeParameterComment"><!-- here is comment --></div>
+      				<div id="testContextNodeParameterProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
+      				<div id="testContextNodeParameterNamespace" xmlns:asdf="http://some-namespace/"></div>
+      			</div>
+  		    </div>
+        </body>
+      </html>`);
   });
 
   it('works with different types of context parameters', () => {
@@ -41,7 +50,7 @@ describe('XPath expression evaluation', () => {
     // get a namespace node
     result = doc.evaluate("namespace::node()", doc.getElementById('testContextNodeParameterNamespace'), null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);
     item = result.singleNodeValue;
-    assert.equal(item, !null);
+    assert.isNotNull(item);
     assert.equal(item.nodeType, 13);
 
     // use namespacenode as a context node

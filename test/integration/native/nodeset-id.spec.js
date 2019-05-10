@@ -80,7 +80,7 @@ describe( 'nodeset id() function', () => {
     ]);
   });
 
-  xit( 'works if a nodeset is provided as the argument (by using the content of the nodeset)', () => {
+  xit('works if a nodeset is provided as the argument (by using the content of the nodeset)', () => {
     checkNodeResult("id(.)", doc.getElementById( 'FunctionNodesetIdCaseNodeset' ), []);
 
     // this test is tricky, the argument is the CONTENT of the FunctionNodesetIdCaseNodeset element!
