@@ -432,6 +432,26 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.boolean(true);
     },
     uuid: function() { return XPR.string(uuid()); },
+    'weighted-checklist': function(min, max /*,vA , wA, vB , wB.... */) {
+      var i, values = [], weights = [], weightedTrues = 0;
+      min = min.v;
+      max = max.v;
+      for (i=2 ; i < arguments.length ; i=i+2) {
+        var v = arguments[i];
+        var w = arguments[i+1];
+        if (v && w) {
+          values.push(v.v);
+          weights.push(w.v);
+        }
+      }
+
+      for(i=0; i < values.length; i++) {
+        if(Boolean(values[i])) {
+          weightedTrues += weights[i];
+        }
+      }
+      return XPR.boolean((min < 0 || weightedTrues >= min) && (max < 0 || weightedTrues <= max));
+    }
   };
 
   // function aliases

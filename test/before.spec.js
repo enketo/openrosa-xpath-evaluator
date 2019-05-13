@@ -1,15 +1,16 @@
+/*jshint unused:false*/
 const SIMPLE_DATE_MATCH = /^\d{4}-\d\d-\d\d$/;
 const FULL_DATE_MATCH = /(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d\d \d{4} \d\d:\d\d:\d\d GMT([+-]\d\d\d\d \(.+\))?/;
 const assert = chai.assert;
 const openRosaXpathExtensions = openrosa_xpath_extensions;
 
-const TODO = () => { if(false) assert.notOk('TODO'); }
+const TODO = () => { if(false) assert.notOk('TODO'); };
 
 let doc, xEval, evaluator;
 
 const initDoc = (xml) => {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
-  node = null
+  node = null;
   evaluator = new ExtendedXpathEvaluator(
     v => {
       const result = doc.evaluate.call(doc, v, node || doc, null, XPathResult.ANY_TYPE, null);
@@ -77,7 +78,7 @@ const assertNumber = (...args) => {
   const node = args.length > 3 ? args[args.length - 4] : null;
   const actual = xEval(regex, node).numberValue;
   if(isNaN(expected)) {
-    assert.isNaN(actual)
+    assert.isNaN(actual);
   } else {
     assert.equal(actual, expected);
   }

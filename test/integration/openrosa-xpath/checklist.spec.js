@@ -1,4 +1,4 @@
-// @see http://opendatakit.org/help/form-design/binding/
+// @see https://docs.opendatakit.org/form-operators-functions/?highlight=checklist#checklist
 describe('#checklist()', () => {
 
   it('checklist()', () => {
