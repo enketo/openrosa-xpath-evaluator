@@ -238,7 +238,10 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         case '*':
           if(c === '*' && (cur.v !== '' || peek().tokens.length === 0)) {
             cur.v += c;
-          } else if(cur.v === '' && nextChar() === ')'){
+            if(cur.v === './*') {
+              handleXpathExpr();
+            }
+          } else if(cur.v === '' && [')', ''].includes(nextChar())){
             cur.v = c;
             handleXpathExpr();
           } else {
@@ -299,6 +302,13 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           break;
         case '[':
           cur.sq = (cur.sq || 0) + 1;
+          /* falls through */
+        case '.':
+          if(cur.v === '' && nextChar() === ')') {
+            cur.v = c;
+            handleXpathExpr();
+            break;
+          }
           /* falls through */
         default:
           cur.v += c;
