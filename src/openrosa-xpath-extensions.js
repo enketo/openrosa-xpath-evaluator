@@ -277,6 +277,24 @@ var openrosa_xpath_extensions = function(translate) {
       }
       return XPR.string(out.join(''));
     },
+    checklist: function(min, max /*,oA , oB .... */) {
+      var i, j, trues = 0;
+      min = min.v;
+      max = max.v;
+      for (i=2 ; i<arguments.length ; i++) {
+        var arg = arguments[i];
+        if (arg.t === 'bool' && Boolean(arg.v)) {
+          trues++;
+        } else if (arg.t === 'arr') {
+          for(j=0;j<arg.v.length;j++) {
+            if(Boolean(arg.v[j])) {
+              trues++;
+            }
+          }
+        }
+      }
+      return XPR.boolean((min < 0 || trues >= min) && (max < 0 || trues <= max));
+    },
     'count-non-empty': function(r) {
       if(arguments.length === 0 || r.t !== 'arr') throw TOO_FEW_ARGS;
       var counter = 0;

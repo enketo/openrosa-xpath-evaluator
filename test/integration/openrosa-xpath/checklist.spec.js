@@ -1,14 +1,15 @@
+// @see http://opendatakit.org/help/form-design/binding/
 describe('#checklist()', () => {
 
-  xit('checklist()', () => {
-    assertBoolean("checklist(-1, 2, 2>1)", true);
-    assertBoolean("checklist(-1, 2, 1=1, 2=2, 3=3)", false);
-    assertBoolean("checklist(1, 2, 1=1, 2=2, 3=3)", false);
-    assertBoolean("checklist(1, 1, 1=1)", true);
-    assertBoolean("checklist(1, 1, true(), false(), false())", true);
+  it('checklist()', () => {
+    assertTrue("checklist(-1, 2, 2>1)");
+    assertFalse("checklist(-1, 2, 1=1, 2=2, 3=3)");
+    assertFalse("checklist(1, 2, 1=1, 2=2, 3=3)");
+    assertTrue("checklist(1, 1, 1=1)");
+    assertTrue("checklist(1, 1, true(), false(), false())");
   });
 
-  xit('checklist(node)', () => {
+  it('checklist(node)', () => {
     initDoc(`
       <div id="FunctionChecklistCase">
         <div id="FunctionChecklistCaseNo">no</div>
@@ -16,12 +17,12 @@ describe('#checklist()', () => {
         <div id="FunctionChecklistCase0">0</div>
       </div>`);
     let node = doc.getElementById('FunctionChecklistCase');
-    assertBoolean(node, null, "checklist(2, 2, * )", true);
+    assertTrue(node, null, "checklist(2, 2, * )");
 
     node = doc.getElementById('FunctionChecklistCaseEmpty');
-    assertBoolean(node, null, "checklist(-1, 2, self::node())", true);
+    assertTrue(node, null, "checklist(-1, 2, self::node())");
 
     node = doc.getElementById('FunctionChecklistCaseEmpty');
-    assertBoolean(node, null, "checklist(1, 2, self::node())", false);
+    assertFalse(node, null, "checklist(1, 2, self::node())");
   });
 });

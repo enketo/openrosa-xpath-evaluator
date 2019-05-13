@@ -34,18 +34,20 @@ const initBasicXmlDoc = () => simpleValueIs('');
 
 const assertTrue = (...args) => {
   const regex = args[args.length - 1];
-  if(args.length > 1) {
-    simpleValueIs(args[0]);
+  if(args.length > 1) {//TODO ignore null values or refactor signature
+    simpleValueIs(args[args.length - 2]);
   }
-  assert.isTrue(xEval(regex).booleanValue);
+  const node = args.length > 2 ? args[args.length - 3] : null;
+  assert.isTrue(xEval(regex, node).booleanValue);
 };
 
 const assertFalse = (...args) => {
   const regex = args[args.length - 1];
-  if(args.length > 1) {
-    simpleValueIs(args[0]);
+  if(args.length > 1) {//TODO ignore null values or refactor signature
+    simpleValueIs(args[args.length - 2]);
   }
-  assert.isFalse(xEval(regex).booleanValue);
+  const node = args.length > 2 ? args[args.length - 3] : null;
+  assert.isFalse(xEval(regex, node).booleanValue);
 };
 
 const assertBoolean = (regex, value) => {

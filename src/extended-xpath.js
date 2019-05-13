@@ -241,7 +241,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
             if(cur.v === './*') {
               handleXpathExpr();
             }
-          } else if(cur.v === '' && [')', ''].includes(nextChar())){
+          } else if(cur.v === '' && [' ', ')', ''].includes(nextChar())){
             cur.v = c;
             handleXpathExpr();
           } else {
