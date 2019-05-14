@@ -257,6 +257,17 @@ var openrosa_xpath_extensions = function(translate) {
 
   func = {
     abs: function(r) { return XPR.number(Math.abs(r.v)); },
+    acos: function(r) { return XPR.number(Math.acos(r.v)); },
+    asin: function(r) { return XPR.number(Math.asin(r.v)); },
+    atan: function(r) { return XPR.number(Math.atan(r.v)); },
+    atan2: function(r) {
+      if(arguments.length>1) {
+        var y = arguments[0].v;
+        var x = arguments[1].v;
+        return XPR.number(Math.atan2(y, x));
+      }
+      return XPR.number(Math.atan2(r.v));
+    },
     'boolean-from-string': function(string) {
       string = _str(string);
       return XPR.boolean(string === '1' || string === 'true');
@@ -265,18 +276,6 @@ var openrosa_xpath_extensions = function(translate) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       return areaOrDistance(XPR.number, area, r);
 		},
-    coalesce: function(a, b) { return XPR.string(_str(a) || _str(b)); },
-    concat: function() {
-      var out = [];
-      for (var j = 0; j < arguments.length; j++){
-        if(arguments[j].t === 'arr') {
-          out.push(arguments[j].v.join(''));
-        } else {
-          out.push(arguments[j].v);
-        }
-      }
-      return XPR.string(out.join(''));
-    },
     checklist: function(min, max /*,oA , oB .... */) {
       var i, j, trues = 0;
       min = min.v;
@@ -295,6 +294,19 @@ var openrosa_xpath_extensions = function(translate) {
       }
       return XPR.boolean((min < 0 || trues >= min) && (max < 0 || trues <= max));
     },
+    coalesce: function(a, b) { return XPR.string(_str(a) || _str(b)); },
+    concat: function() {
+      var out = [];
+      for (var j = 0; j < arguments.length; j++){
+        if(arguments[j].t === 'arr') {
+          out.push(arguments[j].v.join(''));
+        } else {
+          out.push(arguments[j].v);
+        }
+      }
+      return XPR.string(out.join(''));
+    },
+    cos: function(r) { return XPR.number(Math.cos(r.v)); },
     'count-non-empty': function(r) {
       if(arguments.length === 0 || r.t !== 'arr') throw TOO_FEW_ARGS;
       var counter = 0;
@@ -318,6 +330,8 @@ var openrosa_xpath_extensions = function(translate) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       return areaOrDistance(XPR.number, distance, r);
     },
+    exp: function(r) { return XPR.number(Math.exp(r.v)); },
+    exp10: function(r) { return XPR.number(Math.pow(10, r.v)); },
     'false': function(arg) {
       if(arg) throw TOO_MANY_ARGS;
       return XPR.boolean(false);
@@ -354,6 +368,8 @@ var openrosa_xpath_extensions = function(translate) {
       }
       return XPR.string(arguments[1].v.join(_str(delim)));
     },
+    log: function(r) { return XPR.number(Math.log(r.v)); },
+    log10: function(r) { return XPR.number(Math.log10(r.v)); },
     max: function() {
       if(arguments.length > 1) {
         var out = [];
@@ -398,6 +414,7 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.boolean(!r.v);
     },
     now: now_and_today,
+    pi: function() { return XPR.number(Math.PI); },
     pow: function(x, y) { return XPR.number(Math.pow(_float(x), _float(y))); },
     random: function() { return XPR.number(Math.random()); },
     regex: function(haystack, pattern) {
@@ -423,6 +440,8 @@ var openrosa_xpath_extensions = function(translate) {
       if(!index) throw new Error(JSON.stringify(list));
       return XPR.string(_str(list).split(' ')[_int(index)] || '');
     },
+    sin: function(r) { return XPR.number(Math.sin(r.v)); },
+    sqrt: function(r) { return XPR.number(Math.sqrt(r.v)); },
     substr: function(string, startIndex, endIndex) {
       return XPR.string(_str(string).slice(
           _int(startIndex),
@@ -437,6 +456,7 @@ var openrosa_xpath_extensions = function(translate) {
       }
       return XPR.number(out);
     },
+    tan: function(r) { return XPR.number(Math.tan(r.v)); },
     today: now_and_today,
     'true': function(arg) {
       if(arg) throw TOO_MANY_ARGS;
