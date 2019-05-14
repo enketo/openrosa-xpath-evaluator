@@ -6,14 +6,14 @@ const openRosaXpathExtensions = openrosa_xpath_extensions;
 
 const TODO = () => { if(false) assert.notOk('TODO'); };
 
-let doc, xEval, evaluator;
+let doc, xEval, evaluator, nsr;
 
 const initDoc = (xml) => {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
   node = null;
   evaluator = new ExtendedXpathEvaluator(
     v => {
-      const result = doc.evaluate.call(doc, v, node || doc, null, XPathResult.ANY_TYPE, null);
+      const result = doc.evaluate.call(doc, v, node || doc, nsr, XPathResult.ANY_TYPE, null);
       // console.log(`${v} => ${result.resultType}`);
       return result;
     },
@@ -88,10 +88,10 @@ beforeEach(function() {
   initBasicXmlDoc();
 });
 
-// const nsResolver = (prefix) => {
-//   var ns = {
-//     'xhtml' : 'http://www.w3.org/1999/xhtml',
-//     'mathml': 'http://www.w3.org/1998/Math/MathML'
-//   };
-//   return ns[prefix] || null;
-// };
+const nsResolver = (prefix) => {
+  var ns = {
+    'xhtml' : 'http://www.w3.org/1999/xhtml',
+    'mathml': 'http://www.w3.org/1998/Math/MathML'
+  };
+  return ns[prefix] || null;
+};

@@ -144,9 +144,6 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       },
       handleXpathExpr = function() {
         var expr = cur.v;
-        while(expr.indexOf('xhtml:') >= 0){
-          expr = expr.replace('xhtml:', '');
-        }
         var evaluated = toInternalResult(wrapped(expr));
         peek().tokens.push(evaluated);
         newCurrent();
@@ -185,7 +182,8 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         continue;
       }
       if (cur.t === 'num') {
-        if(DIGIT.test(c)) {
+        if(DIGIT.test(c) || ['e', '"', "'"].includes(c) ||
+            (c === '-' && input[i-1] === 'e')) {
           cur.string += c;
           continue;
         } else if(c === '.' && !cur.decimal) {
@@ -194,9 +192,9 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         } else finaliseNum();
       }
       if(isNum(c)) {
-          if(cur.v === '') {
-            cur = { t:'num', string:c };
-          } else cur.v += c;
+        if(cur.v === '') {
+          cur = { t:'num', string:c };
+        } else cur.v += c;
       } else switch(c) {
         case "'":
         case '"':

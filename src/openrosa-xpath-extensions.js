@@ -324,13 +324,24 @@ var openrosa_xpath_extensions = function(translate) {
     },
     'format-date': function(date, format) {
         return XPR.string(format_date(date, format)); },
-    'if': function(con, a, b) { return XPR.string(_bool(con)? a.v: b.v); },
+    'if': function(con, a, b) {
+      if(con.t === 'bool') return XPR.string(Boolean(con.v) ? a.v : b.v);
+      if(con.t === 'arr') {
+        var exists = con.v.length && con.v[0] !== null;
+        return XPR.string(exists ? a.v : b.v);
+      }
+      return XPR.string(b.v);
+    },
     'ends-with': function(a, b) {
       if(arguments.length > 2) throw TOO_MANY_ARGS;
       if(arguments.length < 2) throw TOO_FEW_ARGS;
       return XPR.boolean(a.v.endsWith(b.v));
     },
-    int: function(v) { return XPR.number(parseInt(_str(v), 10)); },
+    int: function(v) {
+      v = _str(v);
+      if(v.indexOf('e-')>0) return XPR.number(0);
+      return XPR.number(parseInt(v, 10));
+    },
     join: function() {
       var delim = arguments[0];
       if(arguments.length<2) return XPR.string('');
@@ -406,7 +417,7 @@ var openrosa_xpath_extensions = function(translate) {
       }
     },
     selected: function(haystack, needle) {
-        return XPR.boolean(_str(haystack).split(' ').indexOf(_str(needle)) !== -1);
+      return XPR.boolean(_str(haystack).split(' ').indexOf(_str(needle)) !== -1);
     },
     'selected-at': function(list, index) {
       if(!index) throw new Error(JSON.stringify(list));

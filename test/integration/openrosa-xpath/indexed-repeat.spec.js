@@ -1,3 +1,6 @@
+// TODO do we need to support this?
+// * MOVED TO ENKETO-CORE WHERE IT TRANSFORMED INTO REGULAR XPATH
+
 describe('#indexed-repeat()', () => {
   TODO();
 

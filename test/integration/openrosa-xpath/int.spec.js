@@ -14,8 +14,8 @@ describe('#int()', () => {
     assertNumber('int(-1.4)', -1);
     assertNumber('int(-1.51)', -1);
     assertNumber('int("a")', NaN);
-    // TODO
-    // assertNumber('int(1 div 47999799999)', 0);
+    assertNumber('int(7.922021953507237e-12)', 0);
+    assertNumber('int(1 div 47999799999)', 0);
     // assertNumber('int("7.922021953507237e-12)', NaN);
   });
 

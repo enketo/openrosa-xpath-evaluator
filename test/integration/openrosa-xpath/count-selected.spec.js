@@ -6,8 +6,7 @@ describe('#count-selected()', () => {
   			<div id="FunctionSelectedCaseSingle">ab</div>
   			<div id="FunctionSelectedCaseMultiple">ab cd ef gh</div>
   			<div id="FunctionSelectedCaseMultiple">ij</div>
-  		</div>
-      `);
+  		</div>`);
 
     let node = doc.getElementById('FunctionSelectedCaseEmpty');
     assertNumber(node, null, 'count-selected(self::node())', 0);
