@@ -133,7 +133,6 @@ var openrosa_xpath_extensions = function(translate) {
         while(n.length < len) n = '0' + n;
         return n;
       },
-      _bool = function(r) { return r.t === 'bool' ? r.v : _str(r); },
       _int = function(r) { return Math.round(_float(r)); },
       _float = function(r) { return r.t === 'num'? r.v: parseFloat(_str(r)); },
       _str = function(r) {
@@ -434,7 +433,7 @@ var openrosa_xpath_extensions = function(translate) {
       }
     },
     selected: function(haystack, needle) {
-      return XPR.boolean(_str(haystack).split(' ').indexOf(_str(needle)) !== -1);
+      return XPR.boolean(_str(haystack).split(' ').indexOf(_str(needle).trim()) !== -1);
     },
     'selected-at': function(list, index) {
       if(!index) throw new Error(JSON.stringify(list));

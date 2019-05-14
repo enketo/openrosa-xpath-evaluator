@@ -8,6 +8,7 @@ describe('#selected()', () => {
     assert.ok(xEval('selected(/simple/xpath/to/node, "two")').booleanValue);
     assert.ok(xEval('selected(/simple/xpath/to/node, "three")').booleanValue);
   });
+
   it('should return false if requested item not in list', () => {
     // given
     simpleValueIs('one two three');
@@ -18,28 +19,47 @@ describe('#selected()', () => {
     assert.notOk(xEval('selected(/simple/xpath/to/node, "four")').booleanValue);
   });
 
-  xit('selected()', () => {
-    TODO();
-    [
-      [ "selected(self::node(), '')", doc.getElementById( 'FunctionSelectedCaseEmpty' ), true ],
-      [ "selected(self::node(), 'ab')", doc.getElementById( 'FunctionSelectedCaseEmpty' ), false ],
-      [ "selected(self::node(), 'bc')", doc.getElementById( 'FunctionSelectedCaseSingle' ), false ],
-      [ "selected(self::node(), 'ab')", doc.getElementById( 'FunctionSelectedCaseSingle' ), true ],
-      [ "selected(self::node(), 'kl')", doc.getElementById( 'FunctionSelectedCaseMultiple' ), false ],
-      [ "selected(self::node(), 'ab')", doc.getElementById( 'FunctionSelectedCaseMultiple' ), true ],
-      [ "selected(self::node(), 'cd')", doc.getElementById( 'FunctionSelectedCaseMultiple' ), true ],
-      [ "selected(self::node(), 'ij')", doc.getElementById( 'FunctionSelectedCaseMultiple' ), false ],
-      [ "selected('apple baby crimson', 'apple')", doc, true ],
-      [ "selected('apple baby crimson', 'baby')", doc, true ],
-      [ "selected('apple baby crimson', 'crimson')", doc, true ],
-      [ "selected('apple baby crimson', '  baby  ')", doc, true ],
-      [ "selected('apple baby crimson', 'babby')", doc, false ],
-      [ "selected('apple baby crimson', 'bab')", doc, false ],
-      [ "selected('apple', 'apple')", doc, true ],
-      [ "selected('apple', 'ovoid')", doc, false ],
-      [ "selected('', 'apple')", doc, false ]
-    ].forEach( t => {
-      assertBoolean(t[1], null, t[0], t[2]);
-    });
+  it('simple', () => {
+    assertTrue("selected('apple baby crimson', '  baby  ')");
+    assertTrue("selected('apple baby crimson', 'apple')");
+    assertTrue("selected('apple baby crimson', 'baby')");
+    assertTrue("selected('apple baby crimson', 'crimson')");
+    assertFalse("selected('apple baby crimson', 'babby')");
+    assertFalse("selected('apple baby crimson', 'bab')");
+    assertTrue("selected('apple', 'apple')");
+    assertFalse("selected('apple', 'ovoid')");
+    assertFalse("selected('', 'apple')");
+  });
+
+  it('with nodes', () => {
+    const doc = initDoc(`
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+      	<head>
+      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      		<title>xpath-test</title>
+      	</head>
+      	<body class="yui3-skin-sam" id="body">
+          <div id="FunctionSelectedCase">
+      			<div id="FunctionSelectedCaseEmpty"></div>
+      			<div id="FunctionSelectedCaseSingle">ab</div>
+      			<div id="FunctionSelectedCaseMultiple">ab cd ef gh</div>
+      			<div id="FunctionSelectedCaseMultiple">ij</div>
+      		</div>
+      	</body>
+      </html>`);
+    let node = doc.getElementById('FunctionSelectedCaseEmpty');
+    assertTrue(node, null, "selected(self::node(), '')");
+    assertFalse(node, null, "selected(self::node(), 'ab')");
+
+    node = doc.getElementById('FunctionSelectedCaseSingle');
+    assertFalse(node, null, "selected(self::node(), 'bc')");
+    assertTrue(node, null, "selected(self::node(), 'ab')");
+
+    node = doc.getElementById('FunctionSelectedCaseMultiple');
+    assertFalse(node, null, "selected(self::node(), 'kl')");
+    assertTrue(node, null, "selected(self::node(), 'ab')");
+    assertTrue(node, null, "selected(self::node(), 'cd')");
+    assertFalse(node, null, "selected(self::node(), 'ij')");
   });
 });
