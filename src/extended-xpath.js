@@ -43,6 +43,11 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       if(extendedFuncs.hasOwnProperty(name)) {
         return callExtended(name, args);
       }
+      //TODO structure this better depending on how many more
+      // native functions need to be patched
+      if(['number'].includes(name) && args.length && args[0].t === 'arr') {
+        args = [{t: 'num', v: args[0].v[0]}];
+      }
       return callNative(name, args);
     },
     callExtended = function(name, args) {
@@ -254,6 +259,9 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
             // function name expr
             cur.v += c;
           } else if(peek().tokens.length === 0 || prevToken().t === 'op' ||
+            // two argument function
+            (prevToken().t === 'num' && stack.length > 1 && stack[1].t === 'fn') ||
+            // negative argument
             (prevToken().t !== 'num' && isNum(nextChar()))) {
             // -ve number
             cur = { t:'num', string:'-' };

@@ -5,7 +5,7 @@ describe('native number functions', () => {
     assertNumber('number(1)', 1);
     assertNumber('number(0.199999)', 0.199999);
     assertNumber('number(-0.199999)', -0.199999);
-    //TODO: assertNumber('number(- 0.199999)', -0.199999],
+    //TODO assertNumber('number(- 0.199999)', -0.199999],
     assertNumber('number(0.0)', 0);
     assertNumber('number(.0)', 0);
     assertNumber('number(0.)', 0);
@@ -37,60 +37,60 @@ describe('native number functions', () => {
     assertNumber("number(' . ')", NaN);
   });
 
-  it('number() conversion of nodesets', () => {
-    initDoc(`
-      <div id="FunctionNumberCase">
-  			<div id="FunctionNumberCaseNumber">123</div>
-  			<div id="FunctionNumberCaseNotNumber">  a a  </div>
-  			<div id="FunctionNumberCaseNumberMultiple">
-  				<div>-10</div>
-  				<div>11</div>
-  				<div>99</div>
-  			</div>
-  			<div id="FunctionNumberCaseNotNumberMultiple">
-  				<div>-10</div>
-  				<div>11</div>
-  				<div>a</div>
-  			</div>
-  		</div>`);
-    [
-      [ "number(self::node())", doc.getElementById('FunctionNumberCaseNumber'), 123 ],
-      // [ "number(*)", doc.getElementById('FunctionNumberCaseNumberMultiple'), -10 ],
-      ["number()", doc.getElementById('FunctionNumberCaseNumber'), 123]
-    ].forEach( t => {
-      assertNumber(t[1], null, t[0], t[2]);
-    } );
+  describe('conversion of nodesets', () => {
+    let doc;
 
-    [
-      ["number()", doc.getElementById( 'FunctionNumberCaseNotNumber' ) ]
-    ].forEach( t => {
-      assertNumber(t[1], null, t[0], NaN);
-    });
-  });
-
-  xit('number() conversion fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("number(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(() => test, Error);
-  });
-
-  xit('sum()', () => {
-    [
-      [ "sum(self::*)", doc.getElementById('FunctionNumberCaseNumber'), 123],
-      [ "sum(*)", doc.getElementById('FunctionNumberCaseNumberMultiple'), 100]
-    ].forEach( t => {
-      assertNumber(t[1], null, t[0], t[2]);
+    beforeEach(() => {
+      doc = initDoc(`
+        <div id="FunctionNumberCase">
+    			<div id="FunctionNumberCaseNumber">123</div>
+    			<div id="FunctionNumberCaseNotNumber">  a a  </div>
+    			<div id="FunctionNumberCaseNumberMultiple">
+    				<div>-10</div>
+    				<div>11</div>
+    				<div>99</div>
+    			</div>
+    			<div id="FunctionNumberCaseNotNumberMultiple">
+    				<div>-10</div>
+    				<div>11</div>
+    				<div>a</div>
+    			</div>
+          <div id="FunctionSumCaseJavarosa">
+      			<div>-10</div>
+      			<div>15</div>
+      			<div></div>
+      		</div>
+    		</div>`);
     });
 
-    [
-      [ "sum(node())", doc.getElementById('FunctionNumberCaseNotNumberMultiple') ],
-      [ "sum(*)", doc.getElementById('FunctionSumCaseJavarosa') ]
-    ].forEach(t => {
-      assertNumber(t[1], null, t[0], NaN);
-      // const result = g.doc.evaluate( t[ 0 ], t[ 1 ], null, g.win.XPathResult.NUMBER_TYPE, null );
-      // expect( result.numberValue ).to.be.a( 'number' );
-      // expect( result.numberValue ).to.deep.equal( NaN );
+    it('number() ', () => {
+      let node = doc.getElementById('FunctionNumberCaseNumber');
+      assertNumber(node, null, "number(self::node())", 123);
+      assertNumber(node, null, "number()", 123);
+      node = doc.getElementById('FunctionNumberCaseNumberMultiple');
+      assertNumber(node, null, "number(*)", -10);
+      node = doc.getElementById('FunctionNumberCaseNotNumber');
+      assertNumber(node, null, "number()", NaN)
+    });
+
+    it('number() conversion fails when too many arguments are provided', () => {
+      const test = () => {
+        doc.evaluate("number(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
+      };
+      assert.throw(test, Error);
+    });
+
+    it('sum()', () => {
+      let node = doc.getElementById('FunctionNumberCaseNumber');
+      assertNumber(node, null, "sum(self::*)", 123);
+
+      node = doc.getElementById('FunctionNumberCaseNumberMultiple');
+      assertNumber(node, null, "sum(*)", 100);
+
+      node = doc.getElementById('FunctionNumberCaseNotNumberMultiple');
+      assertNumber(node, null, "sum(node())", NaN);
+      node = doc.getElementById('FunctionSumCaseJavarosa');
+      assertNumber(node, null, "sum(*)", NaN);
     });
   });
 
@@ -156,7 +156,7 @@ describe('native number functions', () => {
     assert.throw(test, Error);
   });
 
-  it( 'round()', () => {
+  it('round()', () => {
     assertNumber("round(-1.55)", -2);
     assertNumber("round(2.44)", 2);
     assertNumber("round(0.001)", 0);
@@ -164,14 +164,11 @@ describe('native number functions', () => {
     assertNumber("round(5)", 5);
     assertNumber("round(1.00)", 1);
     assertNumber("round(-1.05)", -1);
+    assertNumber("round(33.33, -1)", 30);
   });
 
-  // behaviour changed in OpenRosa
-  xit( 'round() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("round(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+  it('round() fails when too many arguments are provided', () => {
+    assert.throw(() => xEval("round(1, 2, 3)"), Error);
   });
 
   it('round() fails when too few arguments are provided', () => {
