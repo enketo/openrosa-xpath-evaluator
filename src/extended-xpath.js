@@ -253,7 +253,8 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           if(cur.v !== '') {
             // function name expr
             cur.v += c;
-          } else if(peek().tokens.length === 0 || prevToken().t === 'op') {
+          } else if(peek().tokens.length === 0 || prevToken().t === 'op' ||
+            (prevToken().t !== 'num' && isNum(nextChar()))) {
             // -ve number
             cur = { t:'num', string:'-' };
           } else {
