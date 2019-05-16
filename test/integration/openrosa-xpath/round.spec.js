@@ -105,14 +105,12 @@ describe('#round()', () => {
     assertNumber("round(1.234, 2)", 1.23);
     assertNumber("round(1.234, 5)", 1.234);
     assertNumber("round(1.234, 0)", 1);
-    // TODO()
-    // assertNumber("round(33.33, -1)", 30);
+    assertNumber("round(33.33, -1)", 30);
     assertNumber("round(1 div 47999799999)", 0); //(2.08e-11)
     assertNumber("round('a')", NaN);
   });
 
-  xit( 'round() with too many args throws exception', () => {
-    TODO()
-    assert.throw(() => "round(1, 2, 3)", Error);
+  it( 'round() with too many args throws exception', () => {
+    assert.throw(() => xEval("round(1, 2, 3)"), Error);
   });
 });

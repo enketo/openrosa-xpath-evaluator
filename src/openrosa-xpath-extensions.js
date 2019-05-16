@@ -441,7 +441,31 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.boolean(!r.v);
     },
     now: now_and_today,
+    /**
+     * The once function returns the value of the parameter if its own value
+     * is not empty, NaN, [Infinity or -Infinity]. The naming is therefore misleading!
+     * Also note that the parameter expr is always evaluated.
+     * This function simply decides whether to return the new result or the old value.
+     */
+    once: function(node, r) {
+      if(node.v.length && node.v[0].length) {
+        return XPR.string(node.v[0]);
+      }
+      if(r.v == Infinity) return XPR.string('');
+      if(r.t === 'num' && r.v === 0) return XPR.string('');
+      return XPR.string(r.v);
+    },
     pi: function() { return XPR.number(Math.PI); },
+    position: function(r) {
+      var node = r.iterateNext();
+      var nodeName = node.tagName;
+      var position = 1;
+      while (node.previousElementSibling && node.previousElementSibling.tagName === nodeName) {
+        node = node.previousElementSibling;
+        position++;
+      }
+      return XPR.number(position);
+    },
     pow: function(x, y) { return XPR.number(Math.pow(_float(x), _float(y))); },
     random: function() { return XPR.number(Math.random()); },
     regex: function(haystack, pattern) {

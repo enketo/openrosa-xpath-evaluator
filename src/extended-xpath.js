@@ -149,7 +149,12 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       },
       handleXpathExpr = function() {
         var expr = cur.v;
-        var evaluated = toInternalResult(wrapped(expr));
+        var evaluated;
+        if(['position'].includes(peek().v)) {
+          evaluated = wrapped(expr);
+        } else {
+          evaluated = toInternalResult(wrapped(expr));
+        }
         peek().tokens.push(evaluated);
         newCurrent();
       },
@@ -211,7 +216,13 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           cur.t = 'fn';
           cur.tokens = [];
           stack.push(cur);
+          if(cur.v === 'once') {
+            newCurrent();
+            cur.v = '.';
+            handleXpathExpr();
+          }
           newCurrent();
+
           break;
         case ')':
           if(nextChar() === '[') {
