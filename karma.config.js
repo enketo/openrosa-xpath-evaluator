@@ -1,4 +1,5 @@
 module.exports = function(config) {
+  process.env.TZ = 'America/Phoenix';
   config.set({
     basePath: '',
     frameworks: ['jasmine'],

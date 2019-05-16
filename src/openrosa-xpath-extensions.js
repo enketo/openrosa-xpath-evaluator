@@ -325,6 +325,34 @@ var openrosa_xpath_extensions = function(translate) {
     'decimal-date': function(date) {
         return XPR.number(Date.parse(_str(date)) / MILLIS_PER_DAY);
     },
+    'decimal-time': function(r) {
+      if(arguments.length > 1) throw TOO_MANY_ARGS;
+      var time = r.v;
+      // There is no Time type, and so far we don't need it so we do all validation
+      // and conversion here, manually.
+      var	m = time.match(/^(\d\d):(\d\d):(\d\d)(\.\d\d?\d?)?(\+|-)(\d\d):(\d\d)$/);
+      var PRECISION = 1000;
+      var dec;
+      if (m &&
+        m[1] < 24 && m[1] >= 0 &&
+        m[2] < 60 && m[2] >= 0 &&
+        m[3] < 60 && m[3] >= 0 &&
+        m[6] < 24 && m[6] >= 0 && // this could be tighter
+        m[7] < 60 && m[7] >= 0 // this is probably either 0 or 30
+      ) {
+        var pad2 = function(x) { return (x < 10) ? '0' + x : x; };
+        var today = new Date(); // use today to cater to daylight savings time.
+        var d = new Date(today.getFullYear() + '-' + pad2(today.getMonth() + 1) + '-' + pad2(today.getDate()) + 'T' + time);
+        if(d.toString() === 'Invalid Date'){
+          dec = NaN;
+        } else {
+          dec = Math.round((d.getSeconds()/3600 + d.getMinutes()/60 + d.getHours()) * PRECISION/24) / PRECISION;
+        }
+      } else {
+        dec = NaN;
+      }
+      return XPR.number(dec);
+    },
     distance: function(r) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       return areaOrDistance(XPR.number, distance, r);

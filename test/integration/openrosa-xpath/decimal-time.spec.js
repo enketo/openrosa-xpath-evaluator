@@ -1,6 +1,5 @@
 describe( 'decimal-time()', () => {
-  TODO()
-  xit('decimates times', () => {
+  it('decimates times', () => {
     assertNumber('decimal-time("06:00:00.000-07:00")', 0.250);
     assertNumber('decimal-time("06:00:00.000-01:00")', 0.000);
     assertNumber('decimal-time("06:00:59.000-07:00")', 0.251);
@@ -15,11 +14,11 @@ describe( 'decimal-time()', () => {
     assertNumber('decimal-time("now()")', NaN);
   });
 
-  xit( `facilitates time calculations and evaluates`, () => {
+  it( `facilitates time calculations and evaluates`, () => {
     assertNumber('decimal-time("12:00:00.000-07:00") - decimal-time("06:00:00.000-07:00")', 0.250);
   });
 
-  xit('with invalid args throws an error', () => {
+  it('with invalid args throws an error', () => {
     assert.throw(() => xEval('decimal-time("06:00:00.000-07:00", 2)'), Error);
   });
 });
