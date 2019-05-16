@@ -11,6 +11,7 @@ describe('#number()', () => {
       });
     });
   });
+
   describe('called on a number', () => {
     _.forEach({
       'number("0")': '0',
@@ -51,6 +52,7 @@ describe('#number()', () => {
       });
     });
   });
+
   describe('called on a date string', () => {
     _.forEach({
       'number("1970-01-01")': '0',
@@ -60,8 +62,7 @@ describe('#number()', () => {
       'number("1941-12-07")': '-10252',
     }, function(expectedResult, expr) {
       it(expr + ' should be ' + expectedResult + ' days since the epoch', () => {
-        TODO();
-        // assert.equal(xEval(expr).numberValue, expectedResult);
+        assertNumber(expr, expectedResult);
       });
     });
   });
@@ -81,8 +82,8 @@ describe('#number()', () => {
       });
     });
 
-    xit('number() conversion of nodesets', () => {
-      initDoc(`
+    it('number() conversion of nodesets', () => {
+      const doc = initDoc(`
         <div id="FunctionNumberCase">
     			<div id="FunctionNumberCaseNumber">123</div>
     			<div id="FunctionNumberCaseNotNumber">  a a  </div>
@@ -97,18 +98,19 @@ describe('#number()', () => {
     				<div>a</div>
     			</div>
     		</div>`);
-      let node = doc.getElementById('FunctionNumberCaseNumberMultiple');
-      assertNumber(node, null, "number(self::node())", -10);
 
-      node = doc.getElementById('FunctionNumberCaseNumber');
-      assertNumber(node, null, "number()", 123);
+      let node = doc.getElementById('FunctionNumberCaseNumber');
       assertNumber(node, null, "number(self::node())", 123);
+      assertNumber(node, null, "number()", 123);
+
+      node = doc.getElementById('FunctionNumberCaseNumberMultiple');
+      assertNumber(node, null, "number(*)", -10);
 
       node = doc.getElementById('FunctionNumberCaseNotNumber');
-      assertNumber(node, null, "number()", 123);
+      assertNumber(node, null, "number()", NaN);
     });
 
-    it( 'number() conversion fails when too many arguments are provided', () => {
+    it('number() conversion fails when too many arguments are provided', () => {
       assert.throw(() => xEval("number(1, 2)"), Error);
     });
   });

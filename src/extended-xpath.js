@@ -12,6 +12,8 @@ var OP_PRECEDENCE = [
 ];
 
 var DIGIT = /[0-9]/;
+// TODO fix duplicate
+var DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d(?:Z|[+-]\d\d:\d\d))?$/;
 var FUNCTION_NAME = /^[a-z]/;
 
 // TODO remove all the checks for cur.t==='?' - what else woudl it be?
@@ -45,8 +47,15 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       }
       //TODO structure this better depending on how many more
       // native functions need to be patched
-      if(['number'].includes(name) && args.length && args[0].t === 'arr') {
-        args = [{t: 'num', v: args[0].v[0]}];
+      if(['number'].includes(name) && args.length) {
+        if(args[0].t === 'arr') {
+          args = [{t: 'num', v: args[0].v[0]}];
+        } else if(args[0].t === 'str' && DATE_STRING.test(args[0].v)) {
+          var d1 = new Date('1970-01-01').getTime();
+          var d2 = new Date(args[0].v).getTime();
+          var days = (d2 - d1)/(24*60*60*1000);
+          args = [{t: 'num', v: days}];
+        }
       }
       return callNative(name, args);
     },
