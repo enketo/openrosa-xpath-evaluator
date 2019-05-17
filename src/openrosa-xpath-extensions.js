@@ -117,7 +117,12 @@ var openrosa_xpath_extensions = function(translate) {
       TOO_FEW_ARGS = new Error('too few args'),
       MILLIS_PER_DAY = 1000 * 60 * 60 * 24,
       RAW_NUMBER = /^(-?[0-9]+)(\.[0-9]+)?$/,
-      DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d(?:Z|[+-]\d\d:\d\d))?$/,
+      // DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d(?:Z|[+-]\d\d:\d\d))?$/,
+      DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d\.?\d?\d?(?:Z|[+-]\d\d:\d\d)|.*)?$/,
+
+                  //  ^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:Z|[+-][01]\d:[0-5]\d)$
+
+      // DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d.\d\d(?:Z|[+-]\d\d:\d\d))?$/,
       XPR = {
         boolean: function(val) { return { t:'bool', v:val }; },
         number: function(val) { return { t:'num', v:val }; },
@@ -158,13 +163,10 @@ var openrosa_xpath_extensions = function(translate) {
       },
       _date = function(it) {
         var temp, t;
-
         if(it.v instanceof Date) {
           return new Date(it.v);
         }
-
         it = _str(it);
-
         if(RAW_NUMBER.test(it)) {
           // Create a date at 00:00:00 1st Jan 1970 _in the current timezone_
           temp = new Date(1970, 0, 1);
@@ -177,6 +179,8 @@ var openrosa_xpath_extensions = function(translate) {
           temp = new Date(temp[0], temp[1]-1, temp[2]);
           return temp;
         }
+        var d = new Date(it);
+        return d == 'Invalid Date' ? null : d;
       },
       uuid = function() {
           return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
@@ -189,8 +193,9 @@ var openrosa_xpath_extensions = function(translate) {
       },
       format_date = function(date, format) {
         date = _date(date);
+        if(!format) return '';
         format = _str(format);
-        if(!date) return '';
+        if(!date) return 'Invalid Date';
         var c, i, sb = '', f = {
           year: 1900 + date.getYear(),
           month: 1 + date.getMonth(),
@@ -198,10 +203,10 @@ var openrosa_xpath_extensions = function(translate) {
           hour: date.getHours(),
           minute: date.getMinutes(),
           second: date.getSeconds(),
+          millis: date.getMilliseconds(),
           secTicks: date.getTime(),
-          dow: date.getDay(),
+          dow: 1 + date.getDay(),
         };
-
         for(i=0; i<format.length; ++i) {
           c = format.charAt(i);
 
@@ -236,7 +241,8 @@ var openrosa_xpath_extensions = function(translate) {
             } else if (c === 'S') {  //0-padded second
               sb += _zeroPad(f.second, 2);
             } else if (c === '3') {  //0-padded millisecond ticks (000-999)
-              sb += _zeroPad(f.secTicks, 3);
+              // sb += _zeroPad(f.secTicks, 3);
+              sb += _zeroPad(f.millis, 3);
             } else if (c === 'a') {  //Three letter short text day
               sb += translate('date.dayofweek.' + f.dow);
             } else if (c === 'Z' || c === 'A' || c === 'B') {
@@ -323,7 +329,8 @@ var openrosa_xpath_extensions = function(translate) {
     },
     date: date,
     'decimal-date': function(date) {
-        return XPR.number(Date.parse(_str(date)) / MILLIS_PER_DAY);
+      if(arguments.length > 1) throw TOO_MANY_ARGS;
+      return XPR.number(Date.parse(_str(date)) / MILLIS_PER_DAY);
     },
     'decimal-time': function(r) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
@@ -364,7 +371,7 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.boolean(false);
     },
     'format-date': function(date, format) {
-        return XPR.string(format_date(date, format)); },
+      return XPR.string(format_date(date, format)); },
     'if': function(con, a, b) {
       if(con.t === 'bool') return XPR.string(Boolean(con.v) ? a.v : b.v);
       if(con.t === 'arr') {
