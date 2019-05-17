@@ -71,7 +71,7 @@ describe('Union operator', () => {
     ]);
   });
 
-  xit('combines attributes that live on different elements', () => {
+  it('combines attributes that live on different elements', () => {
     checkNodeResult("id('eee35')/attribute::*[1] | id('eee40')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee35').attributes)[0],
       filterAttributes(doc.getElementById('eee40').attributes)[0]
@@ -85,18 +85,16 @@ describe('Union operator', () => {
     ]);
   });
 
-  xit('combines attributes that live on descendent element (reversed)', () => {
+  it('combines attributes that live on descendent element (reversed)', () => {
     checkNodeResult("id('eee40')/attribute::*[1] | id('eee30')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee30').attributes)[0],
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
-  xit('combines different attributes on the same element', () => {
-    checkNodeResult("id('eee40')/attribute::*[2] | id('eee40')/attribute::*[1]", doc, [
-      filterAttributes(doc.getElementById('eee40').attributes)[0],
-      filterAttributes(doc.getElementById('eee40').attributes)[1]
-    ]);
+  it('combines different attributes on the same element', () => {
+    checkNodeResult("id('eee40')/attribute::*[2] | id('eee40')/attribute::*[1]", doc,
+      filterAttributes(doc.getElementById('eee40').attributes).reverse()); //TODO verify this reverse
   });
 
   it('combines a namespace and attribute on the same element', () => {
@@ -109,21 +107,21 @@ describe('Union operator', () => {
     );
   });
 
-  xit('combines two namespaces on the same element', () => {
-    const result = doc.evaluate("id('nss40')/namespace::*", doc, null, win.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null ); //
+  it('combines two namespaces on the same element', () => {
+    const result = doc.evaluate("id('nss40')/namespace::*", doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 
     checkNodeResult("id('nss40')/namespace::* | id('nss40')/namespace::*", doc,
       snapshotToArray(result)
     );
   });
 
-  xit('combines a namespace and attribute', () => {
-    const result = doc.evaluate("id('nss40')/namespace::*", doc, null, win.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null ); //
+  it('combines a namespace and attribute', () => {
+    const result = doc.evaluate("id('nss40')/namespace::*", doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 
     checkNodeResult("id('nss40')/namespace::* | id('nss25')/attribute::* | id('nss25')", doc, [
       doc.getElementById('nss25')
     ].concat(
-      filterAttributes(doc.getElementById('nss25').attributes )
+      filterAttributes(doc.getElementById('nss25').attributes).reverse() //TODO verify this reverse
     ).concat(
       snapshotToArray(result)
     ));

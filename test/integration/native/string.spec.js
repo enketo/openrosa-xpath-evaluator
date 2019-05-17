@@ -51,30 +51,30 @@ describe('native string functions', () => {
     let input;
     let i;
     let node;
-    const nodeWithAttributes = doc.getElementById( 'FunctionStringCaseStringNodesetAttribute' );
+    const nodeWithAttributes = doc.getElementById('FunctionStringCaseStringNodesetAttribute');
 
     input = [
-      [ "string(/htmlnot)", doc, "" ], // empty
-      [ "string(self::node())", doc.getElementById( 'FunctionStringCaseStringNodesetElement' ), "aaa" ], // element
-      [ "string()", doc.getElementById( 'FunctionStringCaseStringNodesetElement' ), "aaa" ], // element
-      //TODO [ "string(node())", doc.getElementById( 'FunctionStringCaseStringNodesetElementNested' ), "bbb" ], // element nested
-      [ "string(self::node())", doc.getElementById( 'FunctionStringCaseStringNodesetElementNested' ), "bbbssscccddd" ], // element nested
-      [ "string()", doc.getElementById( 'FunctionStringCaseStringNodesetElementNested' ), "bbbssscccddd" ], // element nested
-      [ "string()", doc.getElementById( 'FunctionStringCaseStringNodesetComment').firstChild, " hello world " ], // comment
-      [ "string()", doc.getElementById( 'FunctionStringCaseStringNodesetText').firstChild, "here is some text" ], // text
-      [ "string(attribute::node()[1])", nodeWithAttributes, filterAttributes( nodeWithAttributes.attributes )[ 0 ].nodeValue ], // attribute
-      [ "string(attribute::node()[3])", nodeWithAttributes, filterAttributes( nodeWithAttributes.attributes )[ 2 ].nodeValue ] // attribute
-    ];
+      ["string(/htmlnot)", doc, ""], // empty
+      ["string(self::node())", doc.getElementById('FunctionStringCaseStringNodesetElement'), "aaa"], // element
+      ["string()", doc.getElementById('FunctionStringCaseStringNodesetElement'), "aaa"], // element
+      // ["string(node())", doc.getElementById( 'FunctionStringCaseStringNodesetElementNested' ), "bbb"], // element nested
+      ["string(self::node())", doc.getElementById('FunctionStringCaseStringNodesetElementNested' ), "bbbssscccddd"], // element nested
+      ["string()", doc.getElementById('FunctionStringCaseStringNodesetElementNested' ), "bbbssscccddd"], // element nested
+      ["string()", doc.getElementById('FunctionStringCaseStringNodesetComment').firstChild, " hello world "], // comment
+      ["string()", doc.getElementById('FunctionStringCaseStringNodesetText').firstChild, "here is some text"], // text
+      ["string(attribute::node()[1])", nodeWithAttributes, filterAttributes(nodeWithAttributes.attributes)[0].nodeValue], // attribute
+      ["string(attribute::node()[3])", nodeWithAttributes, filterAttributes(nodeWithAttributes.attributes)[2].nodeValue] // attribute
+   ];
 
     // Processing Instruction
     node = doc.getElementById( 'FunctionStringCaseStringNodesetProcessingInstruction').firstChild;
     if(node && node.nodeType == 7) {
-      input.push( [ "string()", node, 'type="text/xml" href="test.xsl"' ] );
+      input.push( ["string()", node, 'type="text/xml" href="test.xsl"'] );
     }
     // CDATASection
     node = doc.getElementById( 'FunctionStringCaseStringNodesetCData').firstChild;
     if(node && node.nodeType == 4) {
-      input.push( [ "string()", node, 'some cdata' ] );
+      input.push( ["string()", node, 'some cdata'] );
     }
 
     for(i = 0; i < input.length; i++) {
@@ -83,6 +83,17 @@ describe('native string functions', () => {
   });
 
   xit('string conversion of nodeset with namepace', () => {
+    const doc = initDoc(`
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+      	<head>
+      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      		<title>xpath-test</title>
+      	</head>
+      	<body class="yui3-skin-sam" id="body">
+          <div id="FunctionStringCaseStringNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
+        </body>
+      </html>`);
     const node = doc.getElementById('FunctionStringCaseStringNodesetNamespace');
     assertString(node, null, "string(namespace::node())", "http://www.w3.org/1999/xhtml");
   });
@@ -103,16 +114,9 @@ describe('native string functions', () => {
 
   //in javarosa this needs to return ''
   xit('concat() fails when not enough arguments provided', () => {
-      let test = () => {
-          doc.evaluate( "concat()", doc, helpers.getXhtmlResolver( doc ), win.XPathResult.STRING_TYPE, null );
-      };
-      expect(test).to.throw( win.Error );
-
-      test = () => {
-          doc.evaluate( "concat(1)", doc, helpers.getXhtmlResolver( doc ), win.XPathResult.STRING_TYPE, null );
-      };
-      expect(test).to.throw( win.Error );
-  } );
+    assert.throw(() => xEval('concat()'), Error);
+    assert.throw(() => xEval('concat(1)'), Error);
+  });
 
   it('starts-with', () => {
     assertTrue("starts-with('', '')");
@@ -124,22 +128,12 @@ describe('native string functions', () => {
   });
 
   it('starts-with() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate( "starts-with(1, 2, 3)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("starts-with(1, 2, 3)"), Error);
   });
 
   it('start-with() fails when not enough arguments are provided', () => {
-    let test = () => {
-      doc.evaluate("starts-with()", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
-
-    test = () => {
-      doc.evaluate("starts-with(1)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("starts-with()"), Error);
+    assert.throw(() => xEval("starts-with(1)"), Error);
   });
 
   it('contains()', () => {
@@ -152,22 +146,12 @@ describe('native string functions', () => {
   });
 
   it('contains() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("contains(1, 2, 3)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("contains(1, 2, 3)"), Error);
   });
 
   it('contains() fails when too few arguments are provided', () => {
-    let test = () => {
-      doc.evaluate( "contains()", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
-
-    test = () => {
-      doc.evaluate( "contains(1)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("contains()"), Error);
+    assert.throw(() => xEval("contains(1)"), Error);
   });
 
   it('substring-before()', () => {
@@ -182,21 +166,12 @@ describe('native string functions', () => {
   });
 
   it('substring-before() fails with too many arguments', () => {
-    const test = () => {
-      doc.evaluate("substring-before(1, 2, 3)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("substring-before(1, 2, 3)"), Error);
   });
 
   it('substring-before() with too few arguments', () => {
-    let test = () => {
-      doc.evaluate("substring-before()", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
-    test = () => {
-      doc.evaluate("substring-before(1)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("substring-before()"), Error);
+    assert.throw(() => xEval("substring-before(1)"), Error);
   });
 
   it('substring-after()', () => {
@@ -211,28 +186,18 @@ describe('native string functions', () => {
   });
 
   it('substring-after() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("substring-after(1, 2, 3)", doc, getXhtmlResolver(doc), win.XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("substring-after(1, 2, 3)"), Error);
   });
 
   it('substring-after() fails when too few arguments are provided', () => {
-    let test = () => {
-      doc.evaluate( "substring-after()", doc, getXhtmlResolver( doc ), win.XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
-
-    test = () => {
-      doc.evaluate( "substring-after(1)", doc, getXhtmlResolver(doc), win.XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("substring-after()"), Error);
+    assert.throw(() => xEval("substring-after(1)"), Error);
   });
 
   it('substring()', () => {
     assertString("substring('12345', 2, 3)", '234');
     assertString("substring('12345', 2)", '2345');
-    // assertString("substring('12345', -1)", '12345');
+    assertString("substring('12345', -1)", '12345');
     assertString("substring('12345', 1 div 0)", '');
     assertString("substring('12345', 0 div 0)", '');
     // assertString("substring('12345', -1 div 0)", '12345');
@@ -247,107 +212,91 @@ describe('native string functions', () => {
   });
 
   it('substring() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("substring(1, 2, 3, 4)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("substring(1, 2, 3, 4)"), Error);
   });
 
   it('substring() fails when too few arguments are provided', () => {
-    let test = () => {
-      doc.evaluate("substring()", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
-
-    test = () => {
-      doc.evaluate("substring(1)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("substring()"), Error);
+    assert.throw(() => xEval("substring(1)"), Error);
   });
 
   it('string-length()', () => {
+    const doc = initDoc(`
+      <div>
+        <div id="FunctionStringCaseStringLength1"></div>
+  			<div id="FunctionStringCaseStringLength2">asdf</div>
+      </div>`);
     [
-      [ "string-length('')", 0, doc ],
-      [ "string-length(' ')", 1, doc ],
-      [ "string-length('\r\n')", 2, doc ],
-      [ "string-length('a')", 1, doc ],
-      // [ "string-length()", 0, doc.getElementById( 'FunctionStringCaseStringLength1' ) ],
-      // [ "string-length()", 4, doc.getElementById( 'FunctionStringCaseStringLength2' ) ]
-    ].forEach( t => {
+      ["string-length('')", 0, doc],
+      ["string-length(' ')", 1, doc],
+      ["string-length('\r\n')", 2, doc],
+      ["string-length('a')", 1, doc],
+      ["string-length()", 0, doc.getElementById('FunctionStringCaseStringLength1')],
+      ["string-length()", 4, doc.getElementById('FunctionStringCaseStringLength2')]
+   ].forEach( t => {
       assertNumber(t[2], null, t[0], t[1]);
     });
   });
 
   it('string-length() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate( "string-length(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("string-length(1, 2)"), Error);
   });
 
   it('normalize-space', () => {
+    const doc = initDoc(`
+      <div>
+        <div id="FunctionStringCaseStringNormalizeSpace1"></div>
+  			<div id="FunctionStringCaseStringNormalizeSpace2">   </div>
+  			<div id="FunctionStringCaseStringNormalizeSpace3">  a  b  </div>
+  			<div id="FunctionStringCaseStringNormalizeSpace4">  a
+  				 bc  c
+  			</div>
+      </div>`);
     [
-      [ "normalize-space('')", '', doc ],
-      [ "normalize-space('    ')", '', doc ],
-      [ "normalize-space('  a')", 'a', doc ],
-      [ "normalize-space('  a  ')", 'a', doc ],
-      [ "normalize-space('  a b  ')", 'a b', doc ],
-      [ "normalize-space('  a  b  ')", 'a b', doc ],
-      [ "normalize-space(' \r\n\t')", '', doc ],
-      // [ "normalize-space(' \f\v ')", '\f\v', doc ],
-      // [ "normalize-space('\na  \f \r\v  b\r\n  ')", 'a \f \v b', doc ],
-      // [ "normalize-space()", '', doc.getElementById( 'FunctionStringCaseStringNormalizeSpace1' ) ],
-      // [ "normalize-space()", '', doc.getElementById( 'FunctionStringCaseStringNormalizeSpace2' ) ],
-      // [ "normalize-space()", 'a b', doc.getElementById( 'FunctionStringCaseStringNormalizeSpace3' ) ],
-      // [ "normalize-space()", 'a bc c', doc.getElementById( 'FunctionStringCaseStringNormalizeSpace4' ) ]
-    ].forEach( t => {
-      assertString(t[2], null, t[0], t[1]);
+      ["normalize-space('')", '', doc],
+      ["normalize-space('    ')", '', doc],
+      ["normalize-space('  a')", 'a', doc],
+      ["normalize-space('  a  ')", 'a', doc],
+      ["normalize-space('  a b  ')", 'a b', doc],
+      ["normalize-space('  a  b  ')", 'a b', doc],
+      ["normalize-space(' \r\n\t')", '', doc],
+      // ["normalize-space(' \f\v ')", '\f\v', doc],
+      // ["normalize-space('\na  \f \r\v  b\r\n  ')", 'a \f \v b', doc],
+      ["normalize-space()", '', doc.getElementById('FunctionStringCaseStringNormalizeSpace1')],
+      ["normalize-space()", '', doc.getElementById('FunctionStringCaseStringNormalizeSpace2')],
+      ["normalize-space()", 'a b', doc.getElementById('FunctionStringCaseStringNormalizeSpace3')],
+      ["normalize-space()", 'a bc c', doc.getElementById('FunctionStringCaseStringNormalizeSpace4')]
+   ].forEach(([expr, expected, node]) => {
+      assertString(node, null, expr, expected);
     });
   });
 
   it('normalize-space() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate( "normalize-space(1,2)", doc, getXhtmlResolver(doc), XPathResult.STRING_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("normalize-space(1,2)"), Error);
   });
 
   it('translate()', () => {
     [
-      [ "translate('', '', '')", '' ],
-      [ "translate('a', '', '')", 'a' ],
-      [ "translate('a', 'a', '')", '' ],
-      [ "translate('a', 'b', '')", 'a' ],
-      [ "translate('ab', 'a', 'A')", 'Ab' ],
-      [ "translate('ab', 'a', 'AB')", 'Ab' ],
-      [ "translate('aabb', 'ab', 'ba')", 'bbaa' ],
-      [ "translate('aa', 'aa', 'bc')", 'bb' ]
-    ].forEach( t => {
-      assertString(t[0], t[1]);
+      ["translate('', '', '')", ''],
+      ["translate('a', '', '')", 'a'],
+      ["translate('a', 'a', '')", ''],
+      ["translate('a', 'b', '')", 'a'],
+      ["translate('ab', 'a', 'A')", 'Ab'],
+      ["translate('ab', 'a', 'AB')", 'Ab'],
+      ["translate('aabb', 'ab', 'ba')", 'bbaa'],
+      ["translate('aa', 'aa', 'bc')", 'bb']
+    ].forEach(([expr, expected])=> {
+      assertString(expr, expected);
     });
   });
 
   it('translate() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("translate(1, 2, 3, 4)", doc, getXhtmlResolver(doc), XPathResult.STRING_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("translate(1, 2, 3, 4)"), Error);
   });
 
   it('translate() fails when too few arguments are provided', () => {
-    let test = () => {
-      doc.evaluate("translate()", doc, getXhtmlResolver(doc), XPathResult.STRING_TYPE, null);
-    };
-    assert.throw(test, Error);
-
-    test = () => {
-      doc.evaluate("translate(1)", doc, getXhtmlResolver(doc), XPathResult.STRING_TYPE, null);
-    };
-    assert.throw(test, Error);
-
-    test = () => {
-      doc.evaluate("translate(1,2)", doc, getXhtmlResolver(doc), XPathResult.STRING_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("translate()"), Error);
+    assert.throw(() => xEval("translate(1)"), Error);
+    assert.throw(() => xEval("translate(1, 2)"), Error);
   });
 });
