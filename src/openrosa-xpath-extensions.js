@@ -521,7 +521,7 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.boolean(true);
     },
     uuid: function() { return XPR.string(uuid()); },
-    'weighted-checklist': function(min, max /*,vA , wA, vB , wB.... */) {
+    'weighted-checklist': function(min, max) {
       var i, values = [], weights = [], weightedTrues = 0;
       min = min.v;
       max = max.v;
@@ -529,8 +529,9 @@ var openrosa_xpath_extensions = function(translate) {
         var v = arguments[i];
         var w = arguments[i+1];
         if (v && w) {
-          values.push(v.v);
-          weights.push(w.v);
+          // value or weight might be a nodeset
+          values.push(v.t === 'arr' ? v.v[0] : v.v);
+          weights.push(w.t === 'arr' ? w.v[0] : w.v);
         }
       }
 

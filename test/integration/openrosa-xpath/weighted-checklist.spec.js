@@ -9,7 +9,7 @@ describe('#weighted-checklist()', () => {
     assertTrue("weighted-checklist(1, 1, 1=1, 1)");
     assertFalse("weighted-checklist(1, 1, 1=1, 0)");
     assertTrue("weighted-checklist(2, 2, true(), 2, false(), 5, false(), 6)");
-    //TODO assertTrue("weighted-checklist(2, -1, true(), 999, false(), 5, false(), 6)");
+    assertTrue("weighted-checklist(2, -1, true(), 999, false(), 5, false(), 6)");
   });
 
   it('with nodes', () => {
@@ -34,7 +34,7 @@ describe('#weighted-checklist()', () => {
 
     node = doc.getElementById('FunctionChecklistCaseEmpty');
     assertTrue(node, null, "weighted-checklist(-1, 2, self::node(), 0)");
-    //TODO assertFalse(node, null, "weighted-checklist(1, 2, self::node(), 1)");
+    assertFalse(node, null, "weighted-checklist(1, 2, self::node(), 1)");
 
     node = doc.getElementById('FunctionWeightedChecklist');
     assertTrue(node, null, "weighted-checklist(3, 3, 1=1, self::node())");
