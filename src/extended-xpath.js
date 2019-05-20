@@ -16,6 +16,10 @@ var DIGIT = /[0-9]/;
 var DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d(?:Z|[+-]\d\d:\d\d))?$/;
 var FUNCTION_NAME = /^[a-z]/;
 
+var TOO_MANY_ARGS = new Error('too many args');
+var TOO_FEW_ARGS = new Error('too few args');
+var INVALID_ARGS = new Error('invalid args');
+
 // TODO remove all the checks for cur.t==='?' - what else woudl it be?
 var ExtendedXpathEvaluator = function(wrapped, extensions) {
   var
@@ -57,6 +61,16 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           args = [{t: 'num', v: days}];
         }
       }
+      if(name === 'name' && args.length < 2) throw TOO_FEW_ARGS;
+      if(name === 'namespace-uri') {
+        if(args.length > 1) throw TOO_MANY_ARGS;
+        if(args.length === 0) throw TOO_FEW_ARGS;
+        if(args.length === 1 && !isNaN(args[0].v)) throw INVALID_ARGS;
+      }
+      if(name === 'local-name') {
+        if(args.length > 1) throw TOO_MANY_ARGS;
+        if(args.length === 1 && !isNaN(args[0].v)) throw INVALID_ARGS;
+      }
       return callNative(name, args);
     },
     callExtended = function(name, args) {
@@ -94,7 +108,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   this.evaluate = function(input, cN, nR, rT, r) {
-    if(rT > 3) return wrapped(input, cN, nR, rT, r); // we don't try to handle node expressions
+    if(rT > 3 || input.startsWith('count(')) return wrapped(input, cN, nR, rT, r);
 
     var i, cur, stack = [{ t:'root', tokens:[] }],
       peek = function() { return stack[stack.length-1]; },
