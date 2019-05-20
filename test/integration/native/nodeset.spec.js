@@ -1,19 +1,29 @@
 describe('native nodeset functions', () => {
 
   it('last()', () => {
-    initDoc(`
-      <div id="testFunctionNodeset">
-  			<div id="testFunctionNodeset2">
-  				<p>1</p>
-  				<p>2</p>
-  				<p>3</p>
-  				<p>4</p>
-  			</div>`);
+    const doc = initDoc(`
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+      	<head>
+      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      		<title>xpath-test</title>
+      	</head>
+      	<body class="yui3-skin-sam" id="body">
+          <div id="testFunctionNodeset">
+      			<div id="testFunctionNodeset2">
+      				<p>1</p>
+      				<p>2</p>
+      				<p>3</p>
+      				<p>4</p>
+      			</div>
+      		</div>
+        </body>
+      </html>`);
 
     [
       ["last()", 1],
-      // ["xhtml:p[last()]", 4],
-      // [ "xhtml:p[last()-last()+1]", 1 ]
+      ["xhtml:p[last()]", 4],
+      [ "xhtml:p[last()-last()+1]", 1 ]
     ].forEach(t => {
       const node = doc.getElementById('testFunctionNodeset2');
       const ns = getXhtmlResolver(doc);
@@ -29,64 +39,86 @@ describe('native nodeset functions', () => {
     assert.throw(test, Error);
   });
 
-  xit('position()', () => {
+  it('position()', () => {
+    const doc = initDoc(`
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+      	<head>
+      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      		<title>xpath-test</title>
+      	</head>
+      	<body class="yui3-skin-sam" id="body">
+          <div id="testFunctionNodeset">
+      			<div id="testFunctionNodeset2">
+      				<p>1</p>
+      				<p>2</p>
+      				<p>3</p>
+      				<p>4</p>
+      			</div>
+      		</div>
+        </body>
+      </html>`);
+    const node = doc.getElementById('testFunctionNodeset2');
+    nsr = nsResolver;
     [
-      ["position()", 1],
-      // [ "*[position()=last()]", 4 ],
-      // [ "*[position()=2]", 2 ],
-      // [ "xhtml:p[position()=2]", 2 ]
-    ].forEach( t => {
-      const result = doc.evaluate(t[0], doc.getElementById('testFunctionNodeset2'), getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-      assert.equal(result.numberValue, t[1]);
+      //TODO ["position()", 1],
+      [ "*[position()=last()]", 4 ],
+      [ "*[position()=2]", 2 ],
+      [ "xhtml:p[position()=2]", 2 ]
+    ].forEach(([expr, expected]) => {
+      const val = xEval(expr, node, XPathResult.NUMBER_TYPE);
+      assert.equal(val.numberValue, expected);
     });
 
-    // [
-    //   [ "*[position()=-1]", "" ]
-    // ].forEach( t => {
-    //   const result = doc.evaluate(t[0], doc.getElementById('testFunctionNodeset2'), getXhtmlResolver(doc), XPathResult.STRING_TYPE, null);
-    //   assert.equal(result.stringValue, t[1]);
-    // });
+    [
+      [ "*[position()=-1]", "" ]
+    ].forEach(([expr, expected]) => {
+      const val = xEval(expr, node, XPathResult.STRING_TYPE);
+      assert.equal(val.stringValue, expected);
+    });
   });
 
   it('position() fails when too many args are provided', () => {
-    const test = () => {
-      doc.evaluate("position(1)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("position(1)"), Error);
   });
 
-  xit('count()', () => {
+  it('count()', () => {
+    const doc = initDoc(`
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+      	<head>
+      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      		<title>xpath-test</title>
+      	</head>
+      	<body class="yui3-skin-sam" id="body">
+          <div id="testFunctionNodeset">
+      			<div id="testFunctionNodeset2">
+      				<p>1</p>
+      				<p>2</p>
+      				<p>3</p>
+      				<p>4</p>
+      			</div>
+      		</div>
+        </body>
+      </html>`);
+    const node = doc.getElementById('testFunctionNodeset2');
+    nsr = nsResolver;
     [
-      [ "count(xhtml:p)", 4 ],
-      [ "count(p)", 0 ],
-      [ "count(//nonexisting)", 0 ]
-    ].forEach( t => {
-      const result = doc.evaluate(t[0], doc.getElementById('testFunctionNodeset2'), getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-      assert.equal(result.numberValue, t[1]);
+      ["count(xhtml:p)", 4],
+      ["count(p)", 0],
+      ["count(//nonexisting)", 0]
+    ].forEach(([expr, expected]) => {
+      const result = xEval(expr, node, XPathResult.NUMBER_TYPE);
+      assert.equal(result.numberValue, expected);
     });
-
-    /*
-    [
-        ["count(.)", doc.getElementsByName('##########'),1]
-    ].forEach(function(t){
-        var result = doc.evaluate(t[0], t[1], helpers.getXhtmlResolver(doc), g.win.XPathResult.NUMBER_TYPE, null);
-        expect(result.numberValue).to.equal(t[2]);
-    });
-    */
   });
 
   it( 'count() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("count(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("count(1, 2)"), Error);
   });
 
   it('count() fails when too few arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("count()", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throws(test, Error);
+    assert.throw(() => xEval("count()"), Error);
   });
 
   it( 'count() fails when incorrect argument type is provided', () => {
@@ -96,12 +128,34 @@ describe('native nodeset functions', () => {
     assert.throw(test, Error);
   });
 
-  xit('local-name()', () => {
+  it('local-name()', () => {
+    const doc = initDoc(`
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+      	<head>
+      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      		<title>xpath-test</title>
+      	</head>
+      	<body class="yui3-skin-sam" id="body">
+          <div id="testFunctionNodeset">
+      			<div id="testFunctionNodesetElement">aaa</div>
+      			<div id="testFunctionNodesetElementPrefix"><ev:div2></ev:div2></div>
+      			<div id="testFunctionNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
+      			<div id="testFunctionNodesetComment"><!-- hello world --></div>
+      			<div id="testFunctionNodesetText">here is some text</div>
+      			<div id="testFunctionNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
+      			<div id="testFunctionNodesetCData"><![CDATA[some cdata]]></div>
+      			<div id="testFunctionNodesetAttribute" ev:class="123" width="  1   00%  "></div>
+      			<div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
+      		</div>
+        </body>
+      </html>`);
+    nsr = nsResolver;
     let result;
     let input;
     let i;
     let node;
-    const nodeWithAttributes = doc.getElementById( 'testFunctionNodesetAttribute' );
+    const nodeWithAttributes = doc.getElementById('testFunctionNodesetAttribute');
     const nodeAttributes = filterAttributes(nodeWithAttributes.attributes );
     let nodeAttributesIndex;
 
@@ -140,41 +194,72 @@ describe('native nodeset functions', () => {
     }
 
     for (i = 0; i < input.length; i++) {
-      result = doc.evaluate( input[ i ][ 0 ], input[ i ][ 1 ], null, g.win.XPathResult.STRING_TYPE, null );
-      expect( result.stringValue.toLowerCase() ).to.equal( input[ i ][ 2 ] );
+      result = doc.evaluate(input[i][0], input[i][1], null, XPathResult.STRING_TYPE, null);
+      assert.equal(result.stringValue.toLowerCase(), input[i][2]);
     }
   });
 
-  xit('local-name() with namespace', () => {
+  it('local-name() with namespace', () => {
+    const doc = initDoc(`
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+      	<head>
+      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      		<title>xpath-test</title>
+      	</head>
+      	<body class="yui3-skin-sam" id="body">
+          <div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
+        </body>
+      </html>`);
+    const node = doc.getElementById('testFunctionNodesetNamespace');
+    nsr = nsResolver;
     [
-      ["local-name(namespace::node())", doc.getElementById('testFunctionNodesetNamespace'), ""],
-      ["local-name(namespace::node()[2])", doc.getElementById('testFunctionNodesetNamespace'), "asdf"]
-    ].forEach( t => {
-      assertString(t[1], null, t[0], t[2]);
+      ["local-name(namespace::node())", node, ""],
+      //TODO ["local-name(namespace::node()[2])", node, "asdf"]
+    ].forEach(([expr, node, expected]) => {
+      const val = doc.evaluate(expr, node, nsr, XPathResult.STRING_TYPE, null);
+      assert.equal(val.stringValue, expected);
     });
   });
 
   it('local-name() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate( "local-name(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+      assert.throw(() => xEval("local-name(1, 2)"), Error);
   });
 
-  xit('local-name() fails when the wrong type argument is provided', () => {
-    const test = () => {
-      doc.evaluate("local-name(1)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+  it('local-name() fails when the wrong type argument is provided', () => {
+    assert.throw(() => xEval("local-name(1)"), Error);
   });
 
-  xit( 'namespace-uri()', () => {
+  it('namespace-uri()', () => {
+    const doc = initDoc(`
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+      	<head>
+      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      		<title>xpath-test</title>
+      	</head>
+      	<body class="yui3-skin-sam" id="body">
+          <div id="testFunctionNodeset">
+      			<div id="testFunctionNodesetElement">aaa</div>
+      			<div id="testFunctionNodesetElementPrefix"><ev:div2></ev:div2></div>
+      			<div id="testFunctionNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
+      			<div id="testFunctionNodesetComment"><!-- hello world --></div>
+      			<div id="testFunctionNodesetText">here is some text</div>
+      			<div id="testFunctionNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
+      			<div id="testFunctionNodesetCData"><![CDATA[some cdata]]></div>
+      			<div id="testFunctionNodesetAttribute" ev:class="123" width="  1   00%  "></div>
+      			<div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
+      		</div>
+        </body>
+      </html>`);
+    nsr = nsResolver;
+
     let result;
     let input;
     let i;
     let node;
-    const nodeWithAttributes = doc.getElementById( 'testFunctionNodesetAttribute' );
-    const nodeAttributes = helpers.filterAttributes( nodeWithAttributes.attributes );
+    const nodeWithAttributes = doc.getElementById('testFunctionNodesetAttribute');
+    const nodeAttributes = filterAttributes( nodeWithAttributes.attributes );
     let nodeAttributesIndex;
 
     for (i = 0; i < nodeAttributes.length; i++) {
@@ -215,31 +300,48 @@ describe('native nodeset functions', () => {
 
     for(i = 0; i < input.length; i++) {
       result = doc.evaluate(input[i][0], input[i][1], null, XPathResult.STRING_TYPE, null);
-      expect(result.stringValue).to.equal(input[i][2]);
+      assert.equal(result.stringValue, input[i][2]);
     }
   });
 
   it('namespace-uri() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("namespace-uri(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("namespace-uri(1, 2)"), Error);
   });
 
-  xit('namespace-uri() fails when wrong type of argument is provided', () => {
-    const test = () => {
-      doc.evaluate("namespace-uri(1)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+  it('namespace-uri() fails when wrong type of argument is provided', () => {
+    assert.throw(() => xEval("namespace-uri(1)"), Error);
   });
 
-  xit('name()', () => {
+  it('name()', () => {
+    const doc = initDoc(`
+      <!DOCTYPE html>
+      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+      	<head>
+      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      		<title>xpath-test</title>
+      	</head>
+      	<body class="yui3-skin-sam" id="body">
+          <div id="testFunctionNodeset">
+      			<div id="testFunctionNodesetElement">aaa</div>
+      			<div id="testFunctionNodesetElementPrefix"><ev:div2></ev:div2></div>
+      			<div id="testFunctionNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
+      			<div id="testFunctionNodesetComment"><!-- hello world --></div>
+      			<div id="testFunctionNodesetText">here is some text</div>
+      			<div id="testFunctionNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
+      			<div id="testFunctionNodesetCData"><![CDATA[some cdata]]></div>
+      			<div id="testFunctionNodesetAttribute" ev:class="123" width="  1   00%  "></div>
+      			<div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
+      		</div>
+        </body>
+      </html>`);
+    nsr = nsResolver;
+
     let result;
     let input;
     let i;
     let node;
     const nodeWithAttributes = doc.getElementById( 'testFunctionNodesetAttribute' );
-    const nodeAttributes = helpers.filterAttributes( nodeWithAttributes.attributes );
+    const nodeAttributes = filterAttributes( nodeWithAttributes.attributes );
     let nodeAttributesIndex;
 
     for (i = 0; i < nodeAttributes.length; i++) {
@@ -263,7 +365,7 @@ describe('native nodeset functions', () => {
       [ "name(attribute::node())", nodeWithAttributes, nodeAttributes[ 0 ].nodeName ], // attribute
       [ `name(attribute::node()[${nodeAttributesIndex + 1}])`, nodeWithAttributes, 'ev:class' ], // attribute
       [ "name(namespace::node())", doc.getElementById( 'testFunctionNodesetNamespace' ), "" ], // namespace
-      [ "name(namespace::node()[2])", doc.getElementById( 'testFunctionNodesetNamespace' ), "asdf" ] // namespace
+      //TODO [ "name(namespace::node()[2])", doc.getElementById( 'testFunctionNodesetNamespace' ), "asdf" ] // namespace
     ];
 
     // Processing Instruction
@@ -280,21 +382,15 @@ describe('native nodeset functions', () => {
 
     for (i = 0; i < input.length; i++ ) {
       result = doc.evaluate(input[i][0], input[i][1], null, XPathResult.STRING_TYPE, null);
-      expect(result.stringValue).to.equal(input[i][2]);
+      assert.equal(result.stringValue, input[i][2]);
     }
   });
 
   it('name() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("name(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("name(1, 2)"), Error);
   });
 
-  xit('name() fails when the wrong argument type is provided', () => {
-    const test = () => {
-      doc.evaluate("name(1)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+  it('name() fails when the wrong argument type is provided', () => {
+    assert.throw(() => xEval("name(1)"), Error);
   });
 });

@@ -70,7 +70,7 @@ describe('#max()', () => {
     assertNumber(node, null, 'max(*)', 0);
 
     node = doc.getElementById('FunctionMaxCase');
-    assertNumber("max(//*[@id='FunctionMaxCase']/*[position()=1], //*[@id='FunctionMaxCase']/*[position()=2], //*[@id='FunctionMaxCase']/*[position()=3])", 0);
+    assertNumber(node, null, "max(//*[@id='FunctionMaxCase']/*[position()=1], //*[@id='FunctionMaxCase']/*[position()=2], //*[@id='FunctionMaxCase']/*[position()=3])", 0);
 
     node = doc.getElementById('FunctionMaxMinWithEmpty');
     assertNumber(node, null, 'max(*)', NaN);
