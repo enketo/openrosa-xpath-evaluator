@@ -39,7 +39,7 @@ describe('native nodeset functions', () => {
     assert.throw(test, Error);
   });
 
-  it('position()', () => {
+  xit('position()', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
@@ -61,7 +61,7 @@ describe('native nodeset functions', () => {
     const node = doc.getElementById('testFunctionNodeset2');
     nsr = nsResolver;
     [
-      //TODO ["position()", 1],
+      ["position()", 1],
       [ "*[position()=last()]", 4 ],
       [ "*[position()=2]", 2 ],
       [ "xhtml:p[position()=2]", 2 ]

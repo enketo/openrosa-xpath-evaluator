@@ -13,6 +13,7 @@ const initDoc = (xml) => {
   node = null;
   evaluator = new ExtendedXpathEvaluator(
     v => {
+      rt = null;
       const result = doc.evaluate.call(doc, v, node || doc, nsr, rt || XPathResult.ANY_TYPE, null);
       // console.log(`${v} => ${result.resultType}`);
       return result;
@@ -21,7 +22,7 @@ const initDoc = (xml) => {
   xEval = function(e, xnode, resultType) {
     node = xnode;
     rt = resultType;
-    return evaluator.evaluate(e);
+    return evaluator.evaluate(e, node, nsr, rt, null);
   };
   return doc;
 };
