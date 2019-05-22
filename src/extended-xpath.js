@@ -13,12 +13,67 @@ var OP_PRECEDENCE = [
 
 var DIGIT = /[0-9]/;
 // TODO fix duplicate
-var DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d(?:Z|[+-]\d\d:\d\d))?$/;
+var DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d\.?\d?\d?(?:Z|[+-]\d\d:\d\d)|.*)?$/;
 var FUNCTION_NAME = /^[a-z]/;
 
 var TOO_MANY_ARGS = new Error('too many args');
 var TOO_FEW_ARGS = new Error('too few args');
 var INVALID_ARGS = new Error('invalid args');
+
+/**
+ * Converts a native Date UTC String to a RFC 3339-compliant date string with local offsets
+ * used in ODK, so it replaces the Z in the ISOstring with a local offset
+ * @return {string} a datetime string formatted according to RC3339 with local offset
+ */
+Date.prototype.toISOLocalString = function() {
+  //2012-09-05T12:57:00.000-04:00 (ODK)
+
+  if (this.toString() === 'Invalid Date') {
+    return this.toString();
+  }
+
+  var dt = new Date(this.getTime() - (this.getTimezoneOffset() * 60 * 1000)).toISOString()
+      .replace('Z', this.getTimezoneOffsetAsTime());
+
+  if (dt.indexOf('T00:00:00.000') > 0) {
+    return dt.split('T')[0];
+  } else {
+    return dt;
+  }
+};
+
+Date.prototype.getTimezoneOffsetAsTime = function() {
+  var offsetMinutesTotal;
+  var hours;
+  var minutes;
+  var direction;
+  var pad2 = function(x) {
+    return (x < 10) ? '0' + x : x;
+  };
+
+  if (this.toString() === 'Invalid Date') {
+    return this.toString();
+  }
+
+  offsetMinutesTotal = this.getTimezoneOffset();
+
+  direction = (offsetMinutesTotal < 0) ? '+' : '-';
+  hours = pad2(Math.abs(Math.floor(offsetMinutesTotal / 60)));
+  minutes = pad2(Math.abs(Math.floor(offsetMinutesTotal % 60)));
+
+  return direction + hours + ':' + minutes;
+};
+
+function dateToDays(d) {
+  var temp = null;
+  if(d.indexOf('T') > 0) {
+    temp = new Date(d);
+  } else {
+    temp = d.split('-');
+    temp = new Date(temp[0], temp[1]-1, temp[2]);
+  }
+  return (temp.getTime()) / (1000 * 60 * 60 * 24);
+}
 
 // TODO remove all the checks for cur.t==='?' - what else woudl it be?
 var ExtendedXpathEvaluator = function(wrapped, extensions) {
@@ -36,29 +91,44 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       }
       return { t:'str', v:r.stringValue };
     },
-    toExternalResult = function(r) {
+    toExternalResult = function(r, rt) {
+
       if(extendedProcessors.toExternalResult) {
         var res = extendedProcessors.toExternalResult(r);
         if(res) return res;
+      }
+      if( (r.t === 'arr' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v[0])) ||
+          (r.t === 'str' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v))) {
+        var val = r.t === 'arr' ? r.v[0] : r.v;
+        var days = dateToDays(val);
+        return {
+          resultType:XPathResult.NUMBER_TYPE,
+          numberValue:days,
+          stringValue:days
+        };
       }
       if(r.t === 'num') return { resultType:XPathResult.NUMBER_TYPE, numberValue:r.v, stringValue:r.v.toString() };
       if(r.t === 'bool') return { resultType:XPathResult.BOOLEAN_TYPE, booleanValue:r.v, stringValue:r.v.toString() };
       return { resultType:XPathResult.STRING_TYPE, stringValue: r.v===null ? '' : r.v.toString() };
     },
-    callFn = function(name, args) {
+    callFn = function(name, args, rt) {
       if(extendedFuncs.hasOwnProperty(name)) {
+        // TODO can we pass rt all the time
+        if(rt && (name.startsWith('date') || name === 'now' || name === 'today')) {
+          args.push(rt)
+        }
         return callExtended(name, args);
       }
       //TODO structure this better depending on how many more
       // native functions need to be patched
-      if(['number'].includes(name) && args.length) {
+      if(name === 'number' && args.length) {
         if(args[0].t === 'arr') {
           args = [{t: 'num', v: args[0].v[0]}];
         } else if(args[0].t === 'str' && DATE_STRING.test(args[0].v)) {
-          var d1 = new Date('1970-01-01').getTime();
-          var d2 = new Date(args[0].v).getTime();
-          var days = (d2 - d1)/(24*60*60*1000);
-          args = [{t: 'num', v: days}];
+          args = [{t: 'num', v: dateToDays(args[0].v)}];
+        } else if(args[0].t === 'num' &&
+          args[0].v.toString().indexOf('e-') > 0) {
+          args = [{t: 'num', v: 0}];
         }
       }
       if(name === 'name' && args.length < 2) throw TOO_FEW_ARGS;
@@ -261,7 +331,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           cur = stack.pop();
           if(cur.t !== 'fn') err();
           if(cur.v) {
-            peek().tokens.push(callFn(cur.v, cur.tokens));
+            peek().tokens.push(callFn(cur.v, cur.tokens, rT));
           } else {
             if(cur.tokens.length !== 1) err();
             peek().tokens.push(cur.tokens[0]);
@@ -370,7 +440,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
     if(stack[0].tokens.length >= 3) backtrack();
     if(stack[0].tokens.length > 1) err('Too many tokens.');
 
-    return toExternalResult(stack[0].tokens[0]);
+    return toExternalResult(stack[0].tokens[0], rT);
   };
 };
 

@@ -182,14 +182,29 @@ var openrosa_xpath_extensions = function(translate) {
         var d = new Date(it);
         return d == 'Invalid Date' ? null : d;
       },
+      _dateForReturnType = function(it, rt) {
+        if(rt === XPathResult.BOOLEAN_TYPE) {
+          if(!it) return XPR.boolean(false);
+          return XPR.boolean(!isNaN(new Date(it).getTime()));
+        }
+        if(rt === XPathResult.NUMBER_TYPE) {
+          if(!it) return XPR.number(0);
+          return XPR.number((new Date(it).getTime()) / (1000 * 60 * 60 * 24));
+        }
+        if(rt === XPathResult.STRING_TYPE) {
+          if(!it) return XPR.string('Invalid Date');
+          return XPR.string(new Date(it).toISOLocalString());
+        }
+        if(!it) return XPR.string('Invalid Date');
+        return XPR.date(it);
+      },
       uuid = function() {
           return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
                   .replace(/[xy]/g, _uuid_part);
       },
-      date = function(it) {
+      date = function(it, rt) {
         it = _date(it);
-        if(!it) return XPR.string('Invalid Date');
-        return XPR.date(it);
+        return _dateForReturnType(it, rt);
       },
       format_date = function(date, format) {
         date = _date(date);
@@ -258,7 +273,9 @@ var openrosa_xpath_extensions = function(translate) {
         return sb;
       },
       func, process, ret = {},
-      now_and_today = function() { return XPR.date(ret._now()); };
+      now_and_today = function(rt) {
+        return _dateForReturnType(ret._now(), rt);
+      };
 
   func = {
     abs: function(r) { return XPR.number(Math.abs(r.v)); },
@@ -327,7 +344,10 @@ var openrosa_xpath_extensions = function(translate) {
       while(--i >= 0) if(parts[i].length) ++count;
       return XPR.number(count);
     },
-    date: date,
+    date: function(it, rt) {
+      it = _date(it);
+      return _dateForReturnType(it, rt);
+    },
     'decimal-date': function(date) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
       return XPR.number(Date.parse(_str(date)) / MILLIS_PER_DAY);
@@ -447,7 +467,7 @@ var openrosa_xpath_extensions = function(translate) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
       return XPR.boolean(!r.v);
     },
-    now: now_and_today,
+    now: function(rt) { return now_and_today(rt); },
     /**
      * The once function returns the value of the parameter if its own value
      * is not empty, NaN, [Infinity or -Infinity]. The naming is therefore misleading!
@@ -515,7 +535,6 @@ var openrosa_xpath_extensions = function(translate) {
       return XPR.number(out);
     },
     tan: function(r) { return XPR.number(Math.tan(r.v)); },
-    today: now_and_today,
     'true': function(arg) {
       if(arg) throw TOO_MANY_ARGS;
       return XPR.boolean(true);
@@ -548,6 +567,7 @@ var openrosa_xpath_extensions = function(translate) {
   func['date-time'] = func.date;
   func['decimal-date-time'] = func['decimal-date'];
   func['format-date-time'] = func['format-date'];
+  func['today'] = func['now'];
 
   process = {
       toExternalResult: function(r) {

@@ -5,7 +5,7 @@ describe('#number()', () => {
       'number(false())': '0',
       'number(1 = 1)': '1',
       'number(1 = 2)': '0',
-    }, function(expectedResult, expr) {
+    }, (expectedResult, expr) => {
       it(`${expr} should be ${expectedResult}`, () => {
         assertNumber(expr, expectedResult);
       });
@@ -26,7 +26,7 @@ describe('#number()', () => {
       'number(0.0)': 0,
       'number(.0)': 0,
       'number(0.)': 0
-    }, function(expectedResult, expr) {
+    }, (expectedResult, expr) => {
       it(`${expr} should be ${expectedResult}`, () => {
         assertNumber(expr, expectedResult);
       });
@@ -46,7 +46,7 @@ describe('#number()', () => {
       "number('1.1   ')": 1.1 ,
       "number('1.1   \n ')": 1.1,
       "number('  1.1 \n\r\n  ')": 1.1
-    }, function(expectedResult, expr) {
+    }, (expectedResult, expr) => {
       it(`${expr} should be ${expectedResult}`, () => {
         assertNumber(expr, expectedResult);
       });
@@ -55,14 +55,15 @@ describe('#number()', () => {
 
   describe('called on a date string', () => {
     _.forEach({
-      'number("1970-01-01")': '0',
-      'number("1970-01-02")': '1',
-      'number("1969-12-31")': '-1',
-      'number("2008-09-05")': '14127',
-      'number("1941-12-07")': '-10252',
-    }, function(expectedResult, expr) {
-      it(expr + ' should be ' + expectedResult + ' days since the epoch', () => {
-        assertNumber(expr, expectedResult);
+      'number("1970-01-01")': 0.29,
+      'number("1970-01-02")': 1.29,
+      'number("1969-12-31")': -0.71,
+      'number("2008-09-05")': 14127.29,
+      'number("1941-12-07")': -10251.71,
+    }, (expected, expr) => {
+      it(expr + ' should be ' + expected + ' days since the epoch', () => {
+        const value = xEval(expr, null, XPathResult.NUMBER_TYPE);
+        assert.equal(Math.round(value.numberValue * 100)/100, expected);
       });
     });
   });
