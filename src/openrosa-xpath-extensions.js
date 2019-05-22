@@ -567,7 +567,7 @@ var openrosa_xpath_extensions = function(translate) {
   func['date-time'] = func.date;
   func['decimal-date-time'] = func['decimal-date'];
   func['format-date-time'] = func['format-date'];
-  func['today'] = func['now'];
+  func.today = func.now;
 
   process = {
       toExternalResult: function(r) {

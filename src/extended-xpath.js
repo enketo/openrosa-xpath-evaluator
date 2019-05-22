@@ -115,7 +115,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       if(extendedFuncs.hasOwnProperty(name)) {
         // TODO can we pass rt all the time
         if(rt && (name.startsWith('date') || name === 'now' || name === 'today')) {
-          args.push(rt)
+          args.push(rt);
         }
         return callExtended(name, args);
       }
