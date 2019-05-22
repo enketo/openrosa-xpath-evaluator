@@ -37,7 +37,7 @@ const initBasicXmlDoc = () => simpleValueIs('');
 
 const assertTrue = (...args) => {
   const regex = args[args.length - 1];
-  if(args.length > 1) {//TODO ignore null values or refactor signature
+  if(args.length > 1 && args[args.length - 2]) {
     simpleValueIs(args[args.length - 2]);
   }
   const node = args.length > 2 ? args[args.length - 3] : null;
@@ -46,7 +46,7 @@ const assertTrue = (...args) => {
 
 const assertFalse = (...args) => {
   const regex = args[args.length - 1];
-  if(args.length > 1) {//TODO ignore null values or refactor signature
+  if(args.length > 1 && args[args.length - 2]) {
     simpleValueIs(args[args.length - 2]);
   }
   const node = args.length > 2 ? args[args.length - 3] : null;
@@ -64,7 +64,7 @@ const assertBoolean = (regex, value) => {
 const assertString = (...args) => {
   const expected = args[args.length -1];
   const regex = args[args.length - 2];
-  if(args.length > 2) {
+  if(args.length > 2 && args[args.length - 3]) {
     simpleValueIs(args[args.length - 3]);
   }
   const node = args.length > 3 ? args[args.length - 4] : null;
@@ -74,7 +74,7 @@ const assertString = (...args) => {
 const assertNumber = (...args) => {
   const expected = args[args.length -1];
   const regex = args[args.length - 2];
-  if(args.length > 2 && args[1]) {
+  if(args.length > 2 && args[args.length - 3]) {
     simpleValueIs(args[args.length - 3]);
   }
   const node = args.length > 3 ? args[args.length - 4] : null;

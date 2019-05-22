@@ -75,6 +75,29 @@ function dateToDays(d) {
   return (temp.getTime()) / (1000 * 60 * 60 * 24);
 }
 
+function checkMinMaxArgs(args, min, max) {
+  if(min != null && args.length < min) throw TOO_FEW_ARGS;
+  if(max != null && args.length > max) throw TOO_MANY_ARGS;
+}
+
+function checkNativeFn(name, args) {
+  if(name === 'last') checkMinMaxArgs(args, null, 0);
+  else if(name === 'boolean' || name === 'lang' ||
+     name === 'ceiling' || name === 'name' || name === 'floor') {
+    checkMinMaxArgs(args, 1, 1);
+  }
+  else if(name === 'number' || name === 'string' ||
+    name === 'normalize-space' || name === 'string-length') {
+    checkMinMaxArgs(args, null, 1);
+  }
+  else if(name === 'substring') checkMinMaxArgs(args, 2, 3);
+  else if(name === 'starts-with' || name === 'contains' ||
+    name === 'substring-after' || name === 'substring-before') {
+    checkMinMaxArgs(args, 2, 2);
+  }
+  else if(name === 'translate') checkMinMaxArgs(args, 3, 3);
+}
+
 // TODO remove all the checks for cur.t==='?' - what else woudl it be?
 var ExtendedXpathEvaluator = function(wrapped, extensions) {
   var
@@ -162,6 +185,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         if(arg.t !== 'num' && arg.t !== 'bool') argString += quote;
         if(i < args.length - 1) argString += ', ';
       }
+      checkNativeFn(name, args);
       return toInternalResult(wrapped(name + '(' + argString + ')'));
     },
     typefor = function(val) {
@@ -178,7 +202,13 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   this.evaluate = function(input, cN, nR, rT, r) {
-    if(rT > 3 || input.startsWith('count(')) return wrapped(input, cN, nR, rT, r);
+    if(rT > 3 || input.startsWith('count(')) {
+      if(input.startsWith('count(')) {
+        if(input.indexOf(',') > 0) throw TOO_MANY_ARGS;
+        if(input === 'count()') throw TOO_FEW_ARGS;
+      }
+      return wrapped(input, cN, nR, rT, r);
+    }
 
     var i, cur, stack = [{ t:'root', tokens:[] }],
       peek = function() { return stack[stack.length-1]; },

@@ -6,6 +6,7 @@
   "scripts": {
     "jshint": "jshint src/*.js test/*.js",
     "test": "karma start karma.config.js --single-run",
+    "test:watch": "karma start karma.config.js --auto-watch",
     "travis": "npm run jshint && npm test"
   },
   "author": "Alex",
@@ -18,6 +19,7 @@
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^2.0.1",
     "karma-mocha": "^1.3.0",
+    "karma-opera-launcher": "^1.0.0",
     "karma-requirejs": "^1.1.0",
     "lodash": "^4.17.11",
     "mocha": "^6.1.1",

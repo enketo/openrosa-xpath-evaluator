@@ -74,10 +74,7 @@ describe('native number functions', () => {
     });
 
     it('number() conversion fails when too many arguments are provided', () => {
-      const test = () => {
-        doc.evaluate("number(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-      };
-      assert.throw(test, Error);
+      assert.throw(() => xEval("number(1, 2)"), Error);
     });
 
     it('sum()', () => {
@@ -95,17 +92,11 @@ describe('native number functions', () => {
   });
 
   it('sum() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("sum(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("sum(1, 2)"), Error);
   });
 
   it('sum() fails when too few arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("sum()", doc, getXhtmlResolver(doc),XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("sum()"), Error);
   });
 
   it( 'floor()', () => {
@@ -119,17 +110,11 @@ describe('native number functions', () => {
   });
 
   it( 'floor() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("floor(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("floor(1, 2)"), Error);
   });
 
   it( 'floor fails when too few arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("floor()", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("floor()"), Error);
   });
 
   it( 'ceiling()', () => {
@@ -143,17 +128,11 @@ describe('native number functions', () => {
   });
 
   it( 'ceiling() fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("ceiling(1, 2)", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("ceiling(1, 2)"), Error);
   });
 
   it('ceiling() fails when not enough arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("ceiling()", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("ceiling()"), Error);
   });
 
   it('round()', () => {
@@ -172,9 +151,6 @@ describe('native number functions', () => {
   });
 
   it('round() fails when too few arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("round()", doc, getXhtmlResolver(doc), XPathResult.NUMBER_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("round()"), Error);
   });
 });

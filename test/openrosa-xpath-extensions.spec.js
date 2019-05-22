@@ -140,31 +140,35 @@ describe('#date()', function() {
       // given
       const r = { t:'string', v };
 
-      xit('should return a string type', function() {
+      it('should return a string type', function() {
         // expect
-        assert.equal(f.date(r).t, 'str');
+        // TODO verify expectations when passing rt
+        // assert.equal(f.date(r).t, 'str');
+        assert.equal(f.date(r, XPathResult.STRING_TYPE).t, 'str');
       });
-      xit(`should convert "${v}" to "Invalid Date"`, function() {
-        // expect
-        assert.equal(f.date(r).v, 'Invalid Date');
-      });
+      // TODO different expectations - verify
+      // xit(`should convert "${v}" to "Invalid Date"`, function() {
+      //   // expect
+      //   assert.equal(f.date(r).v, 'Invalid Date');
+      // });
     });
   });
 });
 
-describe('#date-format()', function() {
-  xit("should return empty string if it can't parse a date", function() {
-    // given
-    const badDateString = { type:'str', v:'abc' };
-    const format = { type:'str', v:'%Y' };
-
-    // when
-    const formattedDate = f['format-date'](badDateString, format);
-
-    // then
-    assert.equal(formattedDate.v, '');
-  });
-});
+// TODO different expectations - verify
+// describe('#date-format()', function() {
+//   xit("should return empty string if it can't parse a date", function() {
+//     // given
+//     const badDateString = { type:'str', v:'abc' };
+//     const format = { type:'str', v:'%Y' };
+//
+//     // when
+//     const formattedDate = f['format-date'](badDateString, format);
+//
+//     // then
+//     assert.equal(formattedDate.v, '');
+//   });
+// });
 
 describe('#now()', function() {
   it('should return a result of type `date`', function() {

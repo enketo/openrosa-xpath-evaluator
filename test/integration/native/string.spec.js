@@ -99,10 +99,7 @@ describe('native string functions', () => {
   });
 
   it('string conversion fails when too many arguments are provided', () => {
-    const test = () => {
-      doc.evaluate("string(1, 2)", doc, getXhtmlResolver(doc), XPathResult.STRING_TYPE, null);
-    };
-    assert.throw(test, Error);
+    assert.throw(() => xEval("string(1, 2)"), Error);
   });
 
   it('concat()', () => {
