@@ -16,7 +16,8 @@ module.exports = function(config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: false,
-    browsers: ['ChromeHeadless', 'FirefoxHeadless', 'Opera'],
+    browsers: ['ChromeHeadless', 'FirefoxHeadless'],
+    // browsers: ['ChromeHeadless', 'FirefoxHeadless', 'Opera'],
     singleRun: false,
     concurrency: Infinity
   })
