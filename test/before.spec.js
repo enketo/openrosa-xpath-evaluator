@@ -41,7 +41,7 @@ const assertTrue = (...args) => {
     simpleValueIs(args[args.length - 2]);
   }
   const node = args.length > 2 ? args[args.length - 3] : null;
-  assert.isTrue(xEval(regex, node).booleanValue);
+  assert.isTrue(xEval(regex, node, XPathResult.BOOLEAN_TYPE).booleanValue);
 };
 
 const assertFalse = (...args) => {
@@ -50,7 +50,7 @@ const assertFalse = (...args) => {
     simpleValueIs(args[args.length - 2]);
   }
   const node = args.length > 2 ? args[args.length - 3] : null;
-  assert.isFalse(xEval(regex, node).booleanValue);
+  assert.isFalse(xEval(regex, node, XPathResult.BOOLEAN_TYPE).booleanValue);
 };
 
 const assertBoolean = (regex, value) => {

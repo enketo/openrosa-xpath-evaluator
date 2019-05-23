@@ -1,18 +1,18 @@
 describe( 'and/or operators', () => {
-  TODO()
-  xit('and works without spacing', () => {
+
+  it('and works without spacing', () => {
     assertTrue("1and1");
   });
 
-  xit('and works without spacing AFTER and', () => {
+  it('and works without spacing AFTER and', () => {
     assertTrue("1 and1");
   });
 
-  xit('and works with linebreak/tab spacing', () => {
+  it('and works with linebreak/tab spacing', () => {
     assertTrue("1 and\r\n\t1");
   });
 
-  xit('and works without spacing BEFORE and', () => {
+  it('and works without spacing BEFORE and', () => {
     assertTrue("1and 1");
   });
 
@@ -20,7 +20,7 @@ describe( 'and/or operators', () => {
     assertTrue("'1'and'1'");
   });
 
-  xit('And (capitalized) fails miserably', () => {
+  it('And (capitalized) fails miserably', () => {
     assert.throw(() => xEval("1 And 1"));//does not throw instance of error
   });
 
@@ -50,21 +50,20 @@ describe( 'and/or operators', () => {
     assertFalse("true() and false() and $some-made-up-var");
   });
 
-  xit('or works without spacing', () => {
+  it('or works without spacing', () => {
     assertTrue("1or1");
   });
 
-  xit('or works without spacing AFTER or', () => {
+  it('or works without spacing AFTER or', () => {
     assertTrue("1 or1");
   });
 
-  xit('or works with newline/tab spacing', () => {
+  it('or works with newline/tab spacing', () => {
     assertTrue("1 or\r\n\t1");
   });
 
-  xit('or works without spacing BEFORE or', () => {
-    const result = g.doc.evaluate( "1or 1", g.doc, null, g.win.XPathResult.BOOLEAN_TYPE, null );
-    expect( result.booleanValue ).to.equal( true );
+  it('or works without spacing BEFORE or', () => {
+    assertTrue("1or 1");
   });
 
   xit('or works with numbers-as-string', () => {
@@ -72,7 +71,7 @@ describe( 'and/or operators', () => {
   });
 
   xit('And (capitalized) fails miserably', () => {
-    expect(xEval("1 OR 1")).to.throw(); // does not throw instance of error
+    assert.throw(xEval("1 OR 1")) // does not throw instance of error
   });
 
   it('or without potential spacing issues works', () => {
@@ -93,8 +92,8 @@ describe( 'and/or operators', () => {
       [ "1 or 1 or 0", true ],
       [ "1 or 1 or true()", true ],
       [ "false() or 0 or 0", false ]
-    ].forEach(t => {
-        assertBoolean(t[0], t[1]);
+    ].forEach(([expr, value]) => {
+      assertBoolean(expr, value);
     });
   });
 
@@ -104,8 +103,8 @@ describe( 'and/or operators', () => {
       [ "true() or $some-made-up-var", true ],
       [ "true() or $some-made-up-var and true()", true ],
       [ "false() or true() or $some-made-up-var", true ]
-    ].forEach( t => {
-      assertBoolean(t[0], t[1]);
+    ].forEach(([expr, value]) => {
+      assertBoolean(expr, value);
     });
   });
 
@@ -116,8 +115,8 @@ describe( 'and/or operators', () => {
       [ "false() and false() or false()", false ],
       [ "0 or 1 and 0", false ],
       [ "0 or 1 and 0+1", true ]
-    ].forEach( t => {
-      assertBoolean(t[0], t[1]);
-    } );
+    ].forEach(([expr, value]) => {
+      assertBoolean(expr, value);
+    });
   });
 });

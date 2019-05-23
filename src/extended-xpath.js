@@ -209,6 +209,11 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       }
       return wrapped(input, cN, nR, rT, r);
     }
+    if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0
+        && input.indexOf('/') < 0) {
+      input = input.replace(/(\n|\r|\t)/g, '');
+      input = "boolean-from-string("+input+")";
+    }
 
     var i, cur, stack = [{ t:'root', tokens:[] }],
       peek = function() { return stack[stack.length-1]; },
@@ -375,9 +380,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         case '*':
           if(c === '*' && (cur.v !== '' || peek().tokens.length === 0)) {
             cur.v += c;
-            if(cur.v === './*') {
-              handleXpathExpr();
-            }
+            if(cur.v === './*') handleXpathExpr();
           } else if(cur.v === '' &&
             ( [')', ''].includes(nextChar()) ||
             input.substring(i+1).trim() === ')')
@@ -460,9 +463,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
     }
 
     if(cur.t === 'num') finaliseNum();
-
     if(cur.t === '?' && cur.v !== '') handleXpathExpr();
-
     if(cur.t !== '?' || cur.v !== '' || (cur.tokens && cur.tokens.length)) err('Current item not evaluated!');
     if(stack.length > 1) err('Stuff left on stack.');
     if(stack[0].t !== 'root') err('Weird stuff on stack.');
