@@ -98,6 +98,71 @@ function checkNativeFn(name, args) {
   else if(name === 'translate') checkMinMaxArgs(args, 3, 3);
 }
 
+var MAX_INT32 = 2147483647;
+var MINSTD = 16807;
+
+/**
+ * Creates a the Park-Miller PRNG pseudo-random value generator.
+ * The seed must be an integer.
+ *
+ * Adapted from: https://gist.github.com/blixt/f17b47c62508be59987b
+ */
+function Random(seed) {
+    this._seed = seed % MAX_INT32;
+	if (this._seed <= 0) {
+		this._seed += ( MAX_INT32 - 1 );
+	}
+}
+
+/**
+ * Returns a pseudo-random integer value.
+ */
+Random.prototype.next = function () {
+  this._seed = this._seed * MINSTD % MAX_INT32;
+  return this._seed;
+};
+
+/**
+ * Returns a pseudo-random floating point number in range [0, 1).
+ */
+Random.prototype.nextFloat = function () {
+    // We know that result of next() will be 1 to 2147483646 (inclusive).
+    return ( this.next() - 1 ) / ( MAX_INT32 - 1 );
+};
+
+/**
+ * Performs the "inside-out" variant of the Fisher-Yates array shuffle.
+ *
+ * @see https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_%22inside-out%22_algorithm
+ *
+ * @param  {<*>}        array the array to shuffle
+ * @param  {number=}    seed the seed value
+ * @return {<*>}        the suffled array
+ */
+function shuffle(array, seed) {
+  var rng;
+  var result = [];
+
+  if ( typeof seed !== 'undefined' ){
+    if ( !Number.isInteger( seed ) ) {
+      throw new Error('Invalid seed argument. Integer required.');
+    }
+    var rnd = new Random( seed );
+    rng = rnd.nextFloat.bind(rnd);
+  } else {
+    rng = Math.random;
+  }
+
+  for ( var i = 0; i < array.length; ++i ) {
+    var j = Math.floor( rng() * ( i + 1 ) );
+    if ( j !== i ) {
+      result[i] = result[j];
+    }
+    result[j] = array[i];
+  }
+  return result;
+}
+
 // TODO remove all the checks for cur.t==='?' - what else woudl it be?
 var ExtendedXpathEvaluator = function(wrapped, extensions) {
   var
@@ -115,7 +180,6 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       return { t:'str', v:r.stringValue };
     },
     toExternalResult = function(r, rt) {
-
       if(extendedProcessors.toExternalResult) {
         var res = extendedProcessors.toExternalResult(r);
         if(res) return res;
@@ -132,12 +196,25 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       }
       if(r.t === 'num') return { resultType:XPathResult.NUMBER_TYPE, numberValue:r.v, stringValue:r.v.toString() };
       if(r.t === 'bool') return { resultType:XPathResult.BOOLEAN_TYPE, booleanValue:r.v, stringValue:r.v.toString() };
+      if(rt > 3) {
+        r = shuffle(r[0], r[1]);
+        return {
+          snapshotLength: r.length,
+          snapshotItem: function(idx) { return r[idx]; }
+        };
+      }
       return { resultType:XPathResult.STRING_TYPE, stringValue: r.v===null ? '' : r.v.toString() };
+    },
+    toNodes = function(r) {
+      var n, v = [];
+      while((n = r.iterateNext())) v.push(n);
+      return v;
     },
     callFn = function(name, args, rt) {
       if(extendedFuncs.hasOwnProperty(name)) {
         // TODO can we pass rt all the time
-        if(rt && (name.startsWith('date') || name === 'now' || name === 'today')) {
+        if(rt && (name.startsWith('date') || name === 'now' ||
+          name === 'today' || name === 'randomize')) {
           args.push(rt);
         }
         return callExtended(name, args);
@@ -202,15 +279,15 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   this.evaluate = function(input, cN, nR, rT, r) {
-    if(rT > 3 || input.startsWith('count(')) {
+    if((rT > 3 && !input.startsWith('randomize')) || input.startsWith('count(')) {
       if(input.startsWith('count(')) {
         if(input.indexOf(',') > 0) throw TOO_MANY_ARGS;
         if(input === 'count()') throw TOO_FEW_ARGS;
       }
       return wrapped(input, cN, nR, rT, r);
     }
-    if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0
-        && input.indexOf('/') < 0) {
+    if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 &&
+        input.indexOf('/') < 0) {
       input = input.replace(/(\n|\r|\t)/g, '');
       input = "boolean-from-string("+input+")";
     }
@@ -281,7 +358,11 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         if(['position'].includes(peek().v)) {
           evaluated = wrapped(expr);
         } else {
-          evaluated = toInternalResult(wrapped(expr));
+          if(rT > 3) {
+            evaluated = toNodes(wrapped(expr));
+          } else {
+            evaluated = toInternalResult(wrapped(expr));
+          }
         }
         peek().tokens.push(evaluated);
         newCurrent();

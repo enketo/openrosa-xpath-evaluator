@@ -495,6 +495,22 @@ var openrosa_xpath_extensions = function(translate) {
     },
     pow: function(x, y) { return XPR.number(Math.pow(_float(x), _float(y))); },
     random: function() { return XPR.number(Math.random()); },
+    randomize: function(r) {
+      if(arguments.length === 0) throw TOO_FEW_ARGS;
+      if(arguments.length > 3) throw TOO_MANY_ARGS;
+
+      var seed = arguments.length > 2 ? arguments[1] : arguments[2];
+      var rt = arguments[arguments.length - 1];
+
+      if(rt === XPathResult.BOOLEAN_TYPE) {
+        return XPR.boolean(r.v.length > 0 ? true : false);
+      }
+      if(rt === XPathResult.STRING_TYPE) {
+        if (r.v.length < 1) return '';
+        return XPR.string(r.v[0]);
+      }
+      return [r, seed && seed.v];
+    },
     regex: function(haystack, pattern) {
         return XPR.boolean(new RegExp(_str(pattern)).test(_str(haystack))); },
     round: function(number, num_digits) {

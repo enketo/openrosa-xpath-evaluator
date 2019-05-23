@@ -1,46 +1,82 @@
-describe('randomize() shuffles nodesets', () => {
-  TODO();
+describe('randomize()', () => {
+  let doc;
   const SELECTOR = '//xhtml:div[@id="FunctionRandomize"]/xhtml:div';
 
-  // xit( 'without a seed', () => {
-  //   const result = doc.evaluate(`randomize(${SELECTOR})`, g.doc, helpers.getXhtmlResolver( g.doc ), g.win.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
-  //   const nodes = [];
-  //   let text = '';
-  //   for ( let j = 0; j < result.snapshotLength; j++ ) {
-  //       const node = result.snapshotItem( j );
-  //       nodes.push( node );
-  //       text += node.textContent;
-  //   }
-  //   expect( nodes.length ).to.equal( 6 );
-  //   expect( text.length ).to.equal( 6 );
-  //   expect( text ).not.to.equal( 'ABCDEF' );
-  // });
+  describe('shuffles nodesets', () => {
+    beforeEach(() => {
+      doc = initDoc(`
+        <!DOCTYPE html>
+        <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+        	<head>
+        		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        		<title>xpath-test</title>
+        	</head>
+        	<body class="yui3-skin-sam" id="body">
+            <div id="FunctionRandomize">
+        			<div>A</div>
+        			<div>B</div>
+        			<div>C</div>
+        			<div>D</div>
+        			<div>E</div>
+        			<div>F</div>
+        		</div>
+            <div id="testFunctionNodeset2">
+              <p>1</p>
+              <p>2</p>
+              <p>3</p>
+              <p>4</p>
+            </div>
+          </body>
+        </html>`);
+    });
 
-//
-//     [
-//         [ 42, 'AFCBDE' ],
-//         [ '42', 'AFCBDE' ],
-//         [ -42, 'EDAFBC' ],
-//         [ 1, 'BFEACD' ],
-//         [ 11111111, 'ACDBFE' ],
-//         [ 'int(1)', 'BFEACD' ],
-//         [ 'floor(1.1)', 'BFEACD' ],
-//         [ '//xhtml:div[@id="testFunctionNodeset2"]/xhtml:p', 'BFEACD' ]
-//     ].forEach( t => {
-//         it( `with a seed: ${t[0]}`, () => {
-//             const result = g.doc.evaluate( `randomize(${SELECTOR},${t[0]})`, g.doc, helpers.getXhtmlResolver( g.doc ), g.win.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
-//             let text = '';
-//             for ( let j = 0; j < result.snapshotLength; j++ ) {
-//                 text += result.snapshotItem( j ).textContent;
-//             }
-//             expect( text ).to.equal( t[ 1 ] );
-//         } );
-//     } );
-//
-  xit(`with invalid args, throws an error`, () => {
-    // g.doc.evaluate(XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
-    assert.throw(() => 'randomize()', Error);
-    assert.throw(() => `randomize(${SELECTOR}, 'a')`, Error);
-    assert.throw(() => `randomize(${SELECTOR}, 1, 2)`, Error);
+    it('without a seed', () => {
+      nsr = nsResolver;
+      assertTrue(`randomize(${SELECTOR})`);
+      assertStringValue(`randomize(${SELECTOR})`, 'A');
+      const getNodesAndText = (expr) => {
+        let result = xEval(expr, doc, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
+        const nodes = [];
+        let text = '';
+        for (let j = 0; j < result.snapshotLength; j++) {
+          const node = result.snapshotItem(j);
+          nodes.push(node);
+          text += node.textContent;
+        }
+        return [nodes, text];
+      }
+      const [nodes, text] = getNodesAndText(`randomize(${SELECTOR})`);
+      assert.equal(nodes.length, 6);
+      assert.equal(text.length, 6);
+      assert.equal(text !== 'ABCDEF', true);
+    });
+
+    [
+      [42, 'AFCBDE'],
+      ['42', 'AFCBDE'],
+      // [-42, 'EDAFBC'],
+      [1, 'BFEACD'],
+      [11111111, 'ACDBFE'],
+      ['int(1)', 'BFEACD'],
+      ['floor(1.1)', 'BFEACD'],
+      // ['//xhtml:div[@id="testFunctionNodeset2"]/xhtml:p', 'BFEACD']
+    ].forEach(([seed, expected]) => {
+      it(`with a seed: ${seed}`, () => {
+        nsr = nsResolver;
+        const result = xEval(`randomize(${SELECTOR}, ${seed})`, doc,
+          XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+        let text = '';
+        for (let j = 0; j < result.snapshotLength; j++) {
+          text += result.snapshotItem(j).textContent;
+        }
+        assert.equal(text, expected);
+      });
+    });
+  });
+
+  it(`with invalid args, throws an error`, () => {
+    assert.throw(() => xEval('randomize()'), Error);
+    assert.throw(() => xEval(`randomize(${SELECTOR}, 'a')`), Error);
+    assert.throw(() => xEval(`randomize(${SELECTOR}, 1, 2)`), Error);
   });
 });

@@ -71,6 +71,17 @@ const assertString = (...args) => {
   assert.equal(xEval(regex, node).stringValue, expected);
 };
 
+// TODO combine with assertString?
+const assertStringValue = (...args) => {
+  const expected = args[args.length -1];
+  const regex = args[args.length - 2];
+  if(args.length > 2 && args[args.length - 3]) {
+    simpleValueIs(args[args.length - 3]);
+  }
+  const node = args.length > 3 ? args[args.length - 4] : null;
+  assert.equal(xEval(regex, node, XPathResult.STRING_TYPE).stringValue, expected);
+};
+
 const assertNumber = (...args) => {
   const expected = args[args.length -1];
   const regex = args[args.length - 2];
