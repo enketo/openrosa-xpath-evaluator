@@ -15,6 +15,8 @@ var DIGIT = /[0-9]/;
 // TODO fix duplicate
 var DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d\.?\d?\d?(?:Z|[+-]\d\d:\d\d)|.*)?$/;
 var FUNCTION_NAME = /^[a-z]/;
+var NUMERIC_COMPARATOR = /(>|<)/;
+var BOOLEAN_COMPARATOR = /(=)/;
 
 var TOO_MANY_ARGS = new Error('too many args');
 var TOO_FEW_ARGS = new Error('too few args');
@@ -287,8 +289,10 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       return wrapped(input, cN, nR, rT, r);
     }
     if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 &&
-        input.indexOf('/') < 0) {
+        input.indexOf('/') < 0 && input.indexOf('=') < 0 && input.indexOf('!=') < 0) {
       input = input.replace(/(\n|\r|\t)/g, '');
+      input = input.replace(/"(\d)"/g, '$1');
+      input = input.replace(/'(\d)'/g, '$1');
       input = "boolean-from-string("+input+")";
     }
 
@@ -447,7 +451,12 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           cur = stack.pop();
           if(cur.t !== 'fn') err();
           if(cur.v) {
-            peek().tokens.push(callFn(cur.v, cur.tokens, rT));
+            var expectedReturnType = rT;
+            if(rT === XPathResult.BOOLEAN_TYPE) {
+              if(NUMERIC_COMPARATOR.test(input)) expectedReturnType = XPathResult.NUMBER_TYPE;
+              if(BOOLEAN_COMPARATOR.test(input)) expectedReturnType = XPathResult.BOOLEAN_TYPE;
+            }
+            peek().tokens.push(callFn(cur.v, cur.tokens, expectedReturnType));
           } else {
             if(cur.tokens.length !== 1) err();
             peek().tokens.push(cur.tokens[0]);

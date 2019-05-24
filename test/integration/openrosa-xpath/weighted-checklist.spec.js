@@ -12,8 +12,7 @@ describe('#weighted-checklist()', () => {
     assertTrue("weighted-checklist(2, -1, true(), 999, false(), 5, false(), 6)");
   });
 
-  // TODO firefox
-  xit('with nodes', () => {
+  it('with nodes', () => {
     const doc = initDoc(`
       <root>
         <div id="FunctionChecklistCase">

@@ -53,11 +53,12 @@ const assertFalse = (...args) => {
   assert.isFalse(xEval(regex, node, XPathResult.BOOLEAN_TYPE).booleanValue);
 };
 
-const assertBoolean = (regex, value) => {
+const assertBoolean = (...args) => {
+  const value = args.pop();
   if(value) {
-    assertTrue(regex);
+    assertTrue(...args);
   } else {
-    assertFalse(regex);
+    assertFalse(...args);
   }
 };
 
@@ -90,6 +91,20 @@ const assertNumber = (...args) => {
   }
   const node = args.length > 3 ? args[args.length - 4] : null;
   const actual = xEval(regex, node).numberValue;
+  if(isNaN(expected)) {
+    assert.isNaN(actual);
+  } else {
+    assert.equal(actual, expected);
+  }
+};
+const assertNumberValue = (...args) => {
+  const expected = args[args.length -1];
+  const regex = args[args.length - 2];
+  if(args.length > 2 && args[args.length - 3]) {
+    simpleValueIs(args[args.length - 3]);
+  }
+  const node = args.length > 3 ? args[args.length - 4] : null;
+  const actual = xEval(regex, node, XPathResult.NUMBER_TYPE).numberValue;
   if(isNaN(expected)) {
     assert.isNaN(actual);
   } else {

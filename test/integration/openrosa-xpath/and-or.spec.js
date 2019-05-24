@@ -16,12 +16,12 @@ describe( 'and/or operators', () => {
     assertTrue("1and 1");
   });
 
-  xit('and works with numbers-as-string', () => {
+  it('and works with numbers-as-string', () => {
     assertTrue("'1'and'1'");
   });
 
-  it('And (capitalized) fails miserably', () => {
-    assert.throw(() => xEval("1 And 1"));//does not throw instance of error
+  xit('And (capitalized) fails miserably', () => {
+    assert.throw(() => xEval("1 And 1", null, XPathResult.BOOLEAN_TYPE));//does not throw instance of error
   });
 
   it('and without potential spacing issues works', () => {
@@ -66,12 +66,12 @@ describe( 'and/or operators', () => {
     assertTrue("1or 1");
   });
 
-  xit('or works with numbers-as-string', () => {
+  it('or works with numbers-as-string', () => {
     assertTrue("'1'or'1'");
   });
 
   xit('And (capitalized) fails miserably', () => {
-    assert.throw(xEval("1 OR 1")) // does not throw instance of error
+    assert.throw(() => xEval("1 OR 1", null, XPathResult.BOOLEAN_TYPE)); // does not throw instance of error
   });
 
   it('or without potential spacing issues works', () => {

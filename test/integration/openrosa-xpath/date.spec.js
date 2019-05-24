@@ -169,8 +169,8 @@ describe('#date()', () => {
 
   it('datetype comparisons', () => {
     [
-      // ["date('2001-12-26') > date('2001-12-25')", true],
-      // ["date('1969-07-20') < date('1969-07-21')", true],
+      ["date('2001-12-26') > date('2001-12-25')", true],
+      ["date('1969-07-20') < date('1969-07-21')", true],
       ["date('2004-05-01') = date('2004-05-01')", true],
       ["true() != date('1999-09-09T00:00:00.000+00:00')", false],
       ["date(0) = date('1970-01-01T00:00:00.000+00:00')", true],
@@ -179,26 +179,24 @@ describe('#date()', () => {
       ["date(14127) = date('2008-09-05T00:00:00.000+00:00')", true],
       ["date(-10252) = date('1941-12-07T00:00:00.000+00:00')", true],
       // ["date(date('1989-11-09')) = date('1989-11-09')", true],
-      // ["date('2012-01-01') < today()", true],
-      // ["date('2100-01-02') > today()", true],
-      // ["date('2012-01-01') < now()", true],
-      // ["date('2100-01-02') > now()", true],
+      ["date('2012-01-01') < today()", true],
+      ["date('2100-01-02') > today()", true],
+      ["date('2012-01-01') < now()", true],
+      ["date('2100-01-02') > now()", true],
       // ["now() > today()", true],
       // ['today() = "2018-06-26"', true],
       // ['"2018-06-25" = "2018-06-25T00:00:00.000-07:00"', true],
       // ['"2018-06-25" < "2018-06-25T00:00:00.000-07:00"', false],
       ['"2018-06-25" < "2018-06-25T00:00:00.001-07:00"', true],
    ].forEach(([expr, expected]) => {
-     const value = xEval(expr, null, XPathResult.BOOLEAN_TYPE).booleanValue;
-      assert.equal(value, expected);
-      // do the same tests for the alias date-time()
-      expr = expr.replace('date(', 'date-time(' );
-      xEval(expr, null, XPathResult.BOOLEAN_TYPE).numberValue;
-      assert.equal(value, expected);
+     assertBoolean(expr, expected)
+     // do the same tests for the alias date-time()
+     expr = expr.replace('date(', 'date-time(' );
+     assertBoolean(expr, expected)
     });
   });
 
-  xit('datestring comparisons (date detection)', () => {
+  it('datestring comparisons (date detection)', () => {
     const doc = initDoc(`
       <div id="FunctionDate">
   			<div id="FunctionDateCase1">2012-07-23</div>
@@ -209,34 +207,30 @@ describe('#date()', () => {
   		</div>`);
     [
       [". < date('2012-07-24')", doc.getElementById("FunctionDateCase1" ), true],
-      // //returns false if strings are compared but true if dates are compared
-      ["../node()[@id='FunctionDateCase2'] > ../node()[@id='FunctionDateCase3']", doc.getElementById("FunctionDateCase1" ), true]
+      //returns false if strings are compared but true if dates are compared
+      //TODO ["../node()[@id='FunctionDateCase2'] > ../node()[@id='FunctionDateCase3']", doc.getElementById("FunctionDateCase1" ), true]
     ].forEach(([expr, node, expected]) => {
-      const value = xEval(expr, node, XPathResult.BOOLEAN_TYPE).booleanValue;
-      assert.equal(value, expected);
+      assertBoolean(expr, expected);
       // do the same tests for the alias date-time()
       expr = expr.replace('date(', 'date-time(');
-      value = xEval(expr, node, XPathResult.BOOLEAN_TYPE).booleanValue;
-      assert.equal(value, expected);
+      assertBoolean(expr, expected);
     });
   });
 
-  xit('date calculations', () => {
+  it('date calculations', () => {
     [
-      ["today() > ('2012-01-01' + 10)", doc, true],
-      ["10 + date('2012-07-24') = date('2012-08-03')", doc, true],
+      // ["today() > ('2012-01-01' + 10)", doc, true],
+      // ["10 + date('2012-07-24') = date('2012-08-03')", doc, true],
       [". = date('2012-07-24') - 1", doc.getElementById("FunctionDateCase1" ), true],
-      [". > date('2012-07-24') - 2", doc.getElementById("FunctionDateCase1" ), true],
+      // [". > date('2012-07-24') - 2", doc.getElementById("FunctionDateCase1" ), true],
       [". < date('2012-07-25') - 1", doc.getElementById("FunctionDateCase1" ), true],
-      [". = 30 + /xhtml:html/xhtml:body/xhtml:div[@id='FunctionDate']/xhtml:div[@id='FunctionDateCase4']", g.doc.getElementById("FunctionDateCase1" ), true],
-      ["10 + '2012-07-24' = '2012-08-03'", doc, true]
+      // [". = 30 + /xhtml:html/xhtml:body/xhtml:div[@id='FunctionDate']/xhtml:div[@id='FunctionDateCase4']", doc.getElementById("FunctionDateCase1" ), true],
+      // ["10 + '2012-07-24' = '2012-08-03'", doc, true]
     ].forEach(([expr, node, expected]) => {
-      let value = xEval(expr, node, XPathResult.BOOLEAN_TYPE).booleanValue;
-      assert.equal(value, expected);
+      assertBoolean(node, null, expr, expected);
       // do the same tests for the alias date-time()
-      expr = expr.replace('date(', 'date-time(' );
-      value = xEval(expr, node, XPathResult.BOOLEAN_TYPE).booleanValue;
-      assert.equal(value, expected);
+      expr = expr.replace('date(', 'date-time(');
+      assertBoolean(node, null, expr, expected);
     });
 
     [
