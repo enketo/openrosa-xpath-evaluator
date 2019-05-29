@@ -1,18 +1,18 @@
 describe('#max()', () => {
   it('should max simple values', () => {
-    assertNumber('max(1, 2, 3)', 3);
-    assertNumber('max(-1, -3, 0)', 0);
-    assertNumber('max(-1, 0, -3)', 0);
-    assertNumber('max(-4, -1, -3)', -1);
-    assertNumber("max('')", NaN);
+    assertNumberValue('max(1, 2, 3)', 3);
+    assertNumberValue('max(-1, -3, 0)', 0);
+    assertNumberValue('max(-1, 0, -3)', 0);
+    assertNumberValue('max(-4, -1, -3)', -1);
+    assertNumberValue("max('')", NaN);
   });
 
   it('should return NaN if no numerical nodes are matched', () => {
-    assertNumber('', 'max(/simple)', NaN);
+    assertNumberValue('', 'max(/simple)', NaN);
   });
 
   it('should return value of a single node if only one matches', () => {
-    assertNumber('3', 'max(/simple/xpath/to/node)', 3);
+    assertNumberValue('3', 'max(/simple/xpath/to/node)', 3);
   });
 
   it('should return NaN if any node evaluates to NaN', () => {
@@ -23,7 +23,7 @@ describe('#max()', () => {
         <item>-32</item>
         <item>cheese</item>
       </root>`);
-    assertNumber('max(/root/item)', NaN);
+    assertNumberValue('max(/root/item)', NaN);
   });
 
   it('should return the max value in a node set', () => {
@@ -33,7 +33,7 @@ describe('#max()', () => {
         <item>17</item>
         <item>-32</item>
       </root>`);
-    assertNumber('max(/root/item)', 17);
+    assertNumberValue('max(/root/item)', 17);
   });
 
   it('should return the max value in a node set of negative numbers', () => {
@@ -43,7 +43,7 @@ describe('#max()', () => {
         <item>-17</item>
         <item>-32</item>
       </root>`);
-    assertNumber('max(/root/item)', -3);
+    assertNumberValue('max(/root/item)', -3);
   });
 
   it('max(self::*) & max(*)', () => {
@@ -64,16 +64,16 @@ describe('#max()', () => {
       </root>`);
 
     let node = doc.getElementById('FunctionMaxMinCaseEmpty');
-    assertNumber(node, null, 'max(self::*)', NaN);
+    assertNumberValue(node, null, 'max(self::*)', NaN);
 
     node = doc.getElementById('FunctionMaxCase');
-    assertNumber(node, null, 'max(*)', 0);
+    assertNumberValue(node, null, 'max(*)', 0);
 
     node = doc.getElementById('FunctionMaxCase');
-    assertNumber(node, null, "max(//*[@id='FunctionMaxCase']/*[position()=1], //*[@id='FunctionMaxCase']/*[position()=2], //*[@id='FunctionMaxCase']/*[position()=3])", 0);
+    assertNumberValue(node, null, "max(//*[@id='FunctionMaxCase']/*[position()=1], //*[@id='FunctionMaxCase']/*[position()=2], //*[@id='FunctionMaxCase']/*[position()=3])", 0);
 
     node = doc.getElementById('FunctionMaxMinWithEmpty');
-    assertNumber(node, null, 'max(*)', NaN);
+    assertNumberValue(node, null, 'max(*)', NaN);
   });
 
   it('max(self::*) & max(*)', () => {
@@ -94,14 +94,14 @@ describe('#max()', () => {
       </div>`);
 
     let node = doc.getElementById('FunctionNumberCaseNumber');
-    assertNumber(node, null, 'max(self::*)', 123);
+    assertNumberValue(node, null, 'max(self::*)', 123);
 
     node = doc.getElementById('FunctionNumberCaseNumberMultiple');
-    assertNumber(node, null, 'max(*)', 99);
+    assertNumberValue(node, null, 'max(*)', 99);
 
     node = doc.getElementById('FunctionNumberCaseNotNumberMultiple');
-    assertNumber(node, null, 'max(node())', NaN);
+    assertNumberValue(node, null, 'max(node())', NaN);
 
-    assertNumber("max(//nonexisting)", NaN);
+    assertNumberValue("max(//nonexisting)", NaN);
   });
 });

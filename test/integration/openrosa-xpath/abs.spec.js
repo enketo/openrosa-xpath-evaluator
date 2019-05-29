@@ -1,8 +1,8 @@
 describe( '#abs()', () => {
   it( 'abs', () => {
-    assertNumber('abs(10.5)', 10.5);
-    assertNumber('abs(-10.5)', 10.5);
-    assertNumber('abs("-10.5")', 10.5);
-    assertNumber('abs("a")', NaN);
+    assertNumberValue('abs(10.5)', 10.5);
+    assertNumberValue('abs(-10.5)', 10.5);
+    assertNumberValue('abs("-10.5")', 10.5);
+    assertNumberValue('abs("a")', NaN);
   });
 });

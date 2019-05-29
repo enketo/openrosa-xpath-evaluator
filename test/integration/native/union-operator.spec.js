@@ -1,6 +1,7 @@
 describe('Union operator', () => {
+  let doc;
   beforeEach(() => {
-    initDoc(`
+    doc = initDoc(`
       <div id="UnionOperatorTestCase">
   			<div id="eee10">
   				<div id="eee20">

@@ -25,10 +25,10 @@ describe('#format-date()', () => {
       //     '2012 | 12 | 08 | 8 | Aug | 08 | 8 | 06 | 6 | 07 | 08 | 123 | Wed'
       // ],
     ].forEach(([expr, node, expected]) => {
-        assertString(node, null, expr, expected);
+        assertStringValue(node, null, expr, expected);
         // do the same tests for the alias format-date-time()
         expr = expr.replace( 'format-date', 'format-date-time' );
-        assertString(node, null, expr, expected);
+        assertStringValue(node, null, expr, expected);
     });
   });
 
@@ -42,10 +42,10 @@ describe('#format-date()', () => {
       // ["format-date('2017-05-26T01:00:00-07:00', '%a %b')", 'ven. mai', 'fr'],
       // ["format-date('2017-05-26T01:00:00-07:00', '%a %b')", 'vr mei', 'nl'],
     ].forEach(([expr, expected, language]) => {
-      assertString(expr, expected);
+      assertStringValue(expr, expected);
       // do the same tests for the alias format-date-time()
       expr = expr.replace('format-date', 'format-date-time');
-      assertString(expr, expected);
+      assertStringValue(expr, expected);
     });
   });
 });

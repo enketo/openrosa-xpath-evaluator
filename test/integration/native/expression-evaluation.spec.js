@@ -1,6 +1,7 @@
 describe('XPath expression evaluation', () => {
+  let doc;
   beforeEach(() => {
-    initDoc(`
+    doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
         <head>
@@ -24,19 +25,17 @@ describe('XPath expression evaluation', () => {
   it('works with different types of context parameters', () => {
     let result;
     [
-        [ ".", doc, 9], // Document
-        [ ".", doc.documentElement, 1], // Element
-        [ ".", doc.getElementById('testContextNodeParameter'), 1], // Element
-        [ ".", filterAttributes(doc.getElementById('testContextNodeParameter' ).attributes )[0], 2], // Attribute
-        [ ".", doc.getElementById('testContextNodeParameterText' ).firstChild, 3], // Text
+      [ ".", doc, 9], // Document
+      [ ".", doc.documentElement, 1], // Element
+      [ ".", doc.getElementById('testContextNodeParameter'), 1], // Element
+      [ ".", filterAttributes(doc.getElementById('testContextNodeParameter' ).attributes )[0], 2], // Attribute
+      [ ".", doc.getElementById('testContextNodeParameterText' ).firstChild, 3], // Text
 
-        // TODO: See for more details http://reference.sitepoint.com/javascript/CDATASection
-        // [".", doc.getElementById('testContextNodeParameterCData').firstChild, 4] // CDATASection
+      // TODO: See for more details http://reference.sitepoint.com/javascript/CDATASection
+      // [".", doc.getElementById('testContextNodeParameterCData').firstChild, 4] // CDATASection
 
-        // TODO: See for more details http://reference.sitepoint.com/javascript/ProcessingInstruction
-        //[".", doc.getElementById('testContextNodeParameterProcessingInstruction').firstChild, 7], // ProcessingInstruction
-
-        [".", doc.getElementById('testContextNodeParameterComment').firstChild, 8] // Comment
+      [".", doc.getElementById('testContextNodeParameterProcessingInstruction').firstChild, 7], // ProcessingInstruction
+      [".", doc.getElementById('testContextNodeParameterComment').firstChild, 8] // Comment
     ].forEach( t => {
       assert.equal(t[1].nodeType, t[2]);
       result = doc.evaluate(t[0], t[1], null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);

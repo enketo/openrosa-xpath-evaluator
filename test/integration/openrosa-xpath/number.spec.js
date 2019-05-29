@@ -7,7 +7,7 @@ describe('#number()', () => {
       'number(1 = 2)': '0',
     }, (expectedResult, expr) => {
       it(`${expr} should be ${expectedResult}`, () => {
-        assertNumber(expr, expectedResult);
+        assertNumberValue(expr, expectedResult);
       });
     });
   });
@@ -28,7 +28,7 @@ describe('#number()', () => {
       'number(0.)': 0
     }, (expectedResult, expr) => {
       it(`${expr} should be ${expectedResult}`, () => {
-        assertNumber(expr, expectedResult);
+        assertNumberValue(expr, expectedResult);
       });
     });
   });
@@ -48,7 +48,7 @@ describe('#number()', () => {
       "number('  1.1 \n\r\n  ')": 1.1
     }, (expectedResult, expr) => {
       it(`${expr} should be ${expectedResult}`, () => {
-        assertNumber(expr, expectedResult);
+        assertNumberValue(expr, expectedResult);
       });
     });
   });
@@ -101,14 +101,14 @@ describe('#number()', () => {
     		</div>`);
 
       let node = doc.getElementById('FunctionNumberCaseNumber');
-      assertNumber(node, null, "number(self::node())", 123);
-      assertNumber(node, null, "number()", 123);
+      assertNumberValue(node, null, "number(self::node())", 123);
+      assertNumberValue(node, null, "number()", 123);
 
       node = doc.getElementById('FunctionNumberCaseNumberMultiple');
-      assertNumber(node, null, "number(*)", -10);
+      assertNumberValue(node, null, "number(*)", -10);
 
       node = doc.getElementById('FunctionNumberCaseNotNumber');
-      assertNumber(node, null, "number()", NaN);
+      assertNumberValue(node, null, "number()", NaN);
     });
 
     it('number() conversion fails when too many arguments are provided', () => {

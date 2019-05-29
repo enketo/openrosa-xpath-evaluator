@@ -5,7 +5,7 @@ describe('#decimal-date()', () => {
     'decimal-date("1969-12-31")' : -1,
   }, function(expectedDaysSinceEpoch, expr) {
     it('should convert ' + expr + ' into ' + expectedDaysSinceEpoch, () => {
-      assertNumber(expr, expectedDaysSinceEpoch);
+      assertNumberValue(expr, expectedDaysSinceEpoch);
     });
   });
 });

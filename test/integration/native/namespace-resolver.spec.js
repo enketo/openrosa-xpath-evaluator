@@ -1,7 +1,7 @@
 describe('namespace resolver', () => {
-
+  let doc;
   beforeEach(() => {
-    initDoc(`
+    doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
         <head>
@@ -110,7 +110,6 @@ describe('namespace resolver', () => {
     }
 
     assert.equal(typeof attribute, 'object');
-
     resolver = doc.createNSResolver(attribute);
     assert.equal(resolver.lookupNamespaceURI('xforms'), 'http://www.w3.org/2002/xforms');
   });

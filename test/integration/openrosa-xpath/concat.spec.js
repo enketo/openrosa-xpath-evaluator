@@ -1,24 +1,24 @@
 describe('#concat', () => {
   it('should concatenate two xpath values', () => {
     const regex = 'concat(/simple/xpath/to/node, /simple/xpath/to/node)';
-    assertString('jaja', regex, 'jajajaja');
+    assertStringValue('jaja', regex, 'jajajaja');
   });
 
   it('should concatenate two string values', () => {
-    assertString('concat("port", "manteau")', 'portmanteau');
+    assertStringValue('concat("port", "manteau")', 'portmanteau');
   });
 
   it('should concatenate a string and an xpath value', () => {
-    assertString('port', 'concat(/simple/xpath/to/node, "manteau")', 'portmanteau');
+    assertStringValue('port', 'concat(/simple/xpath/to/node, "manteau")', 'portmanteau');
   });
 
   it('should concatenate an xpath and a string value', () => {
-    assertString('port', 'concat(/simple/xpath/to/node, "manteau")', 'portmanteau');
+    assertStringValue('port', 'concat(/simple/xpath/to/node, "manteau")', 'portmanteau');
   });
 
   it('should concatenate simple values', () => {
-    assertString('concat("a")', 'a');
-    assertString('concat("a", "b", "")', 'ab');
+    assertStringValue('concat("a")', 'a');
+    assertStringValue('concat("a", "b", "")', 'ab');
   });
 
   // Javarosa accepts an optional node-set argument for concat which deviates from native XPath. It also accepts no arguments.
@@ -33,8 +33,8 @@ describe('#concat', () => {
 			  </div>
 			</div>`);
     const node = doc.getElementById('testFunctionNodeset2');
-    assertString(node, null, "concat(*, 'a')", '1234a');
-    assertString(node, null, "concat(*)", '1234');
-    assertString(node, null, "concat()", '');
+    assertStringValue(node, null, "concat(*, 'a')", '1234a');
+    assertStringValue(node, null, "concat(*)", '1234');
+    assertStringValue(node, null, "concat()", '');
   });
 });

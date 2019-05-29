@@ -1,30 +1,30 @@
 describe('#round()', () => {
   describe('with a single argument', () => {
     it('with a single argument', () => {
-      assertNumber('round(1)', 1);
-      assertNumber('round(1.1)', 1);
-      assertNumber('round(1.5)', 2);
-      assertNumber('round(-1)', -1);
-      assertNumber('round(-1.1)', -1);
-      assertNumber('round(-1.5)', -2);
-      assertNumber('round(-1.55)', -2);
-      assertNumber('round(2.44)', 2);
-      assertNumber('round(0.001)', 0);
-      assertNumber('round(1.5)', 2);
-      assertNumber('round(5)', 5);
-      assertNumber('round(1.000)', 1);
-      assertNumber('round(-1.05)', -1);
+      assertNumberValue('round(1)', 1);
+      assertNumberValue('round(1.1)', 1);
+      assertNumberValue('round(1.5)', 2);
+      assertNumberValue('round(-1)', -1);
+      assertNumberValue('round(-1.1)', -1);
+      assertNumberValue('round(-1.5)', -2);
+      assertNumberValue('round(-1.55)', -2);
+      assertNumberValue('round(2.44)', 2);
+      assertNumberValue('round(0.001)', 0);
+      assertNumberValue('round(1.5)', 2);
+      assertNumberValue('round(5)', 5);
+      assertNumberValue('round(1.000)', 1);
+      assertNumberValue('round(-1.05)', -1);
     });
   });
 
   describe('with two arguments', () => {
     it('with num_digits = 0', () => {
-      assertNumber('round(1, 0)', 1);
-      assertNumber('round(1.1, 0)', 1);
-      assertNumber('round(1.5, 0)', 2);
-      assertNumber('round(-1, 0)', -1);
-      assertNumber('round(-1.1, 0)', -1);
-      assertNumber('round(-1.5, 0)', -2);
+      assertNumberValue('round(1, 0)', 1);
+      assertNumberValue('round(1.1, 0)', 1);
+      assertNumberValue('round(1.5, 0)', 2);
+      assertNumberValue('round(-1, 0)', -1);
+      assertNumberValue('round(-1.1, 0)', -1);
+      assertNumberValue('round(-1.5, 0)', -2);
     });
 
     describe('with num_digits > 0', () => {
@@ -101,13 +101,13 @@ describe('#round()', () => {
   });
 
   it('round()', () => {
-    assertNumber("round(1.234)", 1);
-    assertNumber("round(1.234, 2)", 1.23);
-    assertNumber("round(1.234, 5)", 1.234);
-    assertNumber("round(1.234, 0)", 1);
-    assertNumber("round(33.33, -1)", 30);
-    assertNumber("round(1 div 47999799999)", 0); //(2.08e-11)
-    assertNumber("round('a')", NaN);
+    assertNumberValue("round(1.234)", 1);
+    assertNumberValue("round(1.234, 2)", 1.23);
+    assertNumberValue("round(1.234, 5)", 1.234);
+    assertNumberValue("round(1.234, 0)", 1);
+    assertNumberValue("round(33.33, -1)", 30);
+    assertNumberValue("round(1 div 47999799999)", 0); //(2.08e-11)
+    assertNumberValue("round('a')", NaN);
   });
 
   it( 'round() with too many args throws exception', () => {

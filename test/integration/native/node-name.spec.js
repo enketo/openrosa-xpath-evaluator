@@ -1,8 +1,9 @@
 describe('node name for', () => {
+  let doc;
   let h;
 
   beforeEach(() => {
-    initDoc(`
+    doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
         <head>
@@ -175,12 +176,8 @@ describe('node name for', () => {
   xit('namespace with specific name', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestNamespace');
 
-    checkNodeResultNamespace("namespace::ns2", node, [
-      [
-        'ns2',
-        'http://asdf/'
-      ]
-    ], getXhtmlResolver(doc));
+    checkNodeResultNamespace("namespace::ns2", node,
+      [['ns2', 'http://asdf/']], getXhtmlResolver(doc));
   });
 
   it('child with specific (namespaced) name', () => {

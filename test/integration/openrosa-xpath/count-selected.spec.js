@@ -9,12 +9,12 @@ describe('#count-selected()', () => {
   		</div>`);
 
     let node = doc.getElementById('FunctionSelectedCaseEmpty');
-    assertNumber(node, null, 'count-selected(self::node())', 0);
+    assertNumberValue(node, null, 'count-selected(self::node())', 0);
 
     node = doc.getElementById('FunctionSelectedCaseSingle');
-    assertNumber(node, null, 'count-selected(self::node())', 1);
+    assertNumberValue(node, null, 'count-selected(self::node())', 1);
 
     node = doc.getElementById('FunctionSelectedCaseMultiple');
-    assertNumber(node, null, 'count-selected(self::node())', 4);
+    assertNumberValue(node, null, 'count-selected(self::node())', 4);
   });
 });

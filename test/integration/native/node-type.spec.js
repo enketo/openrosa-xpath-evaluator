@@ -1,6 +1,7 @@
 describe('node-type', () => {
+  let doc;
   beforeEach(() => {
-    initDoc(`
+    doc = initDoc(`
       <div id="StepNodeTestNodeTypeCase">
   			some text
   			<div></div>

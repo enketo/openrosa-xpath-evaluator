@@ -5,7 +5,7 @@ describe('#decimal-date-time()', () => {
     'decimal-date-time("1969-12-31T00:00:00Z")' : -1,
   }, (expectedDaysSinceEpoch, expr) => {
     it('should convert ' + expr + ' into ' + expectedDaysSinceEpoch, () => {
-      assertNumber(expr, expectedDaysSinceEpoch);
+      assertNumberValue(expr, expectedDaysSinceEpoch);
     });
   });
 

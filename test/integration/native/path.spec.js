@@ -1,8 +1,9 @@
 describe('location path', () => {
+  let doc;
   let h;
 
   beforeEach(() => {
-    initDoc(`
+    doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
         <head>

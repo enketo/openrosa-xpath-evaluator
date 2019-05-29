@@ -1,8 +1,8 @@
 describe('math functions', () => {
 
   it('sin()', () => {
-    assertNumber('sin(2)', 0.9092974268256817);
-    assertNumber('sin("a")', NaN);
+    assertNumberValue('sin(2)', 0.9092974268256817);
+    assertNumberValue('sin("a")', NaN);
   });
 
   // TODO firefox
@@ -21,18 +21,18 @@ describe('math functions', () => {
     		</div>
       </html>`);
     nsr = nsResolver;
-    assertNumber('sin(//xhtml:div[@id="testFunctionNodeset2"]/xhtml:p[2])', 0.9092974268256817);
+    assertNumberValue('sin(//xhtml:div[@id="testFunctionNodeset2"]/xhtml:p[2])', 0.9092974268256817);
   });
 
   it('cos()', () => {
-    assertNumber('cos(2)', -0.4161468365471424);
-    assertNumber('cos("NaN")', NaN);
+    assertNumberValue('cos(2)', -0.4161468365471424);
+    assertNumberValue('cos("NaN")', NaN);
   });
 
   it('tan()', () => {
-    assertNumber('tan(2)', -2.185039863261519);
-    assertNumber('tan("a")', NaN);
-    assertNumber('tan("NaN")', NaN);
+    assertNumberValue('tan(2)', -2.185039863261519);
+    assertNumberValue('tan("a")', NaN);
+    assertNumberValue('tan("NaN")', NaN);
   });
 
   // to verify rounding errors
@@ -44,63 +44,63 @@ describe('math functions', () => {
   it('acos()', () => {
     checkNumber('acos(0.5)', 1.047197551196598);
     checkNumber('acos(-1)', 3.141592653589793);
-    assertNumber('acos(2)', NaN);
-    assertNumber('acos("a")', NaN);
-    assertNumber('acos("NaN")', NaN);
+    assertNumberValue('acos(2)', NaN);
+    assertNumberValue('acos("a")', NaN);
+    assertNumberValue('acos("NaN")', NaN);
   });
 
   it('asin()', () => {
     checkNumber('asin(0.5)', 0.523598775598299);
     checkNumber('asin(-1)', -1.570796326794896);
-    assertNumber('asin(2)', NaN);
-    assertNumber('asin("a")', NaN);
-    assertNumber('asin("NaN")', NaN);
+    assertNumberValue('asin(2)', NaN);
+    assertNumberValue('asin("a")', NaN);
+    assertNumberValue('asin("NaN")', NaN);
   });
 
   it('atan()', () => {
     checkNumber('atan(0.5)', 0.463647609000806);
     checkNumber('atan(-1)', -0.785398163397448);
-    assertNumber('atan("a")', NaN);
-    assertNumber('atan("NaN")', NaN);
+    assertNumberValue('atan("a")', NaN);
+    assertNumberValue('atan("NaN")', NaN);
   });
 
   it('atan2()', () => {
-    assertNumber('atan2(2,3)', 0.5880026035475675);
-    assertNumber('atan2(2, "NaN")', NaN);
-    assertNumber('atan2(2, "a")', NaN);
-    assertNumber('atan2("NaN", 2)', NaN);
+    assertNumberValue('atan2(2,3)', 0.5880026035475675);
+    assertNumberValue('atan2(2, "NaN")', NaN);
+    assertNumberValue('atan2(2, "a")', NaN);
+    assertNumberValue('atan2("NaN", 2)', NaN);
   });
 
   it('log()', () => {
-    assertNumber('log(2)', 0.6931471805599453);
-    assertNumber('log("NaN")', NaN);
-    assertNumber('log("a")', NaN);
+    assertNumberValue('log(2)', 0.6931471805599453);
+    assertNumberValue('log("NaN")', NaN);
+    assertNumberValue('log("a")', NaN);
   });
 
   it('log10()', () => {
-    assertNumber('log10(2)', 0.3010299956639812);
-    assertNumber('log10("NaN")', NaN);
-    assertNumber('log10("a")', NaN);
+    assertNumberValue('log10(2)', 0.3010299956639812);
+    assertNumberValue('log10("NaN")', NaN);
+    assertNumberValue('log10("a")', NaN);
   });
 
   it('pi()', () => {
-    assertNumber('pi()', 3.141592653589793);
+    assertNumberValue('pi()', 3.141592653589793);
   });
 
   it('exp()', () => {
-    assertNumber('exp(2)', 7.38905609893065);
-    assertNumber('exp("NaN")', NaN);
+    assertNumberValue('exp(2)', 7.38905609893065);
+    assertNumberValue('exp("NaN")', NaN);
   });
 
   it('exp10()', () => {
-    assertNumber('exp10(2)', 100);
-    assertNumber('exp10(-2)', 0.01);
-    assertNumber('exp10("NaN")', NaN);
+    assertNumberValue('exp10(2)', 100);
+    assertNumberValue('exp10(-2)', 0.01);
+    assertNumberValue('exp10("NaN")', NaN);
   });
 
   it('sqrt()', () => {
-    assertNumber('sqrt(4)', 2);
-    assertNumber('sqrt(-2)', NaN);
-    assertNumber('sqrt("NaN")', NaN);
+    assertNumberValue('sqrt(4)', 2);
+    assertNumberValue('sqrt(-2)', NaN);
+    assertNumberValue('sqrt("NaN")', NaN);
   });
 });

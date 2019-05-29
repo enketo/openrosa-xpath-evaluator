@@ -32,8 +32,8 @@ describe('#position()', () => {
       </html>`);
 
     let node = doc.getElementById('FunctionNumberCaseNumberMultiple');
-    assertNumber(node, null, 'position(..)', 6);
-    assertNumber(node, null, 'position(.)', 3);
+    assertNumberValue(node, null, 'position(..)', 6);
+    assertNumberValue(node, null, 'position(.)', 3);
   });
 
   it('position(node) with p node', () => {
@@ -61,7 +61,7 @@ describe('#position()', () => {
         </div>
       </div>`);
     const node = doc.getElementById('testFunctionNodeset3NodeP');
-    assertNumber(node, null, 'position(../..)', 2);
+    assertNumberValue(node, null, 'position(../..)', 2);
   });
   //   throw new Error('nodeset provided to position() contained multiple nodes');
 });

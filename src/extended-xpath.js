@@ -281,7 +281,8 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   this.evaluate = function(input, cN, nR, rT, r) {
-    if((rT > 3 && !input.startsWith('randomize')) || input.startsWith('count(')) {
+    if((rT > 3 && !input.startsWith('randomize')) ||
+      input.startsWith('count(') || input.startsWith('boolean(')) {
       if(input.startsWith('count(')) {
         if(input.indexOf(',') > 0) throw TOO_MANY_ARGS;
         if(input === 'count()') throw TOO_FEW_ARGS;

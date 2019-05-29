@@ -1,6 +1,7 @@
 describe('#sum()', () => {
+
   it('sum(self::*)', () => {
-    initDoc(`
+    const doc = initDoc(`
       <div id="FunctionNumberCase">
   			<div id="FunctionNumberCaseNumber">123</div>
   			<div id="FunctionNumberCaseNotNumber">  a a  </div>
@@ -22,25 +23,25 @@ describe('#sum()', () => {
   		</div>`);
 
     let node = doc.getElementById('FunctionNumberCaseNumberMultiple');
-    assertNumber(node, null, 'sum(*)', 100);
+    assertNumberValue(node, null, 'sum(*)', 100);
 
     node = doc.getElementById('FunctionNumberCaseNumber');
-    assertNumber(node, null, 'sum(self::*)', 123);
+    assertNumberValue(node, null, 'sum(self::*)', 123);
 
     node = doc.getElementById('FunctionNumberCaseNotNumberMultiple');
-    assertNumber(node, null, 'sum(node())', NaN);
+    assertNumberValue(node, null, 'sum(node())', NaN);
   });
 
   it('sum(*)', () => {
-    initDoc(`
+    const doc = initDoc(`
       <root id="root">
         <item>-10</item>
         <item>11</item>
         <item>99</item>
       </root>`);
     const node = doc.getElementById('root');
-    assertNumber(node, null, "sum(*)", 100);
-    assertNumber("sum(/root/item)", 100);
+    assertNumberValue(node, null, "sum(*)", 100);
+    assertNumberValue("sum(/root/item)", 100);
   });
 
   it('sum() fails when too many arguments are provided', () => {

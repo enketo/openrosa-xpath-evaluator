@@ -6,14 +6,14 @@ describe('#selected-at()', () => {
     { from:'', index:0, expected:'' },
   ].forEach(({ from, index, expected }) => {
     it(`should select ${expected} from "${from}" at index ${index}`, () => {
-      assertString(`selected-at('${from}', '${index}')`, expected);
+      assertStringValue(`selected-at('${from}', '${index}')`, expected);
     });
   });
 
   it('simple', () => {
-    assertString("selected-at('apple baby crimson', 2)", 'crimson');
-    assertString("selected-at('apple baby crimson', -1)", '');
-    assertString("selected-at('', 1)", '');
+    assertStringValue("selected-at('apple baby crimson', 2)", 'crimson');
+    assertStringValue("selected-at('apple baby crimson', -1)", '');
+    assertStringValue("selected-at('', 1)", '');
   });
 
   it('with nodes', () => {
@@ -34,16 +34,16 @@ describe('#selected-at()', () => {
         </body>
       </html>`);
     let node = doc.getElementById('FunctionSelectedCaseEmpty');
-    assertString(node, null, "selected-at(self::node(), 0)",  '');
+    assertStringValue(node, null, "selected-at(self::node(), 0)",  '');
 
     node = doc.getElementById('FunctionSelectedCaseSingle');
-    assertString(node, null, "selected-at(self::node(), 0)", 'ab');
+    assertStringValue(node, null, "selected-at(self::node(), 0)", 'ab');
 
     node = doc.getElementById( 'FunctionSelectedCaseSingle');
-    assertString(node, null, "selected-at(self::node(), 1)", '');
+    assertStringValue(node, null, "selected-at(self::node(), 1)", '');
 
     node = doc.getElementById('FunctionSelectedCaseMultiple');
-    assertString(node, null, "selected-at(self::node(), 2)", 'ef');
-    assertString(node, null, "selected-at(self::node(), -1)", '');
+    assertStringValue(node, null, "selected-at(self::node(), 2)", 'ef');
+    assertStringValue(node, null, "selected-at(self::node(), -1)", '');
   });
 });

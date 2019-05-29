@@ -21,10 +21,10 @@ describe( 'distance() and area() functions', () => {
     [ '', NaN, NaN ],
   ].forEach((t, i) => {
     it(`area() works (${i+1})`, () => {
-      assertNumber(`area("${t[0]}")`, t[1]);
+      assertNumberValue(`area("${t[0]}")`, t[1]);
     });
     it( `distance() works (${i+1})`, () => {
-      assertNumber(`distance("${t[0]}")`, t[2]);
+      assertNumberValue(`distance("${t[0]}")`, t[2]);
     });
   });
 
@@ -71,11 +71,11 @@ describe( 'distance() and area() functions', () => {
     ].forEach((t, i) => {
       it(`area() works (${i+1})`, () => {
         const node = doc.getElementById(t[0]);
-        assertNumber(node, null, `area(${t[1]})`, t[2]);
+        assertNumberValue(node, null, `area(${t[1]})`, t[2]);
       });
       it(`distance() works (${i+1})`, () => {
         const node = doc.getElementById(t[0]);
-        assertNumber(node, null, `distance(${t[1]})`, t[3]);
+        assertNumberValue(node, null, `distance(${t[1]})`, t[3]);
       });
     });
   });

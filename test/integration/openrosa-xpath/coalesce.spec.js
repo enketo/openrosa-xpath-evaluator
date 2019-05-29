@@ -1,27 +1,27 @@
 describe('#coalesce()', () => {
   it('should return first value if provided via xpath', () => {
-    assertString('first', 'coalesce(/simple/xpath/to/node, "whatever")', 'first');
+    assertStringValue('first', 'coalesce(/simple/xpath/to/node, "whatever")', 'first');
   });
 
   it('should return first value if provided via string', () => {
-    assertString('coalesce("FIRST", "whatever")', 'FIRST');
+    assertStringValue('coalesce("FIRST", "whatever")', 'FIRST');
   });
 
   it('should return second value from xpath if first value is empty string', () => {
-    assertString('second', 'coalesce("", /simple/xpath/to/node)', 'second');
+    assertStringValue('second', 'coalesce("", /simple/xpath/to/node)', 'second');
   });
 
   it('should return second value from string if first value is empty string', () => {
-    assertString('coalesce("", "SECOND")', 'SECOND');
-    assertString("coalesce('', 'ab')", 'ab');
+    assertStringValue('coalesce("", "SECOND")', 'SECOND');
+    assertStringValue("coalesce('', 'ab')", 'ab');
   });
 
   it('should return second value from xpath if first value is empty xpath', () => {
-    assertString('second', 'coalesce(/simple/empty, /simple/xpath/to/node)', 'second');
+    assertStringValue('second', 'coalesce(/simple/empty, /simple/xpath/to/node)', 'second');
   });
 
   it('should return second value from string if first value is empty xpath', () => {
-    assertString('', 'coalesce(/simple/xpath/to/node, "SECOND")', 'SECOND');
+    assertStringValue('', 'coalesce(/simple/xpath/to/node, "SECOND")', 'SECOND');
   });
 
   it('coalesce(self::*)', () => {
@@ -33,9 +33,9 @@ describe('#coalesce()', () => {
         <div id="FunctionSelectedCaseMultiple">ij</div>
       </div>`);
     let node = doc.getElementById('FunctionSelectedCaseEmpty');
-    assertString(node, null, "coalesce(self::*, 'ab')", 'ab');
+    assertStringValue(node, null, "coalesce(self::*, 'ab')", 'ab');
 
     node = doc.getElementById('FunctionSelectedCaseSingle');
-    assertString(node, null, "coalesce(self::*, 'cd')", 'ab');
+    assertStringValue(node, null, "coalesce(self::*, 'cd')", 'ab');
   });
 });

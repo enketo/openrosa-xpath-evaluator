@@ -6,12 +6,12 @@ describe('#join()', () => {
         <item>two</item>
         <item>three</item>
       </root>`);
-    assertString(`join(' :: ', //item)`, 'one :: two :: three');
+    assertStringValue(`join(' :: ', //item)`, 'one :: two :: three');
   });
 
   it('should join list of strings', () => {
-    assertString(`join(' ', 'This', 'is', 'a', 'sentence.')`, "This is a sentence.");
-    assertString("join(' ## ')", "");
+    assertStringValue(`join(' ', 'This', 'is', 'a', 'sentence.')`, "This is a sentence.");
+    assertStringValue("join(' ## ')", "");
   })
 
   it('should join nodes', () => {
@@ -22,10 +22,10 @@ describe('#join()', () => {
           <item>3</item>
           <item>4</item>
         </root>`);
-    assertString("join(', ', //item)", "1, 2, 3, 4")
-    assertString("join(', ', /root/*)", "1, 2, 3, 4")
+    assertStringValue("join(', ', //item)", "1, 2, 3, 4")
+    assertStringValue("join(', ', /root/*)", "1, 2, 3, 4")
 
     const node = doc.getElementById('xroot');
-    assertString(node, null, "join(', ', *)", "1, 2, 3, 4")
+    assertStringValue(node, null, "join(', ', *)", "1, 2, 3, 4")
   })
 });
