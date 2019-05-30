@@ -27,83 +27,83 @@ describe('Union operator', () => {
   });
 
   it('combines elements', () => {
-    checkNodeResult("id('eee40') | id('eee20') | id('eee25') | id('eee10') | id('eee30') | id('eee50')", doc, [
-      doc.getElementById('eee10'),
-      doc.getElementById('eee20'),
-      doc.getElementById('eee25'),
-      doc.getElementById('eee30'),
-      doc.getElementById('eee40'),
-      doc.getElementById('eee50')
-    ]);
+    assertNodes(
+      "id('eee40') | id('eee20') | id('eee25') | id('eee10') | id('eee30') | id('eee50')",
+      doc, [
+        doc.getElementById('eee10'),
+        doc.getElementById('eee20'),
+        doc.getElementById('eee25'),
+        doc.getElementById('eee30'),
+        doc.getElementById('eee40'),
+        doc.getElementById('eee50')
+      ]);
   });
 
   it('combines elements and attributes', () => {
-    checkNodeResult("id('eee40')/attribute::*[1] | id('eee30')", doc, [
+    assertNodes("id('eee40')/attribute::*[1] | id('eee30')", doc, [
       doc.getElementById('eee30'),
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
   it('combines elements and attributes if they refer to the same element', () => {
-    checkNodeResult("id('eee40')/attribute::*[1] | id('eee40')", doc, [
+    assertNodes("id('eee40')/attribute::*[1] | id('eee40')", doc, [
       doc.getElementById('eee40'),
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
   it('combines elements and attributs if they refer to different trees', () => {
-    checkNodeResult("id('eee40')/attribute::*[1] | id('eee20')", doc, [
+    assertNodes("id('eee40')/attribute::*[1] | id('eee20')", doc, [
       doc.getElementById('eee20'),
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
   it('combines elements and attributes if the attribute is on a parent element in the same tree', () => {
-    checkNodeResult("id('eee40') | id('eee30')/attribute::*[1]", doc, [
+    assertNodes("id('eee40') | id('eee30')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee30').attributes)[0],
       doc.getElementById('eee40')
     ]);
   });
 
   it('combines elements and attributes if both are (on) elements under the same parent', () => {
-    checkNodeResult("id('eee40') | id('eee35')/attribute::*[1]", doc, [
+    assertNodes("id('eee40') | id('eee35')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee35').attributes )[0],
       doc.getElementById('eee40')
     ]);
   });
 
   it('combines attributes that live on different elements', () => {
-    checkNodeResult("id('eee35')/attribute::*[1] | id('eee40')/attribute::*[1]", doc, [
+    assertNodes("id('eee35')/attribute::*[1] | id('eee40')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee35').attributes)[0],
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
   it('combines attributes that live on descendent elements', () => {
-    checkNodeResult( "id('eee30')/attribute::*[1] | id('eee40')/attribute::*[1]", doc, [
+    assertNodes( "id('eee30')/attribute::*[1] | id('eee40')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee30').attributes)[0],
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
   it('combines attributes that live on descendent element (reversed)', () => {
-    checkNodeResult("id('eee40')/attribute::*[1] | id('eee30')/attribute::*[1]", doc, [
+    assertNodes("id('eee40')/attribute::*[1] | id('eee30')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee30').attributes)[0],
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
   });
 
-  // TODO firefox vs chrome
-  xit('combines different attributes on the same element', () => {
-    checkNodeResult("id('eee40')/attribute::*[2] | id('eee40')/attribute::*[1]", doc,
+  it('combines different attributes on the same element', () => {
+    assertNodes("id('eee40')/attribute::*[2] | id('eee40')/attribute::*[1]", doc,
       filterAttributes(doc.getElementById('eee40').attributes)); //firefox
-      // filterAttributes(doc.getElementById('eee40').attributes).reverse()); //chrome
   });
 
   it('combines a namespace and attribute on the same element', () => {
-    const result = doc.evaluate( "id('nss25')/namespace::*", doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+    const result = xEval( "id('nss25')/namespace::*", doc, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
 
-    checkNodeResult("id('nss25')/namespace::* | id('nss25')/attribute::*", doc,
+    assertNodes("id('nss25')/namespace::* | id('nss25')/attribute::*", doc,
       snapshotToArray(result).concat(
         filterAttributes(doc.getElementById('nss25').attributes)
       )
@@ -111,22 +111,20 @@ describe('Union operator', () => {
   });
 
   it('combines two namespaces on the same element', () => {
-    const result = doc.evaluate("id('nss40')/namespace::*", doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    const result = xEval("id('nss40')/namespace::*", doc, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
 
-    checkNodeResult("id('nss40')/namespace::* | id('nss40')/namespace::*", doc,
+    assertNodes("id('nss40')/namespace::* | id('nss40')/namespace::*", doc,
       snapshotToArray(result)
     );
   });
 
-  // TODO firefox vs chrome
-  xit('combines a namespace and attribute', () => {
-    const result = doc.evaluate("id('nss40')/namespace::*", doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+  it('combines a namespace and attribute', () => {
+    const result = xEval("id('nss40')/namespace::*", doc, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
 
-    checkNodeResult("id('nss40')/namespace::* | id('nss25')/attribute::* | id('nss25')", doc, [
+    assertNodes("id('nss40')/namespace::* | id('nss25')/attribute::* | id('nss25')", doc, [
       doc.getElementById('nss25')
     ].concat(
-      filterAttributes(doc.getElementById('nss25').attributes) //firefox
-      // filterAttributes(doc.getElementById('nss25').attributes).reverse() //chrome
+      filterAttributes(doc.getElementById('nss25').attributes)
     ).concat(
       snapshotToArray(result)
     ));

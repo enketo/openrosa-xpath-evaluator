@@ -67,49 +67,52 @@ describe('location path', () => {
     }
 
     for (i = 0; i < input.length; i++) {
-      checkNodeResult("/", input[i][0], input[i][1]);
+      assertNodes("/", input[i][0], input[i][1]);
     }
   });
 
   xit('root namespace', () => {
     const input = [h.oneNamespaceNode(doc.getElementById('LocationPathCaseNamespace')), [doc]]; // XPathNamespace
-    checkNodeResult("/", input[0], input[1]);
+    assertNodes("/", input[0], input[1]);
   });
 
   it('root node', () => {
-    checkNodeResult("/html", doc, [], getXhtmlResolver(doc));
-    checkNodeResult("/xhtml:html", doc, [doc.documentElement], getXhtmlResolver(doc));
-    checkNodeResult("/xhtml:html", doc.getElementById('LocationPathCase'), [doc.documentElement], getXhtmlResolver(doc));
-    checkNodeResult("/htmlnot", doc.getElementById('LocationPathCase'), [], getXhtmlResolver(doc));
+    nsr = getXhtmlResolver(doc);
+    assertNodes("/html", doc, []);
+    assertNodes("/xhtml:html", doc, [doc.documentElement]);
+    assertNodes("/xhtml:html", doc.getElementById('LocationPathCase'), [doc.documentElement]);
+    assertNodes("/htmlnot", doc.getElementById('LocationPathCase'), []);
   });
 
   it('root node node', () => {
-    checkNodeResult("/xhtml:html/xhtml:body", doc.getElementById('LocationPathCase'), [doc.querySelector('body')], getXhtmlResolver(doc));
+    nsr = getXhtmlResolver(doc);
+    assertNodes("/xhtml:html/xhtml:body", doc.getElementById('LocationPathCase'), [doc.querySelector('body')]);
   });
 
   it('node (node)', () => {
-    checkNodeResult("html", doc, [], getXhtmlResolver(doc));
-    checkNodeResult("xhtml:html", doc, [doc.documentElement], getXhtmlResolver(doc));
-    checkNodeResult("xhtml:html/xhtml:body", doc, [doc.querySelector('body')], getXhtmlResolver(doc));
+    nsr = getXhtmlResolver(doc);
+    assertNodes("html", doc, []);
+    assertNodes("xhtml:html", doc, [doc.documentElement]);
+    assertNodes("xhtml:html/xhtml:body", doc, [doc.querySelector('body')]);
   });
 
-  xit('node attribute', () => {
+  it('node attribute', () => {
     const node = doc.getElementById('LocationPathCaseAttributeParent');
-
-    checkNodeResult("child::*/attribute::*", node, [
+    nsr = getXhtmlResolver(doc);
+    assertNodes("child::*/attribute::*", node, [
       filterAttributes(node.childNodes[0].attributes)[0],
       filterAttributes(node.childNodes[1].attributes)[0],
       filterAttributes(node.childNodes[1].attributes)[1],
       filterAttributes(node.childNodes[2].attributes)[0],
       filterAttributes(node.childNodes[3].attributes)[0]
-   ], getXhtmlResolver(doc));
+   ]);
   });
 
   // Also skipped by enketo-xpathjs
   // xit('node namespace', () => {
   //   const node = doc.getElementById('LocationPathCaseNamespaceParent'); //
-  //
-  //   checkNodeResultNamespace("child::* /namespace::*", node, [
+  //   nsr = getXhtmlResolver(doc);
+  //   assertNodesNamespace("child::* /namespace::*", node, [
   //       ['', 'http://asdss/'],
   //       ['ev', 'http://some-namespace.com/nss'],
   //       ['xml', 'http://www.w3.org/XML/1998/namespace'],
@@ -126,15 +129,16 @@ describe('location path', () => {
   //       ['aa', 'http://saa/'],
   //       ['ev', 'http://some-namespace.com/nss'],
   //       ['xml', 'http://www.w3.org/XML/1998/namespace']
-  //  ], getXhtmlResolver(doc));
+  //  ]);
   // });
   //
   it('duplicates handled correctly', () => {
-    checkNodeResult("ancestor-or-self::* /ancestor-or-self::*", doc.getElementById('LocationPathCaseDuplicates'), [
+    nsr = getXhtmlResolver(doc);
+    assertNodes("ancestor-or-self::* /ancestor-or-self::*", doc.getElementById('LocationPathCaseDuplicates'), [
       doc.documentElement,
       doc.querySelector('body'),
       doc.getElementById('LocationPathCase'),
       doc.getElementById('LocationPathCaseDuplicates')
-   ], getXhtmlResolver(doc));
+   ]);
   });
 });

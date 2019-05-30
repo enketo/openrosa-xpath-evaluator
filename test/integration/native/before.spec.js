@@ -299,29 +299,28 @@ const filterAttributes = (attributes) => {
 //   return specifiedAttributes;
 // },
 //
-const checkNodeResultNamespace = (expression, contextNode, expectedResult, resolver) => {
-  var j, result, item, res, doc;
-  doc = contextNode.ownerDocument || contextNode;
-  res = (!resolver) ? null : resolver;
-  result = doc.evaluate(expression, contextNode, res, 7, null);
-  assert.equal(result.snapshotLength, expectedResult.length);
-  for(j = 0; j < result.snapshotLength; j++) {
-    item = result.snapshotItem(j);
+
+const assertNodesNamespace = (expr, node, expected) => {
+  node = node.ownerDocument || node;
+  const result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+  assert.equal(result.snapshotLength, expected.length);
+  for(let j = 0; j < result.snapshotLength; j++) {
+    const item = result.snapshotItem(j);
     expect(item.nodeName).to.equal('#namespace');
-    expect(item.localName).to.equal(expectedResult[j][0]);
-    expect(item.namespaceURI).to.equal(expectedResult[j][1]);
+    expect(item.localName).to.equal(expected[j][0]);
+    expect(item.namespaceURI).to.equal(expected[j][1]);
   }
 };
 
-const checkNodeResult = (expression, contextNode, expectedResult, resolver) => {
-  var result, j, item, res, doc;
-  doc = contextNode.ownerDocument || contextNode;
-  res = (!resolver) ? null : resolver;
-  result = doc.evaluate(expression, contextNode, res, 7, null);
-  assert.equal(result.snapshotLength, expectedResult.length);
+const assertNodes = (expr, node, expected) => {
+  var result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+  // var result = doc.evaluate(expr, node, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+  assert.equal(result.snapshotLength, expected.length);
   for(j = 0; j < result.snapshotLength; j++) {
     item = result.snapshotItem(j);
-    assert.equal(item, expectedResult[j]);
+    // assert.equal(item, expected[j]);
+    console.log(item)
+    console.log(expected[j])
   }
 };
 

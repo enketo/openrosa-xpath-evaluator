@@ -13,7 +13,7 @@ const initDoc = (xml) => {
   node = null;
   evaluator = new ExtendedXpathEvaluator(
     v => {
-      rt = null;
+      if(!rt || rt<7 || v.startsWith('//')) rt = null; //TODO ???
       const result = doc.evaluate.call(doc, v, node || doc, nsr, rt || XPathResult.ANY_TYPE, null);
       // console.log(`${v} => ${result.resultType}`);
       return result;
