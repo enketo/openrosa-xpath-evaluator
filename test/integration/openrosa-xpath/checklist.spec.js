@@ -9,8 +9,7 @@ describe('#checklist()', () => {
     assertTrue("checklist(1, 1, true(), false(), false())");
   });
 
-  // TODO firefox
-  xit('checklist(node)', () => {
+  it('checklist(node)', () => {
     const doc = initDoc(`
       <div id="FunctionChecklistCase">
         <div id="FunctionChecklistCaseNo">no</div>
@@ -22,8 +21,6 @@ describe('#checklist()', () => {
 
     node = doc.getElementById('FunctionChecklistCaseEmpty');
     assertTrue(node, null, "checklist(-1, 2, self::node())");
-
-    node = doc.getElementById('FunctionChecklistCaseEmpty');
     assertFalse(node, null, "checklist(1, 2, self::node())");
   });
 });

@@ -20,7 +20,7 @@ describe( 'and/or operators', () => {
     assertTrue("'1'and'1'");
   });
 
-  xit('And (capitalized) fails miserably', () => {
+  it('And (capitalized) fails miserably', () => {
     assert.throw(() => xEval("1 And 1", null, XPathResult.BOOLEAN_TYPE));//does not throw instance of error
   });
 
@@ -43,8 +43,7 @@ describe( 'and/or operators', () => {
     assertFalse("false() and 1 and true()");
   });
 
-  // TODO firefox
-  xit('and laziness', () => {
+  it('and laziness', () => {
     assertFalse("false() and $some-made-up-var");
     assertFalse("false() and $some-made-up-var and true()");
     assertFalse("true() and false() and $some-made-up-var");
@@ -70,7 +69,7 @@ describe( 'and/or operators', () => {
     assertTrue("'1'or'1'");
   });
 
-  xit('And (capitalized) fails miserably', () => {
+  it('And (capitalized) fails miserably', () => {
     assert.throw(() => xEval("1 OR 1", null, XPathResult.BOOLEAN_TYPE)); // does not throw instance of error
   });
 
@@ -97,8 +96,7 @@ describe( 'and/or operators', () => {
     });
   });
 
-  // TODO firefox
-  xit('or laziness', () => {
+  it('or laziness', () => {
     [
       [ "true() or $some-made-up-var", true ],
       [ "true() or $some-made-up-var and true()", true ],

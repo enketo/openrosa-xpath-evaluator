@@ -298,19 +298,17 @@ var openrosa_xpath_extensions = function(translate) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       return areaOrDistance(XPR.number, area, r);
 		},
-    checklist: function(min, max /*,oA , oB .... */) {
+    checklist: function(min, max) {
       var i, j, trues = 0;
       min = min.v;
       max = max.v;
-      for (i=2 ; i<arguments.length ; i++) {
+      for (i=2;i < arguments.length;i++) {
         var arg = arguments[i];
         if (arg.t === 'bool' && Boolean(arg.v)) {
           trues++;
         } else if (arg.t === 'arr') {
           for(j=0;j<arg.v.length;j++) {
-            if(Boolean(arg.v[j])) {
-              trues++;
-            }
+            if(Boolean(arg.v[j])) trues++;
           }
         }
       }

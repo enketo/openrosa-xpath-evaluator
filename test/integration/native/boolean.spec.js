@@ -1,4 +1,4 @@
-describe( 'native boolean functions', () => {
+describe('native boolean functions', () => {
   it('boolean() conversion of booleans', () => {
     assertTrue("boolean('a')");
     assertFalse("boolean('')");
@@ -45,13 +45,11 @@ describe( 'native boolean functions', () => {
     assertTrue(node, null, "boolean(self::node())");
   });
 
-  // todo firefox
-  xit('boolean() fails when too few arguments are provided', () => {
+  it('boolean() fails when too few arguments are provided', () => {
     assert.throw(() => xEval("boolean()"), Error);
   });
 
-  // todo firefox
-  xit('boolean() fails when too many arguments are provided', () => {
+  it('boolean() fails when too many arguments are provided', () => {
     assert.throw(() => xEval("boolean(1, 2)"), Error);
   });
 });

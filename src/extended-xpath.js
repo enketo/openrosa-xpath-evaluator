@@ -186,6 +186,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         var res = extendedProcessors.toExternalResult(r);
         if(res) return res;
       }
+
       if( (r.t === 'arr' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v[0])) ||
           (r.t === 'str' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v))) {
         var val = r.t === 'arr' ? r.v[0] : r.v;
@@ -196,8 +197,10 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           stringValue:days
         };
       }
+
       if(r.t === 'num') return { resultType:XPathResult.NUMBER_TYPE, numberValue:r.v, stringValue:r.v.toString() };
-      if(r.t === 'bool') return { resultType:XPathResult.BOOLEAN_TYPE, booleanValue:r.v, stringValue:r.v.toString() };
+      if(r.t === 'bool')return { resultType:XPathResult.BOOLEAN_TYPE, booleanValue:r.v, stringValue:r.v.toString() };
+
       if(rt > 3) {
         r = shuffle(r[0], r[1]);
         return {
@@ -287,6 +290,11 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         if(input.indexOf(',') > 0) throw TOO_MANY_ARGS;
         if(input === 'count()') throw TOO_FEW_ARGS;
       }
+      if(input.startsWith('boolean(')) { //firefox
+        if(input === 'boolean()') throw TOO_FEW_ARGS;
+        var args = input.substring(8, input.indexOf(')')).split(',');
+        if(args.length > 1) throw TOO_MANY_ARGS;
+      }
       return wrapped(input, cN, nR, rT, r);
     }
     if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 &&
@@ -366,7 +374,11 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           if(rT > 3) {
             evaluated = toNodes(wrapped(expr));
           } else {
-            evaluated = toInternalResult(wrapped(expr));
+            if(expr.startsWith('$')) {
+              evaluated = expr;
+            } else {
+              evaluated = toInternalResult(wrapped(expr));
+            }
           }
         }
         peek().tokens.push(evaluated);
@@ -535,7 +547,11 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
             case 'div': pushOp('/'); break;
             case 'and': pushOp('&'); break;
             case 'or':  pushOp('|'); break;
-            default: if(!FUNCTION_NAME.test(cur.v)) handleXpathExpr();
+            default: {
+              var op = cur.v.toLowerCase();
+              if(/^(mod|div|and|or)$/.test(op)) throw INVALID_ARGS;
+              if(!FUNCTION_NAME.test(cur.v)) handleXpathExpr();
+            }
           }
           break;
         case '[':
@@ -561,7 +577,6 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
     if(stack[0].tokens.length === 0) err('No tokens.');
     if(stack[0].tokens.length >= 3) backtrack();
     if(stack[0].tokens.length > 1) err('Too many tokens.');
-
     return toExternalResult(stack[0].tokens[0], rT);
   };
 };

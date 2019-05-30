@@ -15,8 +15,7 @@ describe('#random()', () => {
     assert.equal(_.uniq(vals).length, vals.length);
   });
 
-  // TODO travis AssertionError: expected 0.86538089277131 to match /0\.[0-9]{15}/
-  xit('random()', () => {
-    assert.match(xEval('random()').numberValue, /0\.[0-9]{15}/);
+  it('random()', () => {
+    assert.match(xEval('random()').numberValue, /0\.[0-9]{15,}/);
   });
 });
