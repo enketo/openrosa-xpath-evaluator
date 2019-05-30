@@ -314,13 +314,10 @@ const assertNodesNamespace = (expr, node, expected) => {
 
 const assertNodes = (expr, node, expected) => {
   var result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
-  // var result = doc.evaluate(expr, node, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
   assert.equal(result.snapshotLength, expected.length);
   for(j = 0; j < result.snapshotLength; j++) {
     item = result.snapshotItem(j);
-    // assert.equal(item, expected[j]);
-    console.log(item)
-    console.log(expected[j])
+    assert.equal(item, expected[j]);
   }
 };
 

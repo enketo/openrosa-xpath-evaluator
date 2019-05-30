@@ -118,7 +118,7 @@ describe('native nodeset functions', () => {
     assert.throw(() => xEval("count()"), Error);
   });
 
-  xit('count() fails when incorrect argument type is provided', () => {
+  it('count() fails when incorrect argument type is provided', () => {
     assert.throw(() => xEval("count(1)"), Error);
   });
 

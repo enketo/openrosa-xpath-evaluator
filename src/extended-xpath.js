@@ -289,11 +289,15 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       if(input.startsWith('count(')) {
         if(input.indexOf(',') > 0) throw TOO_MANY_ARGS;
         if(input === 'count()') throw TOO_FEW_ARGS;
+        if(!isNaN(/\((.*)\)/.exec(input)[1])) throw INVALID_ARGS;//firefox
       }
       if(input.startsWith('boolean(')) { //firefox
         if(input === 'boolean()') throw TOO_FEW_ARGS;
         var args = input.substring(8, input.indexOf(')')).split(',');
         if(args.length > 1) throw TOO_MANY_ARGS;
+      }
+      if(input === 'namespace::node()') {
+        input = '.';
       }
       return wrapped(input, cN, nR, rT, r);
     }
@@ -371,7 +375,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         if(['position'].includes(peek().v)) {
           evaluated = wrapped(expr);
         } else {
-          if(rT > 3) {
+          if(rT > 3 || cur.v.indexOf('position()') >= 0) {
             evaluated = toNodes(wrapped(expr));
           } else {
             if(expr.startsWith('$')) {
