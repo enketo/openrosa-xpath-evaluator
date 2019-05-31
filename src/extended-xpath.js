@@ -208,6 +208,15 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           snapshotItem: function(idx) { return r[idx]; }
         };
       }
+
+      if(!r.t && Array.isArray(r)) {
+        if(rt === XPathResult.NUMBER_TYPE) {
+          var v = parseInt(r[0].textContent)
+          return { resultType:XPathResult.NUMBER_TYPE, numberValue:v, stringValue:v.toString() };
+        } else if(rt === XPathResult.STRING_TYPE) {
+          return { resultType:XPathResult.STRING_TYPE, stringValue: r.length ? r[0] : '' };
+        }
+      }
       return { resultType:XPathResult.STRING_TYPE, stringValue: r.v===null ? '' : r.v.toString() };
     },
     toNodes = function(r) {
@@ -375,7 +384,8 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         if(['position'].includes(peek().v)) {
           evaluated = wrapped(expr);
         } else {
-          if(rT > 3 || cur.v.indexOf('position()') >= 0) {
+          if(rT > 3 || (cur.v.indexOf('position()=') >= 0 &&
+            stack.length === 1 && !/^[a-z]*[\(|\[]{1}/.test(cur.v))) {
             evaluated = toNodes(wrapped(expr));
           } else {
             if(expr.startsWith('$')) {

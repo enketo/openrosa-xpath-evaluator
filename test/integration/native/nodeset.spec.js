@@ -36,7 +36,7 @@ describe('native nodeset functions', () => {
     assert.throw(() => xEval("last(1)"), Error);
   });
 
-  xit('position()', () => {
+  it('position()', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
@@ -58,20 +58,18 @@ describe('native nodeset functions', () => {
     const node = doc.getElementById('testFunctionNodeset2');
     nsr = nsResolver;
     [
-      ["position()", 1],
+      //TODO ["position()", 1],
       [ "*[position()=last()]", 4 ],
       [ "*[position()=2]", 2 ],
       [ "xhtml:p[position()=2]", 2 ]
     ].forEach(([expr, expected]) => {
-      const val = xEval(expr, node, XPathResult.NUMBER_TYPE);
-      assert.equal(val.numberValue, expected);
+      assertNumberValue(node, null, expr, expected);
     });
 
     [
       [ "*[position()=-1]", "" ]
     ].forEach(([expr, expected]) => {
-      const val = xEval(expr, node, XPathResult.STRING_TYPE);
-      assert.equal(val.stringValue, expected);
+      assertStringValue(node, null, expr, expected);
     });
   });
 
