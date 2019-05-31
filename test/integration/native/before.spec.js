@@ -315,9 +315,36 @@ const assertNodesNamespace = (expr, node, expected) => {
 const assertNodes = (expr, node, expected) => {
   var result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
   assert.equal(result.snapshotLength, expected.length);
-  for(j = 0; j < result.snapshotLength; j++) {
+  for(let j = 0; j < result.snapshotLength; j++) {
     item = result.snapshotItem(j);
     assert.equal(item, expected[j]);
+  }
+};
+
+const sorted = (nodes) => {
+  return nodes.sort((a, b) => {
+    if (a.nodeName > b.nodeName) return 1;
+    if (a.nodeName < b.nodeName) return -1;
+    return 0;
+  });
+};
+
+const snapshotItems = (result) => {
+  const all = [];
+  for(let j = 0; j < result.snapshotLength; j++) {
+    all.push(result.snapshotItem(j));
+  }
+  return all;
+};
+
+// Compares nodes and ignores node and attribute order
+const assertUnorderedNodes = (expr, node, expected) => {
+  const result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+  assert.equal(result.snapshotLength, expected.length);
+  const resultNodes = sorted(snapshotItems(result));
+  const expectedNodes = sorted(expected);
+  for(let j = 0; j < resultNodes.length; j++) {
+    assert.equal(resultNodes[j].nodeName, expectedNodes[j].nodeName);
   }
 };
 

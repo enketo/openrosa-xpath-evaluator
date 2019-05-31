@@ -95,8 +95,9 @@ describe('Union operator', () => {
     ]);
   });
 
-  xit('combines different attributes on the same element', () => {
-    assertNodes("id('eee40')/attribute::*[2] | id('eee40')/attribute::*[1]", doc,
+  it('combines different attributes on the same element', () => {
+    //TODO Is node order important? chrome vs firefox have different order.
+    assertUnorderedNodes("id('eee40')/attribute::*[2] | id('eee40')/attribute::*[1]", doc,
       filterAttributes(doc.getElementById('eee40').attributes)); //firefox
     // expected
     // [class="sss", id="eee40"]
@@ -126,10 +127,11 @@ describe('Union operator', () => {
     );
   });
 
-  xit('combines a namespace and attribute', () => {
+  it('combines a namespace and attribute', () => {
     const result = xEval("id('nss40')/namespace::*", doc, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
 
-    assertNodes("id('nss40')/namespace::* | id('nss25')/attribute::* | id('nss25')", doc, [
+    //TODO Is node order important? chrome vs firefox have different order.
+    assertUnorderedNodes("id('nss40')/namespace::* | id('nss25')/attribute::* | id('nss25')", doc, [
       doc.getElementById('nss25')
     ].concat(
       filterAttributes(doc.getElementById('nss25').attributes)
