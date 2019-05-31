@@ -211,7 +211,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
 
       if(!r.t && Array.isArray(r)) {
         if(rt === XPathResult.NUMBER_TYPE) {
-          var v = parseInt(r[0].textContent)
+          var v = parseInt(r[0].textContent);
           return { resultType:XPathResult.NUMBER_TYPE, numberValue:v, stringValue:v.toString() };
         } else if(rt === XPathResult.STRING_TYPE) {
           return { resultType:XPathResult.STRING_TYPE, stringValue: r.length ? r[0] : '' };
