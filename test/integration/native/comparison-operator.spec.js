@@ -27,6 +27,7 @@ describe('Comparison operator', () => {
     assertOps1('false()', 'false()', [true, false]);
     assertOps1('true()', 1, [true, false]);
     assertOps1('true()', '""', [false, true]);
+    // TODO does this make sense? 0 = false() different from false() = 0 ?
     // assertOps1('false()', 0, [false, true]);
     assertOps1('false()', '""', [true, false]);
     assertOps1('"1a"', '"1a"', [true, false]);

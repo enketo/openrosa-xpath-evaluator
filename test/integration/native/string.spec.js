@@ -57,7 +57,7 @@ describe('native string functions', () => {
       ["string(/htmlnot)", doc, ""], // empty
       ["string(self::node())", doc.getElementById('FunctionStringCaseStringNodesetElement'), "aaa"], // element
       ["string()", doc.getElementById('FunctionStringCaseStringNodesetElement'), "aaa"], // element
-      // ["string(node())", doc.getElementById( 'FunctionStringCaseStringNodesetElementNested' ), "bbb"], // element nested
+      // ["string(node())", doc.getElementById('FunctionStringCaseStringNodesetElementNested' ), "bbb"], // element nested
       ["string(self::node())", doc.getElementById('FunctionStringCaseStringNodesetElementNested' ), "bbbssscccddd"], // element nested
       ["string()", doc.getElementById('FunctionStringCaseStringNodesetElementNested' ), "bbbssscccddd"], // element nested
       ["string()", doc.getElementById('FunctionStringCaseStringNodesetComment').firstChild, " hello world "], // comment
@@ -67,14 +67,14 @@ describe('native string functions', () => {
    ];
 
     // Processing Instruction
-    node = doc.getElementById( 'FunctionStringCaseStringNodesetProcessingInstruction').firstChild;
+    node = doc.getElementById('FunctionStringCaseStringNodesetProcessingInstruction').firstChild;
     if(node && node.nodeType == 7) {
-      input.push( ["string()", node, 'type="text/xml" href="test.xsl"'] );
+      input.push(["string()", node, 'type="text/xml" href="test.xsl"'] );
     }
     // CDATASection
-    node = doc.getElementById( 'FunctionStringCaseStringNodesetCData').firstChild;
+    node = doc.getElementById('FunctionStringCaseStringNodesetCData').firstChild;
     if(node && node.nodeType == 4) {
-      input.push( ["string()", node, 'some cdata'] );
+      input.push(["string()", node, 'some cdata'] );
     }
 
     for(i = 0; i < input.length; i++) {
@@ -230,7 +230,7 @@ describe('native string functions', () => {
       ["string-length('a')", 1, doc],
       ["string-length()", 0, doc.getElementById('FunctionStringCaseStringLength1')],
       ["string-length()", 4, doc.getElementById('FunctionStringCaseStringLength2')]
-   ].forEach( t => {
+   ].forEach(t => {
       assertNumber(t[2], null, t[0], t[1]);
     });
   });

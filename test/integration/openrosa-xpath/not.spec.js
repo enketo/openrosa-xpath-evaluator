@@ -1,5 +1,5 @@
 describe('not', () => {
-  it( 'not()', () => {
+  it('not()', () => {
     assertFalse("not(true())");
     assertTrue("not(false())");
     assertTrue('not(not(true()))');

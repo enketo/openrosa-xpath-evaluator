@@ -39,7 +39,7 @@ describe('#selected-at()', () => {
     node = doc.getElementById('FunctionSelectedCaseSingle');
     assertStringValue(node, null, "selected-at(self::node(), 0)", 'ab');
 
-    node = doc.getElementById( 'FunctionSelectedCaseSingle');
+    node = doc.getElementById('FunctionSelectedCaseSingle');
     assertStringValue(node, null, "selected-at(self::node(), 1)", '');
 
     node = doc.getElementById('FunctionSelectedCaseMultiple');

@@ -30,14 +30,14 @@ var INVALID_ARGS = new Error('invalid args');
 Date.prototype.toISOLocalString = function() {
   //2012-09-05T12:57:00.000-04:00 (ODK)
 
-  if (this.toString() === 'Invalid Date') {
+  if(this.toString() === 'Invalid Date') {
     return this.toString();
   }
 
   var dt = new Date(this.getTime() - (this.getTimezoneOffset() * 60 * 1000)).toISOString()
       .replace('Z', this.getTimezoneOffsetAsTime());
 
-  if (dt.indexOf('T00:00:00.000') > 0) {
+  if(dt.indexOf('T00:00:00.000') > 0) {
     return dt.split('T')[0];
   } else {
     return dt;
@@ -53,7 +53,7 @@ Date.prototype.getTimezoneOffsetAsTime = function() {
     return (x < 10) ? '0' + x : x;
   };
 
-  if (this.toString() === 'Invalid Date') {
+  if(this.toString() === 'Invalid Date') {
     return this.toString();
   }
 
@@ -65,6 +65,14 @@ Date.prototype.getTimezoneOffsetAsTime = function() {
 
   return direction + hours + ':' + minutes;
 };
+
+function isNumber(value) {
+  if(typeof value === 'string') {
+    var nbr = value.replace(/["']/g, "");
+    return nbr.trim().length && !isNaN(value);
+  }
+  return typeof value === 'number';
+}
 
 function dateToDays(d) {
   var temp = null;
@@ -111,8 +119,8 @@ var MINSTD = 16807;
  */
 function Random(seed) {
     this._seed = seed % MAX_INT32;
-	if (this._seed <= 0) {
-		this._seed += ( MAX_INT32 - 1 );
+	if(this._seed <= 0) {
+		this._seed += (MAX_INT32 - 1);
 	}
 }
 
@@ -129,7 +137,7 @@ Random.prototype.next = function () {
  */
 Random.prototype.nextFloat = function () {
     // We know that result of next() will be 1 to 2147483646 (inclusive).
-    return ( this.next() - 1 ) / ( MAX_INT32 - 1 );
+    return (this.next() - 1) / (MAX_INT32 - 1);
 };
 
 /**
@@ -145,19 +153,19 @@ function shuffle(array, seed) {
   var rng;
   var result = [];
 
-  if ( typeof seed !== 'undefined' ){
-    if ( !Number.isInteger( seed ) ) {
+  if(typeof seed !== 'undefined'){
+    if(!Number.isInteger(seed)) {
       throw new Error('Invalid seed argument. Integer required.');
     }
-    var rnd = new Random( seed );
+    var rnd = new Random(seed);
     rng = rnd.nextFloat.bind(rnd);
   } else {
     rng = Math.random;
   }
 
-  for ( var i = 0; i < array.length; ++i ) {
-    var j = Math.floor( rng() * ( i + 1 ) );
-    if ( j !== i ) {
+  for (var i = 0; i < array.length; ++i) {
+    var j = Math.floor(rng() * (i + 1));
+    if(j !== i) {
       result[i] = result[j];
     }
     result[j] = array[i];
@@ -187,7 +195,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         if(res) return res;
       }
 
-      if( (r.t === 'arr' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v[0])) ||
+      if((r.t === 'arr' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v[0])) ||
           (r.t === 'str' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v))) {
         var val = r.t === 'arr' ? r.v[0] : r.v;
         var days = dateToDays(val);
@@ -263,6 +271,9 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       res = extendedFuncs[name].apply(null, argVals);
       return res;
     },
+    callNativeDirectly = function(expr) {
+      return wrapped(expr);
+    },
     callNative = function(name, args) {
       var argString = '', arg, quote, i;
       for(i=0; i<args.length; ++i) {
@@ -293,8 +304,24 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   this.evaluate = function(input, cN, nR, rT, r) {
+    if(rT === XPathResult.NUMBER_TYPE && input.indexOf('(') < 0) {
+      input = input.replace('\n', ''); //replaces new lines of expressions without functions
+    }
+    if(/^local-name|namespace-uri|name\(|child::|parent::|descendant::|descendant-or-self::|ancestor::|ancestor-or-self::sibling|following::|following-sibling::|preceding-sibling::|preceding::|attribute::/.test(input)) {
+      var args = input.substring(
+        input.indexOf('(')+1,
+        input.lastIndexOf(')')
+     ).split(',');
+
+      if(args.length > 1) { throw TOO_MANY_ARGS; }
+      if(args.length < 1) { throw TOO_FEW_ARGS; }
+      if(args[0].length && !isNaN(args[0])) { throw INVALID_ARGS; }
+
+      return callNativeDirectly(input);
+    }
+
     if((rT > 3 && !input.startsWith('randomize')) ||
-      input.startsWith('count(') || input.startsWith('boolean(')) {
+      /^count\(|boolean\(/.test(input)) {
       if(input.startsWith('count(')) {
         if(input.indexOf(',') > 0) throw TOO_MANY_ARGS;
         if(input === 'count()') throw TOO_FEW_ARGS;
@@ -302,16 +329,15 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       }
       if(input.startsWith('boolean(')) { //firefox
         if(input === 'boolean()') throw TOO_FEW_ARGS;
-        var args = input.substring(8, input.indexOf(')')).split(',');
-        if(args.length > 1) throw TOO_MANY_ARGS;
+        var bargs = input.substring(8, input.indexOf(')')).split(',');
+        if(bargs.length > 1) throw TOO_MANY_ARGS;
       }
-      if(input === 'namespace::node()') {
-        input = '.';
-      }
+      if(input === 'namespace::node()') { input = '.'; }
       return wrapped(input, cN, nR, rT, r);
     }
     if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 &&
-        input.indexOf('/') < 0 && input.indexOf('=') < 0 && input.indexOf('!=') < 0) {
+        input.indexOf('/') < 0 && input.indexOf('=') < 0 &&
+        input.indexOf('!=') < 0) {
       input = input.replace(/(\n|\r|\t)/g, '');
       input = input.replace(/"(\d)"/g, '$1');
       input = input.replace(/'(\d)'/g, '$1');
@@ -334,6 +360,15 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           }
 
           if(typeof res !== 'undefined' && res !== null) return res;
+        }
+        //Removes quotes for numbers
+        if(op.v === '+' && isNumber(lhs.v) && isNumber(rhs.v)){
+          lhs.v = Number(lhs.v);
+          rhs.v = Number(rhs.v);
+        }
+
+        if(op.v === '-' && (isNaN(lhs.v) || isNaN(rhs.v))) {
+          return NaN;
         }
 
         switch(op.v) {
@@ -367,7 +402,6 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         // handle infix operators
         var i, j, ops, tokens;
         tokens = peek().tokens;
-
         for(j=OP_PRECEDENCE.length-1; j>=0; --j) {
           ops = OP_PRECEDENCE[j];
           i = 1;
@@ -431,7 +465,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         } else cur.v += c;
         continue;
       }
-      if (cur.t === 'num') {
+      if(cur.t === 'num') {
         if(DIGIT.test(c) || ['e', '"', "'"].includes(c) ||
             (c === '-' && input[i-1] === 'e')) {
           cur.string += c;
@@ -499,9 +533,9 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
             cur.v += c;
             if(cur.v === './*') handleXpathExpr();
           } else if(cur.v === '' &&
-            ( [')', ''].includes(nextChar()) ||
+            ([')', ''].includes(nextChar()) ||
             input.substring(i+1).trim() === ')')
-          ) {
+         ) {
             cur.v = c;
             handleXpathExpr();
           } else {
@@ -509,17 +543,22 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
           }
           break;
         case '-':
-          if(cur.v !== '') {
+          var prev = prevToken();
+          if(cur.v !== '' && nextChar() !== ' ' && input.charAt(i-1) !== ' ') {
             // function name expr
             cur.v += c;
-          } else if(peek().tokens.length === 0 || prevToken().t === 'op' ||
+          } else if((peek().tokens.length === 0 && cur.v === '') ||
+            (prev && prev.t === 'op') ||
             // two argument function
-            (prevToken().t === 'num' && stack.length > 1 && stack[1].t === 'fn') ||
+            (prev && prev.t === 'num' && stack.length > 1 && stack[1].t === 'fn') ||
             // negative argument
-            (prevToken().t !== 'num' && isNum(nextChar()))) {
+            (prev && prev.t !== 'num' && isNum(nextChar()))) {
             // -ve number
             cur = { t:'num', string:'-' };
           } else {
+            if(cur.v !== '') {
+              peek().tokens.push(cur);
+            }
             pushOp(c);
           }
           break;
@@ -577,12 +616,15 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
             handleXpathExpr();
             break;
           }
+          if(cur.v === '' && isNum(nextChar())) {
+            cur = { t:'num', string:c };
+            break;
+          }
           /* falls through */
         default:
           cur.v += c;
       }
     }
-
     if(cur.t === 'num') finaliseNum();
     if(cur.t === '?' && cur.v !== '') handleXpathExpr();
     if(cur.t !== '?' || cur.v !== '' || (cur.tokens && cur.tokens.length)) err('Current item not evaluated!');

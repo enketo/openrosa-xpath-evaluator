@@ -1,4 +1,4 @@
-describe( 'decimal-time()', () => {
+describe('decimal-time()', () => {
   it('decimates times', () => {
     assertNumberValue('decimal-time("06:00:00.000-07:00")', 0.250);
     assertNumberValue('decimal-time("06:00:00.000-01:00")', 0.000);
@@ -14,7 +14,7 @@ describe( 'decimal-time()', () => {
     assertNumberValue('decimal-time("now()")', NaN);
   });
 
-  it( `facilitates time calculations and evaluates`, () => {
+  it(`facilitates time calculations and evaluates`, () => {
     assertNumberValue('decimal-time("12:00:00.000-07:00") - decimal-time("06:00:00.000-07:00")', 0.250);
   });
 

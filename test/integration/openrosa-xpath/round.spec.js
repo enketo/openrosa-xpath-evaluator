@@ -96,7 +96,7 @@ describe('#round()', () => {
     });
   });
 
-  it( 'round() fails when too few arguments are provided', () => {
+  it('round() fails when too few arguments are provided', () => {
       assert.throw(() => xEval("round()"), Error);
   });
 
@@ -110,7 +110,7 @@ describe('#round()', () => {
     assertNumberValue("round('a')", NaN);
   });
 
-  it( 'round() with too many args throws exception', () => {
+  it('round() with too many args throws exception', () => {
     assert.throw(() => xEval("round(1, 2, 3)"), Error);
   });
 });

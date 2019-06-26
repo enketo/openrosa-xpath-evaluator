@@ -99,7 +99,7 @@ describe('native number functions', () => {
     assert.throw(() => xEval("sum()"), Error);
   });
 
-  it( 'floor()', () => {
+  it('floor()', () => {
     assertNumber("floor(-1.55)", -2);
     assertNumber("floor(2.44)", 2);
     assertNumber("floor(0.001)", 0);
@@ -109,15 +109,15 @@ describe('native number functions', () => {
     assertNumber("floor(-1.05)", -2);
   });
 
-  it( 'floor() fails when too many arguments are provided', () => {
+  it('floor() fails when too many arguments are provided', () => {
     assert.throw(() => xEval("floor(1, 2)"), Error);
   });
 
-  it( 'floor fails when too few arguments are provided', () => {
+  it('floor fails when too few arguments are provided', () => {
     assert.throw(() => xEval("floor()"), Error);
   });
 
-  it( 'ceiling()', () => {
+  it('ceiling()', () => {
     assertNumber("ceiling(-1.55)", -1);
     assertNumber("ceiling(2.44)", 3);
     assertNumber("ceiling(0.001)", 1);
@@ -127,7 +127,7 @@ describe('native number functions', () => {
     assertNumber("ceiling(-1.05)", -1);
   });
 
-  it( 'ceiling() fails when too many arguments are provided', () => {
+  it('ceiling() fails when too many arguments are provided', () => {
     assert.throw(() => xEval("ceiling(1, 2)"), Error);
   });
 

@@ -12,11 +12,11 @@ describe('#floor()', () => {
     assertNumberValue('floor(-1.005)', -2);
   });
 
-  it( 'floor() fails when too many arguments are provided', () => {
+  it('floor() fails when too many arguments are provided', () => {
     assert.throw(() => xEval('floor(1, 2)'), Error);
   });
 
-  it( 'floor fails when too few arguments are provided', () => {
+  it('floor fails when too few arguments are provided', () => {
     assert.throw(() => xEval('floor()'), Error);
   });
 });

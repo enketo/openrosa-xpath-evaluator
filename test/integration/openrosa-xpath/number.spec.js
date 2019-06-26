@@ -76,7 +76,7 @@ describe('#number()', () => {
         [ "number('1.1sd')", NaN ],
         [ "number('.1sd')", NaN ],
         [ "number(' . ')", NaN ]
-      ].forEach( t => {
+      ].forEach(t => {
         const result = xEval(t[0]);
         assert.typeOf(result.numberValue, 'number');
         assert.isNaN(result.numberValue);

@@ -1,7 +1,7 @@
 describe('#format-date()', () => {
 
   // Karma config is setting timezone to America/Denver
-  it( 'format-date()', () => {
+  it('format-date()', () => {
     const doc = initDoc(`
       <div id="FunctionDate">
   			<div id="FunctionDateCase1">2012-07-23</div>
@@ -27,7 +27,7 @@ describe('#format-date()', () => {
     ].forEach(([expr, node, expected]) => {
         assertStringValue(node, null, expr, expected);
         // do the same tests for the alias format-date-time()
-        expr = expr.replace( 'format-date', 'format-date-time' );
+        expr = expr.replace('format-date', 'format-date-time' );
         assertStringValue(node, null, expr, expected);
     });
   });

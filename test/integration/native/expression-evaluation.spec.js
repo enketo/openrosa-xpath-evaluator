@@ -33,7 +33,7 @@ describe('XPath expression evaluation', () => {
       [".", doc.getElementById('testContextNodeParameterCData').firstChild, 4], // CDATASection
       [".", doc.getElementById('testContextNodeParameterProcessingInstruction').firstChild, 7], // ProcessingInstruction
       [".", doc.getElementById('testContextNodeParameterComment').firstChild, 8] // Comment
-    ].forEach( t => {
+    ].forEach(t => {
       assert.equal(t[1].nodeType, t[2]);
       result = doc.evaluate(t[0], t[1], null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);
       assert.equal(result.singleNodeValue, t[1]);
@@ -56,7 +56,7 @@ describe('XPath expression evaluation', () => {
 
   it('fails if the context is document fragment', () => {
     const test = () => {
-      doc.evaluate( ".", doc.createDocumentFragment(), null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);
+      doc.evaluate(".", doc.createDocumentFragment(), null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);
     };
     assert.throw(test, Error);
   });

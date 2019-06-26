@@ -1,4 +1,4 @@
-describe( 'and/or operators', () => {
+describe('and/or operators', () => {
 
   it('and works without spacing', () => {
     assertTrue("1and1");

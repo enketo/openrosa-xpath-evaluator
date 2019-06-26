@@ -23,32 +23,30 @@ describe('#date()', () => {
       assert.equal(eval("date('1970-01-01')"), '1970-01-01');
       assert.equal(eval('date("2018-01-01")'), '2018-01-01');
       assert.equal(eval('"2018-01-01"'), '2018-01-01');
-      TODO()
-      // assertString('"2018-01-01" + 1', 17533.29167); // converted to Number according to regular XPath rules
-      // assertString('date("2018-01-01" + 1)', '2018-01-02'); // converted to Number according to regular XPath rules
-
-      // it('dates as string', () => {
-      //     [
-      //         [],
-      //         [], //T00:00:00.000-07:00'], // America/Phoenix
-      //         [],
-      //         [], //T00:00:00.000-07:00'],
-      //    ].forEach(t => {
-      //         const result = g.doc.evaluate(t[0], g.doc, helpers.getXhtmlResolver(g.doc ), g.win.XPathResult.STRING_TYPE, null );
-      //         const r = typeof t[1] === 'number' ? Math.round(result.stringValue * 100000 ) / 100000 : result.stringValue;
-      //         expect(r ).to.equal(t[1] );
-      //     } );
-      //
-      //     [
-      //         "today()",
-      //         "date(today() + 10)",
-      //         "date(10 + today())"
-      //    ].forEach(t => {
-      //         const result = g.doc.evaluate(t, g.doc, helpers.getXhtmlResolver(g.doc ), g.win.XPathResult.STRING_TYPE, null );
-      //         expect(result.stringValue ).to.match(/([0-9]{4}-[0-9]{2}-[0-9]{2})$/ );
-      //     } );
-      // } );
     });
+
+    it('dates as string', () => {
+      [
+        [ '"2018-01-01"', '2018-01-01' ],
+        [ 'date("2018-01-01")', '2018-01-01' ], //T00:00:00.000-07:00'], // America/Phoenix
+        // [ '"2018-01-01" + 1', 17533.29167 ], // converted to Number according to regular XPath rules
+        // [ 'date("2018-01-01" + 1)', '2018-01-02' ], //T00:00:00.000-07:00'],
+      ].forEach(([expr, expected]) => {
+        assertStringValue(expr, expected);
+        // const r = typeof t[ 1 ] === 'number' ? Math.round( result.stringValue * 100000 ) / 100000 : result.stringValue;
+        // expect( r ).to.equal( t[ 1 ] );
+      });
+
+      // [
+      //   "today()",
+      //   "date(today() + 10)",
+      //   "date(10 + today())"
+      // ].forEach( t => {
+      //   const result = g.doc.evaluate( t, g.doc, helpers.getXhtmlResolver( g.doc ), g.win.XPathResult.STRING_TYPE, null );
+      //   expect( result.stringValue ).to.match( /([0-9]{4}-[0-9]{2}-[0-9]{2})$/ );
+      // });
+    });
+
   });
 
   describe('date string with single-digit day or month values', () => {

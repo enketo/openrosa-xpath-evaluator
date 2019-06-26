@@ -82,7 +82,7 @@ describe('Union operator', () => {
   });
 
   it('combines attributes that live on descendent elements', () => {
-    assertNodes( "id('eee30')/attribute::*[1] | id('eee40')/attribute::*[1]", doc, [
+    assertNodes("id('eee30')/attribute::*[1] | id('eee40')/attribute::*[1]", doc, [
       filterAttributes(doc.getElementById('eee30').attributes)[0],
       filterAttributes(doc.getElementById('eee40').attributes)[0]
     ]);
@@ -110,7 +110,7 @@ describe('Union operator', () => {
   });
 
   it('combines a namespace and attribute on the same element', () => {
-    const result = xEval( "id('nss25')/namespace::*", doc, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+    const result = xEval("id('nss25')/namespace::*", doc, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
 
     assertNodes("id('nss25')/namespace::* | id('nss25')/attribute::*", doc,
       snapshotToArray(result).concat(

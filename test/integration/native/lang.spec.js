@@ -1,4 +1,4 @@
-describe( 'lang functions', () => {
+describe('lang functions', () => {
   let doc;
   beforeEach(() => {
     doc = initDoc(`
@@ -46,7 +46,7 @@ describe( 'lang functions', () => {
     assert.throw(() => xEval("lang()"), Error);
   });
 
-  it( 'lang() fails when too many arguments are provided', () => {
+  it('lang() fails when too many arguments are provided', () => {
     assert.throw(() => xEval("lang(1, 2)"), Error);
   });
 });

@@ -1,4 +1,4 @@
-describe( 'count-non-empty', () => {
+describe('count-non-empty', () => {
   it('count-non-empty', () => {
     initDoc(`
       <!DOCTYPE html>
@@ -32,7 +32,7 @@ describe( 'count-non-empty', () => {
     assertNumberValue('count-non-empty(//xhtml:div[@id="NoExist"]/xhtml:div)', 0);
   });
 
-  it( 'count-non-empty fails when too few, too many, or incorrect arguments are provided', () => {
+  it('count-non-empty fails when too few, too many, or incorrect arguments are provided', () => {
     assert.throw(() => xEval('count-non-empty()'), Error);
     assert.throw(() => xEval('count-non-empty(2)'), Error);
     assert.throw(() => xEval('count-non-empty(0)'), Error);
