@@ -313,6 +313,11 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         input = input.replace('div', ' div ');
       }
     }
+
+    if(input.indexOf('namespace::node()')) {
+      input = input.replace('namespace::node()', 'namespace-uri(/*)');
+    }
+
     if(/^local-name|namespace-uri|name\(|child::|parent::|descendant::|descendant-or-self::|ancestor::|ancestor-or-self::sibling|following::|following-sibling::|preceding-sibling::|preceding::|attribute::/.test(input)) {
       var args = input.substring(
         input.indexOf('(')+1,
@@ -338,7 +343,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         var bargs = input.substring(8, input.indexOf(')')).split(',');
         if(bargs.length > 1) throw TOO_MANY_ARGS;
       }
-      if(input === 'namespace::node()') { input = '.'; }
+      // if(input === 'namespace::node()') { input = '.'; }
       return wrapped(input, cN, nR, rT, r);
     }
     if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 &&

@@ -82,7 +82,7 @@ describe('native string functions', () => {
     }
   });
 
-  xit('string conversion of nodeset with namepace', () => {
+  it('string conversion of nodeset with namepace', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
@@ -95,7 +95,8 @@ describe('native string functions', () => {
         </body>
       </html>`);
     const node = doc.getElementById('FunctionStringCaseStringNodesetNamespace');
-    assertString(node, null, "string(namespace::node())", "http://www.w3.org/1999/xhtml");
+    assertStringValue(node, null, "string(namespace-uri(/*))", "http://www.w3.org/1999/xhtml");
+    assertStringValue(node, null, "string(namespace::node())", "http://www.w3.org/1999/xhtml");
   });
 
   it('string conversion fails when too many arguments are provided', () => {
@@ -109,11 +110,12 @@ describe('native string functions', () => {
     assertString("concat('a', 'b', 'c', 'd', 'e')", "abcde");
   });
 
+  // Skipped by enketo-xpathjs too
   //in javarosa this needs to return ''
-  xit('concat() fails when not enough arguments provided', () => {
-    assert.throw(() => xEval('concat()'), Error);
-    assert.throw(() => xEval('concat(1)'), Error);
-  });
+  // xit('concat() fails when not enough arguments provided', () => {
+  //   assert.throw(() => xEval('concat()'), Error);
+  //   assert.throw(() => xEval('concat(1)'), Error);
+  // });
 
   it('starts-with', () => {
     assertTrue("starts-with('', '')");

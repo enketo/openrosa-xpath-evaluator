@@ -301,7 +301,7 @@ const filterAttributes = (attributes) => {
 //
 
 const assertNodesNamespace = (expr, node, expected) => {
-  node = node.ownerDocument || node;
+  node = (node && node.ownerDocument) || node;
   const result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
   assert.equal(result.snapshotLength, expected.length);
   for(let j = 0; j < result.snapshotLength; j++) {

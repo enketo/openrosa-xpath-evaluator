@@ -99,7 +99,9 @@ describe('axes', () => {
         },
 
         getNodeNamespace() {
-          const result = doc.evaluate("namespace::node()", doc.getElementById('testStepAxisNodeNamespace'), null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);
+          const result = xEval("namespace::node()",
+            doc.getElementById('testStepAxisNodeNamespace'),
+            XPathResult.ANY_UNORDERED_NODE_TYPE);
           return result.singleNodeValue;
         },
 
@@ -714,7 +716,8 @@ describe('axes', () => {
   });
 
   describe('namespace axis', () => {
-    xit('works for a document context', () => {
+
+    it('works for a document context', () => {
       assertNodesNamespace("namespace::node()", doc, []);
     });
 
@@ -722,16 +725,15 @@ describe('axes', () => {
       assertNodesNamespace("namespace::node()", h.getNodeAttribute(), []);
     });
 
-    // TODO
-    xit('works for a CDATA context', () => {
+    it('works for a CDATA context', () => {
       assertNodesNamespace("namespace::node()", h.getNodeCData(), []);
     });
 
-    xit('works for a comment context', () => {
+    it('works for a comment context', () => {
       assertNodesNamespace("namespace::node()", h.getNodeComment(), []);
     });
 
-    xit('works for a processing instruction context', () => {
+    it('works for a processing instruction context', () => {
       assertNodesNamespace("namespace::node()", h.getNodeProcessingInstruction(), []);
     });
 
@@ -764,7 +766,6 @@ describe('axes', () => {
      ]);
     });
 
-    // TODO
     xit('works for a 1 default context', () => {
       assertNodesNamespace("namespace::node()", doc.getElementById('testStepAxisNodeNamespace1defaultContainer').firstChild, [
           ['', 'asdf'],
