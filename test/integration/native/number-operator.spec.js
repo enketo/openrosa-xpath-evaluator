@@ -12,8 +12,8 @@ describe('number operators', () => {
       // [".5   \n +.5+.3", 1.3],
       ["5+4+1+-1+-4", 5],
       // ["'1'+'1'", 2],
-      // [".55+ 0.56", 1.11],
-      // ["1.0+1.0", 2],
+      [".55+ 0.56", 1.11],
+      ["1.0+1.0", 2],
       ["true()+true()", 2],
       ["false()+1", 1],
       ["(1 div 0) + 1", Number.POSITIVE_INFINITY],
@@ -54,11 +54,11 @@ describe('number operators', () => {
     assert.throw(test);
   });
 
-  xit('- with string without spacing AFTER - fails ', () => {
+  it('- with string without spacing AFTER - fails ', () => {
     assertNumber(doc, null, "asdf -asdf", NaN);
   });
 
-  xit('- with strings', () => {
+  it('- with strings', () => {
     assertNumber(doc, null, "asdf - asdf", NaN);
   });
 
@@ -92,20 +92,20 @@ describe('number operators', () => {
     });
   });
 
-  xit('mod without spacing works', () => {
-    assertNumber(doc, null, "1mod1", 0);
+  it('mod without spacing works', () => {
+    assertNumberValue("1mod1", 0);
   });
 
-  xit('mod without spacing AFTER mod works', () => {
-    assertNumber(doc, null, "1 mod1", d0);
+  it('mod without spacing AFTER mod works', () => {
+    assertNumberValue("1 mod1", 0);
   });
 
   it('mod without spacing BEFORE mod works', () => {
-    assertNumber(doc, null, "1mod 1", 0);
+    assertNumberValue("1mod 1", 0);
   });
 
-  xit('mod with numbers-as-string works', () => {
-    assertNumber(doc, null, "'1'mod'1'", 0);
+  it('mod with numbers-as-string works', () => {
+    assertNumberValue("'1'mod'1'", 0);
   });
 
   it('mod without spacing after mod and a string fails', () => {
@@ -147,28 +147,28 @@ describe('number operators', () => {
     });
   });
 
-  xit('div without spacing', () => {
-    assertNumber("1div1", 1);
+  it('div without spacing', () => {
+    assertNumberValue("1div1", 1);
   });
 
-  xit('div without spacing AFTER div', () => {
-    assertNumber("1 div1", 1);
+  it('div without spacing AFTER div', () => {
+    assertNumberValue("1 div1", 1);
   });
 
   it('div without spacing BEFORE div', () => {
-    assertNumber("1div 1", 1);
+    assertNumberValue("1div 1", 1);
   });
 
-  xit('div without spacing and numbers-as-string', () => {
-    assertNumber("'1'div'1'", 1);
+  it('div without spacing and numbers-as-string', () => {
+    assertNumberValue("'1'div'1'", 1);
   });
 
-  xit('div without spacing AFTER div and number-as-string', () => {
-    assertNumber("'1' div'1'", 1);
+  it('div without spacing AFTER div and number-as-string', () => {
+    assertNumberValue("'1' div'1'", 1);
   });
 
   it('div without spacing BEFORE div and number-as-string', () => {
-    assertNumber("'1'div '1'", 1);
+    assertNumberValue("'1'div '1'", 1);
   });
 
   it('div works as expected', () => {
@@ -188,7 +188,7 @@ describe('number operators', () => {
       ["1 div 0", Number.POSITIVE_INFINITY],
       ["-1 div 0", Number.NEGATIVE_INFINITY]
     ].forEach(t => {
-      assertNumber(t[0], t[1]);
+      assertNumberValue(t[0], t[1]);
     });
 
     [
@@ -196,7 +196,7 @@ describe('number operators', () => {
       ["0 div -0"],
       ["number('a') div 0"]
     ].forEach(t => {
-      assertNumber(t[0], NaN);
+      assertNumberValue(t[0], NaN);
     });
   });
 

@@ -304,8 +304,14 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   this.evaluate = function(input, cN, nR, rT, r) {
-    if(rT === XPathResult.NUMBER_TYPE && input.indexOf('(') < 0) {
+    if(rT === XPathResult.NUMBER_TYPE && input.indexOf('(') < 0 && !input.startsWith('/')) {
       input = input.replace('\n', ''); //replaces new lines of expressions without functions
+      if(input.indexOf('mod')>0) { // to support 1mod1 or any weirdness
+        input = input.replace('mod', ' mod ');
+      }
+      if(input.indexOf('div')>0) { // to support 1div1 or any weirdness
+        input = input.replace('div', ' div ');
+      }
     }
     if(/^local-name|namespace-uri|name\(|child::|parent::|descendant::|descendant-or-self::|ancestor::|ancestor-or-self::sibling|following::|following-sibling::|preceding-sibling::|preceding::|attribute::/.test(input)) {
       var args = input.substring(
