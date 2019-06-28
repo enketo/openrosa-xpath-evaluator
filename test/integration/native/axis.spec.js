@@ -781,15 +781,6 @@ describe('axes', () => {
           ['xml', 'http://www.w3.org/XML/1998/namespace']]);
     });
 
-
-    const sorted = (values) => {
-      return values.sort((a, b) => {
-        if(a[0] > b[0]) {return 1;}
-        if(a[0] < b[0]) {return -1;}
-        return 0;
-      })
-    }
-
     it('works for a 3 context', () => {
       const namespaces = [],
           contextNode = doc.getElementById('testStepAxisNodeNamespace3');
@@ -799,7 +790,7 @@ describe('axes', () => {
       namespaces.push(['ev', 'http://some-namespace.com/nss']);
       namespaces.push(['xml', 'http://www.w3.org/XML/1998/namespace']);
 
-      assertNodesNamespace("namespace::node()", contextNode, sorted(namespaces));
+      assertNodesNamespace("namespace::node()", contextNode, namespaces);
     });
 
     it('works for a 3 default context', () => {
@@ -810,7 +801,7 @@ describe('axes', () => {
       namespaces.push(['ev', 'http://some-namespace.com/nss']);
       namespaces.push(['xml', 'http://www.w3.org/XML/1998/namespace']);
 
-      assertNodesNamespace("namespace::node()", contextNode, sorted(namespaces));
+      assertNodesNamespace("namespace::node()", contextNode, namespaces);
     });
 
     it('works with an element context that overrides the namespace', () => {
@@ -894,7 +885,7 @@ describe('axes', () => {
   const assertAttributes = (node) => {
     // TODO confirm this. chrome includes namespaces attrs and firefox does not.
     // We could exclude them from chrome to be consistent but would have to
-    // manually build the response with an incomplete interface (snapshotItem(idx), etc).    
+    // manually build the response with an incomplete interface (snapshotItem(idx), etc).
     // assertNodes("attribute::node()", node, getAttributes(node));
   }
 

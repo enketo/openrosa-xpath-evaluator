@@ -56,7 +56,7 @@ describe('node name for', () => {
     assertNodes("attribute::*", node, filterAttributes(node.attributes));
   });
 
-  xit('any namespace', () => {
+  it('any namespace', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestNamespace'),
       namespaces = [];
 
@@ -65,7 +65,7 @@ describe('node name for', () => {
     namespaces.push(['ev', 'http://some-namespace.com/nss']);
     namespaces.push(['xml', 'http://www.w3.org/XML/1998/namespace']);
 
-    assertNodesNamespace("namespace::*", node, namespaces);
+    assertNodesNamespace("namespace::*", node, sortedNamespaces(namespaces));
   });
 
   it('any child', () => {
@@ -175,7 +175,7 @@ describe('node name for', () => {
     assertNodes("attribute::attrib3", node, attributes);
   });
 
-  xit('namespace with specific name', () => {
+  it('namespace with specific name', () => {
     const node = doc.getElementById('StepNodeTestCaseNameTestNamespace');
     nsr = getXhtmlResolver(doc);
     assertNodesNamespace("namespace::ns2", node, [['ns2', 'http://asdf/']]);

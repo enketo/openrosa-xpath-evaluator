@@ -318,15 +318,15 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       input = input.replace('namespace::node()', 'namespace-uri(/*)');
     }
 
-    if(input === 'namespace::node()') {
+    if(/^(namespace::node\(\)|namespace::\*)$/.test(input)) {
       var namespaces = [];
       var namespaceKeys = {};
       var items = [];
       var node = cN;
       while(node) {
         if(node.attributes) {
-          for(var i=0; i<node.attributes.length; i++) {
-            var attr = node.attributes[i];
+          for(var j=0; j<node.attributes.length; j++) {
+            var attr = node.attributes[j];
             var item = attr.ownerElement.getAttributeNode(attr.name);
             if(item.nodeName.startsWith('xmlns') && !namespaceKeys[item.nodeName]) {
               var names = item.nodeName.split(':');
@@ -345,10 +345,10 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         node = cN.nodeType === 1 ? node.parentNode : null;
       }
       if(namespaces.length > 0 && !namespaceKeys.xmlns) {
-        namespaces.push({nodeName: '#namespace', localName: 'xmlns', namespaceURI: 'http://www.w3.org/1999/xhtml'})
+        namespaces.push({nodeName: '#namespace', localName: 'xmlns', namespaceURI: 'http://www.w3.org/1999/xhtml'});
       }
       if(namespaces.length > 0 && !namespaceKeys.xml) {
-        namespaces.push({nodeName: '#namespace', localName: 'xml', namespaceURI: 'http://www.w3.org/XML/1998/namespace'})
+        namespaces.push({nodeName: '#namespace', localName: 'xml', namespaceURI: 'http://www.w3.org/XML/1998/namespace'});
       }
       namespaces = namespaces.sort(function(n1, n2){
         if(n1.localName < n2.localName){ return -1;}
@@ -359,7 +359,31 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         singleNodeValue: namespaces.length ? items[0] : null,
         snapshotLength: namespaces.length,
         snapshotItem: function(idx) { return namespaces[idx]; }
+      };
+    }
+    if(/^namespace::/.test(input)) {
+      var nsId = input.substring(11);
+      var xnamespaces = [];
+      var xitems = [];
+      if(cN.attributes) {
+        for(var ii=0; ii<cN.attributes.length; ii++) {
+          var xattr = cN.attributes[ii];
+          var xitem = xattr.ownerElement.getAttributeNode(xattr.name);
+          if(xitem.nodeName === 'xmlns:'+nsId) {
+            xitems.push(xitem);
+            xnamespaces.push({
+              nodeName: '#namespace',
+              localName: nsId,
+              namespaceURI: xitem.nodeValue
+            });
+          }
+        }
       }
+      return {
+        singleNodeValue: xnamespaces.length ? xitems[0] : null,
+        snapshotLength: xnamespaces.length,
+        snapshotItem: function(idx) { return xnamespaces[idx]; }
+      };
     }
 
     if(/^local-name|namespace-uri|name\(|child::|parent::|descendant::|descendant-or-self::|ancestor::|ancestor-or-self::sibling|following::|following-sibling::|preceding-sibling::|preceding::|attribute::/.test(input)) {

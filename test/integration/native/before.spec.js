@@ -303,6 +303,7 @@ const filterAttributes = (attributes) => {
 const assertNodesNamespace = (expr, node, expected) => {
   const result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
   assert.equal(result.snapshotLength, expected.length);
+  expected = sortedNamespaces(expected);
   for(let j = 0; j < result.snapshotLength; j++) {
     const item = result.snapshotItem(j);
     assert.equal(item.nodeName, '#namespace');
@@ -326,6 +327,14 @@ const sorted = (nodes) => {
     if (a.nodeName < b.nodeName) return -1;
     return 0;
   });
+};
+
+const sortedNamespaces = (namespaces) => {
+  return namespaces.sort((ns1, ns2) => {
+    if(ns1[0] > ns2[0]) {return 1;}
+    if(ns1[0] < ns2[0]) {return -1;}
+    return 0;
+  })
 };
 
 const snapshotItems = (result) => {
