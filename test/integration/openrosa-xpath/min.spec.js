@@ -72,8 +72,8 @@ describe('#min()', () => {
     assertNumberValue(node, null, "min(*)",  -10);
   });
 
-  it(() => {
-    initDoc(`
+  it('min()', () => {
+    doc = initDoc(`
       <div>
         <div id="FunctionMinCase">
     			<div>5</div>
@@ -96,23 +96,36 @@ describe('#min()', () => {
     			<div>-15</div>
     			<div></div>
     		</div>
+
+        <div id="FunctionNumberCase">
+          <div id="FunctionNumberCaseNumber">123</div>
+          <div id="FunctionNumberCaseNotNumber">  a a  </div>
+          <div id="FunctionNumberCaseNumberMultiple">
+            <div>-10</div>
+            <div>11</div>
+            <div>99</div>
+          </div>
+          <div id="FunctionNumberCaseNotNumberMultiple">
+            <div>-10</div>
+            <div>11</div>
+            <div>a</div>
+          </div>
+        </div>
+
       </div>`);
 
-      let node = doc.getElementById('FunctionMaxMinCaseEmpty');
-      assertNumberValue(node, null, 'min(self::*)', NaN);
+    let node = doc.getElementById('FunctionMaxMinCaseEmpty');
+    assertNumberValue(node, null, 'min(self::*)', NaN);
 
-      node = doc.getElementById('FunctionMaxMinWithEmpty');
-      assertNumberValue(node, null, 'min(*)', NaN);
+    node = doc.getElementById('FunctionMaxMinWithEmpty');
+    assertNumberValue(node, null, 'min(*)', NaN);
 
-      node = doc.getElementById('FunctionMinCase');
-      assertNumberValue(node, null, 'min(*)', 0);
+    node = doc.getElementById('FunctionMinCase');
+    assertNumberValue(node, null, 'min(*)', 0);
 
-      node = doc.getElementById('FunctionM0nCase');
-      assertNumberValue(node, null, 'min(*)', 0);
+    node = doc.getElementById('FunctionNumberCaseNotNumberMultiple');
+    assertNumberValue(node, null, 'min(node())', NaN);
 
-      node = doc.getElementById('FunctionNumberCaseNotNumberMultiple');
-      assertNumberValue(node, null, 'min(node())', NaN);
-
-      assertNumberValue("min(//*[@id='FunctionMinCase']/*[position()=1], //*[@id='FunctionMinCase']/*[position()=2], //*[@id='FunctionMinCase']/*[position()=3])')", 0);
+    //TODO assertNumberValue("min(//*[@id='FunctionMinCase']/*[position()=1], //*[@id='FunctionMinCase']/*[position()=2], //*[@id='FunctionMinCase']/*[position()=3])')", 0);
   });
 });

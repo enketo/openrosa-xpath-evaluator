@@ -110,13 +110,6 @@ describe('native string functions', () => {
     assertString("concat('a', 'b', 'c', 'd', 'e')", "abcde");
   });
 
-  // Skipped by enketo-xpathjs too
-  //in javarosa this needs to return ''
-  // xit('concat() fails when not enough arguments provided', () => {
-  //   assert.throw(() => xEval('concat()'), Error);
-  //   assert.throw(() => xEval('concat(1)'), Error);
-  // });
-
   it('starts-with', () => {
     assertTrue("starts-with('', '')");
     assertTrue("starts-with('a', '')");

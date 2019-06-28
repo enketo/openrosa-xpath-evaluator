@@ -586,6 +586,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
             cur = tail;
             break;
           }
+
           if(cur.v !== '') handleXpathExpr();
           backtrack();
           cur = stack.pop();
@@ -613,8 +614,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
             if(cur.v === './*') handleXpathExpr();
           } else if(cur.v === '' &&
             ([')', ''].includes(nextChar()) ||
-            input.substring(i+1).trim() === ')')
-         ) {
+            input.substring(i+1).trim() === ')')) {
             cur.v = c;
             handleXpathExpr();
           } else {

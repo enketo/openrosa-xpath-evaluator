@@ -29,11 +29,8 @@ describe('location path', () => {
       </html>`);
     h = {
       oneNamespaceNode(node) {
-        let result, item;
-
-        //TODO result = xEval("namespace::node()", node, XPathResult.ANY_UNORDERED_NODE_TYPE);
-        result = xEval(".", node, XPathResult.ANY_UNORDERED_NODE_TYPE);
-        item = result.singleNodeValue;
+        const result = xEval("namespace::node()", node, XPathResult.ANY_UNORDERED_NODE_TYPE);
+        const item = result.singleNodeValue;
         assert.isNotNull(item);
         //TODO assert.equal(item.nodeType, 13);
 
@@ -52,8 +49,8 @@ describe('location path', () => {
       [doc.getElementById('LocationPathCase'), [doc]], // Element
       [doc.getElementById('LocationPathCaseText').firstChild, [doc]], // Text
       [doc.getElementById('LocationPathCaseComment').firstChild, [doc]], // Comment
-      //TODO [filterAttributes(doc.getElementById('LocationPathCaseAttribute').attributes)[0], [doc]] // Attribute
-   ];
+      // [filterAttributes(doc.getElementById('LocationPathCaseAttribute').attributes)[0], [doc]] // Attribute
+    ];
 
     // ProcessingInstruction
     node = doc.getElementById('LocationPathCaseProcessingInstruction').firstChild;
@@ -72,7 +69,7 @@ describe('location path', () => {
     }
   });
 
-  it('root namespace', () => {
+  xit('root namespace', () => {
     const input = [h.oneNamespaceNode(doc.getElementById('LocationPathCaseNamespace')), [doc]]; // XPathNamespace
     assertNodes("/", input[0], input[1]);
   });
@@ -109,30 +106,6 @@ describe('location path', () => {
    ]);
   });
 
-  // Also skipped by enketo-xpathjs
-  // xit('node namespace', () => {
-  //   const node = doc.getElementById('LocationPathCaseNamespaceParent'); //
-  //   nsr = getXhtmlResolver(doc);
-  //   assertNodesNamespace("child::* /namespace::*", node, [
-  //       ['', 'http://asdss/'],
-  //       ['ev', 'http://some-namespace.com/nss'],
-  //       ['xml', 'http://www.w3.org/XML/1998/namespace'],
-  //       ['', 'http://www.w3.org/1999/xhtml'],
-  //       ['ab', 'hello/world2'],
-  //       ['a2', 'hello/world'],
-  //       ['aa', 'http://saa/'],
-  //       ['ev', 'http://some-namespace.com/nss'],
-  //       ['xml', 'http://www.w3.org/XML/1998/namespace'],
-  //       ['', 'http://www.w3.org/1999/xhtml'],
-  //       ['ev', 'http://some-namespace.com/nss'],
-  //       ['xml', 'http://www.w3.org/XML/1998/namespace'],
-  //       ['', 'http://www.w3.org/1999/xhtml'],
-  //       ['aa', 'http://saa/'],
-  //       ['ev', 'http://some-namespace.com/nss'],
-  //       ['xml', 'http://www.w3.org/XML/1998/namespace']
-  //  ]);
-  // });
-  //
   it('duplicates handled correctly', () => {
     nsr = getXhtmlResolver(doc);
     assertNodes("ancestor-or-self::* /ancestor-or-self::*", doc.getElementById('LocationPathCaseDuplicates'), [
