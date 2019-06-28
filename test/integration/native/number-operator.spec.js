@@ -55,11 +55,11 @@ describe('number operators', () => {
   });
 
   it('- with string without spacing AFTER - fails ', () => {
-    assertNumber(doc, null, "asdf -asdf", NaN);
+    assertNumberValue("asdf -asdf", NaN);
   });
 
   it('- with strings', () => {
-    assertNumber(doc, null, "asdf - asdf", NaN);
+    assertNumberValue("asdf - asdf", NaN);
   });
 
   it('- works as expected', () => {

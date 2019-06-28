@@ -50,7 +50,7 @@ describe('location path', () => {
       [doc.getElementById('LocationPathCaseText').firstChild, [doc]], // Text
       [doc.getElementById('LocationPathCaseComment').firstChild, [doc]], // Comment
       // [filterAttributes(doc.getElementById('LocationPathCaseAttribute').attributes)[0], [doc]] // Attribute
-    ];
+   ];
 
     // ProcessingInstruction
     node = doc.getElementById('LocationPathCaseProcessingInstruction').firstChild;
@@ -103,7 +103,7 @@ describe('location path', () => {
       filterAttributes(node.childNodes[1].attributes)[1],
       filterAttributes(node.childNodes[2].attributes)[0],
       filterAttributes(node.childNodes[3].attributes)[0]
-   ]);
+    ]);
   });
 
   it('duplicates handled correctly', () => {
@@ -113,6 +113,29 @@ describe('location path', () => {
       doc.querySelector('body'),
       doc.getElementById('LocationPathCase'),
       doc.getElementById('LocationPathCaseDuplicates')
-   ]);
+    ]);
+  });
+
+  xit( 'node namespace', () => {
+    const node = doc.getElementById( 'LocationPathCaseNamespaceParent' );
+
+    assertNodesNamespace("child::* /namespace::*", node, [
+      ['', 'http://asdss/'],
+      ['ev', 'http://some-namespace.com/nss'],
+      ['xml', 'http://www.w3.org/XML/1998/namespace'],
+      ['', 'http://www.w3.org/1999/xhtml'],
+      ['ab', 'hello/world2'],
+      ['a2', 'hello/world'],
+      ['aa', 'http://saa/'],
+      ['ev', 'http://some-namespace.com/nss'],
+      ['xml', 'http://www.w3.org/XML/1998/namespace'],
+      ['', 'http://www.w3.org/1999/xhtml'],
+      ['ev', 'http://some-namespace.com/nss'],
+      ['xml', 'http://www.w3.org/XML/1998/namespace'],
+      ['', 'http://www.w3.org/1999/xhtml'],
+      ['aa', 'http://saa/'],
+      ['ev', 'http://some-namespace.com/nss'],
+      ['xml', 'http://www.w3.org/XML/1998/namespace']
+   ], getXhtmlResolver(doc));
   });
 });
