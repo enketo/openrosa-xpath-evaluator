@@ -314,8 +314,52 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
       }
     }
 
-    if(input.indexOf('namespace::node()')) {
+    if(input === 'string(namespace::node())') {
       input = input.replace('namespace::node()', 'namespace-uri(/*)');
+    }
+
+    if(input === 'namespace::node()') {
+      var namespaces = [];
+      var namespaceKeys = {};
+      var items = [];
+      var node = cN;
+      while(node) {
+        if(node.attributes) {
+          for(var i=0; i<node.attributes.length; i++) {
+            var attr = node.attributes[i];
+            var item = attr.ownerElement.getAttributeNode(attr.name);
+            if(item.nodeName.startsWith('xmlns') && !namespaceKeys[item.nodeName]) {
+              var names = item.nodeName.split(':');
+              namespaceKeys[item.nodeName] = item.nodeName;
+              if(item.nodeValue.length) {
+                items.push(item);
+                namespaces.push({
+                  nodeName: '#namespace',
+                  localName: names.length > 1 ? names[1] : '',
+                  namespaceURI: item.nodeValue
+                });
+              }
+            }
+          }
+        }
+        node = cN.nodeType === 1 ? node.parentNode : null;
+      }
+      if(namespaces.length > 0 && !namespaceKeys.xmlns) {
+        namespaces.push({nodeName: '#namespace', localName: 'xmlns', namespaceURI: 'http://www.w3.org/1999/xhtml'})
+      }
+      if(namespaces.length > 0 && !namespaceKeys.xml) {
+        namespaces.push({nodeName: '#namespace', localName: 'xml', namespaceURI: 'http://www.w3.org/XML/1998/namespace'})
+      }
+      namespaces = namespaces.sort(function(n1, n2){
+        if(n1.localName < n2.localName){ return -1;}
+        if(n1.localName > n2.localName){ return 1;}
+        return 0;
+      });
+      return {
+        singleNodeValue: namespaces.length ? items[0] : null,
+        snapshotLength: namespaces.length,
+        snapshotItem: function(idx) { return namespaces[idx]; }
+      }
     }
 
     if(/^local-name|namespace-uri|name\(|child::|parent::|descendant::|descendant-or-self::|ancestor::|ancestor-or-self::sibling|following::|following-sibling::|preceding-sibling::|preceding::|attribute::/.test(input)) {

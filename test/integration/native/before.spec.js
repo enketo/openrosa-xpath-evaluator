@@ -301,14 +301,13 @@ const filterAttributes = (attributes) => {
 //
 
 const assertNodesNamespace = (expr, node, expected) => {
-  node = (node && node.ownerDocument) || node;
   const result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
   assert.equal(result.snapshotLength, expected.length);
   for(let j = 0; j < result.snapshotLength; j++) {
     const item = result.snapshotItem(j);
-    expect(item.nodeName).to.equal('#namespace');
-    expect(item.localName).to.equal(expected[j][0]);
-    expect(item.namespaceURI).to.equal(expected[j][1]);
+    assert.equal(item.nodeName, '#namespace');
+    assert.equal(item.localName, expected[j][0]);
+    assert.equal(item.namespaceURI, expected[j][1]);
   }
 };
 
