@@ -48,19 +48,19 @@ describe('nodeset id() function', () => {
     assertNodes("id('FunctionNodesetIdCaseXhtmlDefaultNamespace')", doc, [node]);
   });
 
-  // Not supported by browsers
+  // Browsers do not return anything in this case
   xit('works if the namespace of the id attribute is the XHTML namespace', () => {
     const node = doc.getElementById('FunctionNodesetIdCaseXhtmlNamespaceContainer').firstChild;
     assertNodes("id('FunctionNodesetIdCaseXhtmlNamespace')", doc, [node]);
   });
 
-  // Not supported by browsers
+  // Browsers do not return anything in this case
   xit('works if the namespace of the id attribute is defined in the parent container', () => {
       const node = doc.getElementById('FunctionNodesetIdCaseXhtmlNamespaceParentContainer').firstChild;
       assertNodes("id('FunctionNodesetIdCaseXhtmlNamespaceParent')", doc, [node]);
   });
 
-  // Not supported by browsers
+  // Browsers do not return anything in this case
   xit('works if the id attribute has the xml namespace alias', () => {
       const node = doc.getElementById('FunctionNodesetIdXmlNamespaceContainer').firstChild;
       assertNodes("id('FunctionNodesetIdXmlNamespace')", doc, [node]);

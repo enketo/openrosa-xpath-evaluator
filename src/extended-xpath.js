@@ -401,6 +401,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
 
     if((rT > 3 && !input.startsWith('randomize')) ||
       /^count\(|boolean\(/.test(input)) {
+
       if(input.startsWith('count(')) {
         if(input.indexOf(',') > 0) throw TOO_MANY_ARGS;
         if(input === 'count()') throw TOO_FEW_ARGS;
@@ -411,7 +412,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
         var bargs = input.substring(8, input.indexOf(')')).split(',');
         if(bargs.length > 1) throw TOO_MANY_ARGS;
       }
-      // if(input === 'namespace::node()') { input = '.'; }
+      if(input === '/') cN = cN.ownerDocument || cN;
       return wrapped(input, cN, nR, rT, r);
     }
     if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 &&

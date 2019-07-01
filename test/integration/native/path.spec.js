@@ -69,9 +69,9 @@ describe('location path', () => {
     }
   });
 
-  xit('root namespace', () => {
-    const input = [h.oneNamespaceNode(doc.getElementById('LocationPathCaseNamespace')), [doc]]; // XPathNamespace
-    assertNodes("/", input[0], input[1]);
+  it('root namespace', () => {
+    const node = h.oneNamespaceNode(doc.getElementById('LocationPathCaseNamespace'));
+    assertNodes("/", node, [doc]);
   });
 
   it('root node', () => {
@@ -116,8 +116,8 @@ describe('location path', () => {
     ]);
   });
 
-  xit( 'node namespace', () => {
-    const node = doc.getElementById( 'LocationPathCaseNamespaceParent' );
+  xit('node namespace', () => {
+    const node = doc.getElementById('LocationPathCaseNamespaceParent' );
 
     assertNodesNamespace("child::* /namespace::*", node, [
       ['', 'http://asdss/'],

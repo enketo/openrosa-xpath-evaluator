@@ -12,9 +12,9 @@ const initDoc = (xml) => {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
   node = null;
   evaluator = new ExtendedXpathEvaluator(
-    v => {
+    (v, xnode) => {
       if(!rt || rt<7 || v.startsWith('//')) rt = null; //TODO ???
-      const result = doc.evaluate.call(doc, v, node || doc, nsr, rt || XPathResult.ANY_TYPE, null);
+      const result = doc.evaluate.call(doc, v, xnode || node || doc, nsr, rt || XPathResult.ANY_TYPE, null);
       // console.log(`${v} => ${result.resultType}`);
       return result;
     },
