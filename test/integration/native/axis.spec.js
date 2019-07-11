@@ -82,7 +82,6 @@ describe('axes', () => {
             }
           }
           assert.equal(typeof attribute, 'object');
-          //expect(attribute).to.be.an('object'); // why does this fail?
           return attribute;
         },
 
@@ -208,7 +207,6 @@ describe('axes', () => {
       assertNodes("self::node()", h.getNodeProcessingInstruction(), [h.getNodeProcessingInstruction()]);
     });
 
-    // also skipped in enketo-xpathjs ???
     it('works with node namespace context', () => {
       assertNodes("self::node()", h.getNodeNamespace(), [h.getNodeNamespace()]);
     });

@@ -26,16 +26,10 @@ describe('#date()', () => {
     });
 
     it('dates as string', () => {
-      [
-        [ '"2018-01-01"', '2018-01-01' ],
-        [ 'date("2018-01-01")', '2018-01-01' ], //T00:00:00.000-07:00'], // America/Phoenix
-        // [ '"2018-01-01" + 1', 17533.29167 ], // converted to Number according to regular XPath rules
-        // [ 'date("2018-01-01" + 1)', '2018-01-02' ], //T00:00:00.000-07:00'],
-      ].forEach(([expr, expected]) => {
-        assertStringValue(expr, expected);
-        // const r = typeof t[ 1 ] === 'number' ? Math.round( result.stringValue * 100000 ) / 100000 : result.stringValue;
-        // expect( r ).to.equal( t[ 1 ] );
-      });
+      assertStringValue('"2018-01-01"', '2018-01-01');
+      assertStringValue('date("2018-01-01")', '2018-01-01');
+      // assertStringValue('"2018-01-01" + 1', 17533.29167);
+      assertStringValue('date("2018-01-01" + 1)', '2018-01-02');
 
       // [
       //   "today()",
@@ -183,8 +177,8 @@ describe('#date()', () => {
       ["date('2100-01-02') > now()", true],
       // ["now() > today()", true],
       // ['today() = "2018-06-26"', true],
-      // ['"2018-06-25" = "2018-06-25T00:00:00.000-07:00"', true],
-      // ['"2018-06-25" < "2018-06-25T00:00:00.000-07:00"', false],
+      ['"2018-06-25" = "2018-06-25T00:00:00.000-07:00"', true],
+      ['"2018-06-25" < "2018-06-25T00:00:00.000-07:00"', false],
       ['"2018-06-25" < "2018-06-25T00:00:00.001-07:00"', true],
    ].forEach(([expr, expected]) => {
      assertBoolean(expr, expected)
@@ -215,15 +209,15 @@ describe('#date()', () => {
     });
   });
 
-  it('date calculations', () => {
+  xit('date calculations', () => {
     [
-      // ["today() > ('2012-01-01' + 10)", doc, true],
+      ["today() > ('2012-01-01' + 10)", doc, true],
       // ["10 + date('2012-07-24') = date('2012-08-03')", doc, true],
       [". = date('2012-07-24') - 1", doc.getElementById("FunctionDateCase1" ), true],
       // [". > date('2012-07-24') - 2", doc.getElementById("FunctionDateCase1" ), true],
       [". < date('2012-07-25') - 1", doc.getElementById("FunctionDateCase1" ), true],
       // [". = 30 + /xhtml:html/xhtml:body/xhtml:div[@id='FunctionDate']/xhtml:div[@id='FunctionDateCase4']", doc.getElementById("FunctionDateCase1" ), true],
-      // ["10 + '2012-07-24' = '2012-08-03'", doc, true]
+      ["10 + '2012-07-24' = '2012-08-03'", doc, true]
     ].forEach(([expr, node, expected]) => {
       assertBoolean(node, null, expr, expected);
       // do the same tests for the alias date-time()

@@ -37,7 +37,7 @@ describe('nodeset id() function', () => {
     assertNodes("id('FunctionNodesetIdCaseSimpleDoesNotExist')", doc, []);
   });
 
-  // Browsers still return the node for this scenario when the nodes namespace is empty (xmlns='')
+  //TODO Browsers still return the node for this scenario when the nodes namespace is empty (xmlns='')
   xit('returns empty result if the default namespace for the node is empty', () => {
     const node = doc.getElementById('FunctionNodesetIdCaseNoDefaultNamespaceContainer').firstChild;
     assertNodes("id('FunctionNodesetIdCaseNoDefaultNamespace')", doc, []);
