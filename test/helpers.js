@@ -1,8 +1,8 @@
 
 /*jshint unused:false*/
 const assert = chai.assert;
-const openRosaXpathExtensions = require('../src/openrosa-extensions');
-const ExtendedXpathEvaluator = require('../src/extended-xpath');
+const openRosaXPathExtensions = require('../src/openrosa-extensions');
+const ExtendedXPathEvaluator = require('../src/extended-xpath');
 const config = require('../src/config');
 
 let doc, xEval, evaluator, nsr, rt, node, docs = [];
@@ -24,20 +24,21 @@ const initDoc = (xml, xnsr) => {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
   node = null;
   nsr = xnsr;
-  evaluator = new ExtendedXpathEvaluator(
+  evaluator = new ExtendedXPathEvaluator(
     (v, xnode) => {
       if(!rt || rt<7 || v.startsWith('//')) rt = null; //TODO ???
       const result = doc.evaluate.call(doc, v, xnode || node || doc, nsr, rt || XPathResult.ANY_TYPE, null);
       // console.log(`${v} => ${result.resultType}`);
       return result;
     },
-    openRosaXpathExtensions(config));
+    openRosaXPathExtensions(config));
   xEval = function(e, xnode, resultType, xnsr) {
     node = xnode;
     rt = resultType;
     _document(e);
     return evaluator.evaluate(e, node, xnsr || nsr, rt, null);
   };
+  doc.evaluator = evaluator;
   doc.xEval = xEval;
   return doc;
 };

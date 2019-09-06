@@ -11,15 +11,42 @@ For more info on extended XPath expressions/bindings supported by XForms/OpenRos
 * [OpenDataKit Binding documentation](https://opendatakit.org/help/form-design/binding/)
 * [JavaRosa XPath functions](https://bitbucket.org/javarosa/javarosa/wiki/xform)
 
-# TODO
 
-Check that UUID generation is correct (random?  UUID vX?)
+## Getting Started
 
-# Limitations
+  1. Include with `npm install openrosa-xpath-evaluator --save` or manually download and add [dist/orxe.min.js](https://raw.github.com/medic/openrosa-xpath-evaluator/master/dist/orxe.min.js) file.
 
-Any expression made requesting a node-type result will be delegated to the underlying xpath evaluator.
+  2. Include orxe.min.js in the \<head> of your HTML document.
+     NOTE: Make sure HTML document is in strict mode i.e. it has a !DOCTYPE declaration at the top!
 
-Also, the expression parser is currently very basic and will fail for some xpath expressions.  Some examples of expressions that are and are not supported follow.
+  2. Initialize orxe:
+
+    ```js
+    // bind XPath methods to document and window objects
+    // NOTE: This will overwrite native XPath implementation if it exists
+    orxe.bindDomLevel3XPath();
+    ```
+
+  3. You can now use XPath expressions to query the DOM:
+
+    ```js
+    var result = document.evaluate(
+        '//ul/li/text()', // XPath expression
+        document, // context node
+        null, // namespace resolver
+        XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+    );
+
+    // loop through results
+    for (var i = 0; i < result.snapshotLength; i++) {
+        var node = result.snapshotItem(i);
+        alert(node.nodeValue);
+    }
+    ```
+
+# External Libraries
+This library does not depend on any external libraries.
+But the odk digest function can be supported by installing the node-forge library.
 
 ## Supported XPath expressions:
 
@@ -91,3 +118,51 @@ Also, the expression parser is currently very basic and will fail for some xpath
 ## Unsupported XPath expressions:
 
 (Add any examples of known-unsupported expressions here and to `test/extended-xpath.spec.js`.)
+
+## Support for custom functions:
+To support custom functions, this library can be extended with the following.
+
+```
+orxe.customXPathFunction.add('comment-status', function(a) {
+  if(arguments.length !== 1) throw new Error('Invalid args');
+  const curValue = a.v[0]; // {t: 'arr', v: [{'status': 'good'}]}
+  const status = JSON.parse(curValue).status;
+  return new orxe.customXPathFunction.type.StringType(status);
+});
+```
+
+The arguments passed to the custom function (string, number, xpath) will determine the
+arguments passed by the library to the function implementation.
+The argument format will be any of these:
+```
+{t: 'arr', v:[]}
+{t: 'num', v:123}
+{t: 'str', v:'123'}
+```
+
+The return types currently supported are these:
+```
+orxe.customXPathFunction.type.StringType
+orxe.customXPathFunction.type.NumberType
+orxe.customXPathFunction.type.BooleanType
+orxe.customXPathFunction.type.DateType
+```
+
+## Configuration support
+The library can be configured with:
+```
+orxe.config = {
+  allowStringComparison: false,
+  includeTimeForTodayString: false,
+  returnCurrentTimeForToday: false
+};
+```
+
+#### allowStringComparison (default: false)
+This flag allows comparing expressions like this: 'bcd' > 'abc'.
+
+#### includeTimeForTodayString (default: false)
+This flag allows the inclusion of time for today() expressions that expect XPathResult.STRING_TYPE.
+
+#### returnCurrentTimeForToday (default: false)
+This flag allows time to be considered for today() expressions that expect XPathResult.ANY_TYPE, XPathResult.NUMBER_TYPE, etc.

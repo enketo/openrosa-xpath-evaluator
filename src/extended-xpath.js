@@ -6,7 +6,7 @@ var {isNativeFunction, preprocessNativeArgs} = require('./utils/native');
 var {DATE_STRING, dateToDays} = require('./utils/date');
 var {toNodes, toSnapshotResult} = require('./utils/result');
 var {inputArgs, preprocessInput} = require('./utils/input');
-
+var xpr = require('./xpr');
 /*
  * From http://www.w3.org/TR/xpath/#section-Expressions XPath infix
  * operator precedence is left-associative, and as follows:
@@ -32,7 +32,7 @@ var TOO_MANY_ARGS = new Error('too many args');
 var TOO_FEW_ARGS = new Error('too few args');
 
 // TODO remove all the checks for cur.t==='?' - what else woudl it be?
-var ExtendedXpathEvaluator = function(wrapped, extensions) {
+var ExtendedXPathEvaluator = function(wrapped, extensions) {
   var
     extendedFuncs = extensions.func || {},
     extendedProcessors = extensions.process || {},
@@ -260,7 +260,7 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
             if(expr.startsWith('$')) {
               evaluated = expr;
             } else {
-              evaluated = toInternalResult(wrapped(expr));
+              evaluated = toInternalResult(wrapped(expr, cN));
             }
           }
         }
@@ -479,6 +479,25 @@ var ExtendedXpathEvaluator = function(wrapped, extensions) {
     if(stack[0].tokens.length > 1) err('Too many tokens.');
     return toExternalResult(stack[0].tokens[0], rT);
   };
+
+  this.customXPathFunction = {
+    type: {
+      StringType: xpr.string,
+      NumberType: xpr.number,
+      BooleanType: xpr.boolean,
+      DateType: xpr.date
+    },
+    add: function(name, fnObj) {
+      extendedFuncs[name] = fnObj;
+    },
+    remove: function(name) {
+      delete extendedFuncs[name];
+    },
+    all: function() {
+      return extendedFuncs;
+    }
+  };
+
 };
 
-module.exports = ExtendedXpathEvaluator;
+module.exports = ExtendedXPathEvaluator;

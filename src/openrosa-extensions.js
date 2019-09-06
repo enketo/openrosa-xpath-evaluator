@@ -1,6 +1,7 @@
-const {area, distance, areaOrDistance} = require('./geo');
-const {digest} = require('./digest');
-const {randomToken} = require('./random-token');
+var {area, distance, areaOrDistance} = require('./geo');
+var {digest} = require('./digest');
+var {randomToken} = require('./random-token');
+var xpr = require('./xpr');
 
 var openrosa_xpath_extensions = function(config) {
   var
@@ -9,16 +10,7 @@ var openrosa_xpath_extensions = function(config) {
       MILLIS_PER_DAY = 1000 * 60 * 60 * 24,
       RAW_NUMBER = /^(-?[0-9]+)(\.[0-9]+)?$/,
       DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d\.?\d?\d?(?:Z|[+-]\d\d:\d\d)|.*)?$/,
-      XPR = {
-        nodes: function(val) { return { t:'nodes', v:val }; },
-        boolean: function(val) { return { t:'bool', v:val }; },
-        number: function(val) { return { t:'num', v:val }; },
-        string: function(val) { return { t:'str', v:val }; },
-        date: function(val) {
-          if(!(val instanceof Date)) throw new Error('Cannot create date from ' + val + ' (' + (typeof val) + ')');
-          return { t:'date', v:val };
-        }
-      },
+      XPR = xpr,
       _zeroPad = function(n, len) {
         len = len || 2;
         n = n.toString();
