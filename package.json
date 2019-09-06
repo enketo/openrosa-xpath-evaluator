@@ -4,20 +4,12 @@
   "description": "Wrapper for browsers' XPath evaluator with added support for OpenRosa extensions.",
   "main": "src/orxe.js",
   "scripts": {
-    "lint": "eslint --ignore-path .gitignore .",
+    "lint": "eslint --ignore-path .gitignore src",
     "lint:watch": "esw --ignore-path .gitignore . -w",
     "prebuild": "rimraf dist",
-    "xxxwatch:test": "karma start --no-single-run --compilers js:@babel/register --auto-watch",
-    "xxxtest": "karma start --single-run --compilers js:@babel/register",
-    "xtest": "karma start karma.config.js --single-run",
-    "xtest:watch": "karma start karma.config.js --auto-watch",
-    "travis": "npm run jshint && npm test",
-    "clear": "rm -rf ./dist",
     "build": "npm run clear && webpack",
     "test": "karma start --single-run",
-    "test2": "npm run build && karma start --single-run",
-    "test2:watch": "npm run build && karma start --no-single-run --auto-watch",
-    "test:watch": "karma start --no-single-run --auto-watch"
+    "travis": "npm run lint && npm run test"
   },
   "author": "Alex",
   "license": "Apache-2.0",

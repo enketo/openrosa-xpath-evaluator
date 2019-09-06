@@ -17,7 +17,7 @@ const digest = (message, algo, encoding) => {
     return forge.util.encode64(hashBuffer.bytes());
   }
   return md.digest().toHex();
-}
+};
 
 module.exports = {
   digest

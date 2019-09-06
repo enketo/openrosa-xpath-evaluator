@@ -150,7 +150,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
   /**
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
-  this.evaluate = function(input, cN, nR, rT, r) {
+  this.evaluate = function(input, cN, nR, rT) {
     input = preprocessInput(input, rT);
     if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
 
@@ -254,7 +254,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           evaluated = wrapped(expr);
         } else {
           if(rT > 3 || (cur.v.indexOf('position()=') >= 0 &&
-            stack.length === 1 && !/^[a-z]*[\(|\[]{1}/.test(cur.v))) {
+            stack.length === 1 && !/^[a-z]*[(|[]{1}/.test(cur.v))) {
             evaluated = toNodes(wrapped(expr));
           } else {
             if(expr.startsWith('$')) {
@@ -358,7 +358,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
                 expectedReturnType = XPathResult.STRING_TYPE;
               }
             }
-            var res = callFn(cur.v, cur.tokens, expectedReturnType)
+            var res = callFn(cur.v, cur.tokens, expectedReturnType);
             if(cur.v === 'node' && res.t === 'arr' && res.v.length > 0)
               res.v = [res.v[0]]; // only interested in first element
             peek().tokens.push(res);

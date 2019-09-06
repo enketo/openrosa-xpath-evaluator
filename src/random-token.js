@@ -7,8 +7,8 @@ function randomToken(length) {
 	return new Array(loops)
     .fill(_random13chars)
     .reduce((string, func) => {
-		    return string + func();
-	   }, '').substring(0, length);
+      return string + func();
+    }, '').substring(0, length);
 }
 
 module.exports = {

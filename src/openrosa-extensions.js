@@ -189,7 +189,7 @@ var openrosa_xpath_extensions = function(config) {
           trues++;
         } else if (arg.t === 'arr') {
           for(j=0;j<arg.v.length;j++) {
-            if(Boolean(arg.v[j])) trues++;
+            if(arg.v[j]) trues++;
           }
         }
       }
@@ -278,7 +278,7 @@ var openrosa_xpath_extensions = function(config) {
     'format-date': function(date, format) {
       return XPR.string(format_date(date, format)); },
     'if': function(con, a, b) {
-      if(con.t === 'bool') return XPR.string(Boolean(con.v) ? a.v : b.v);
+      if(con.t === 'bool') return XPR.string(con.v ? a.v : b.v);
       if(con.t === 'arr') {
         var exists = con.v.length && con.v[0] !== null;
         return XPR.string(exists ? a.v : b.v);
@@ -477,7 +477,7 @@ var openrosa_xpath_extensions = function(config) {
       }
 
       for(i=0; i < values.length; i++) {
-        if(Boolean(values[i])) {
+        if(values[i]) {
           weightedTrues += weights[i];
         }
       }
