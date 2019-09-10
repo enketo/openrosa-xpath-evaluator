@@ -38,8 +38,9 @@ describe('date comparison', () => {
   });
 
   describe('today', () => {
+    // We don't include time in today strings by default (config.js).
     it('should be less than today()', () => {
-      assert.ok(doc.xEval(todayString + ' < today()').booleanValue);
+      assert.notOk(doc.xEval(todayString + ' < today()').booleanValue);
     });
 
     it('should be less than or equal to today()', () => {
@@ -50,8 +51,9 @@ describe('date comparison', () => {
       assert.notOk(doc.xEval(todayString + ' > today()').booleanValue);
     });
 
+    // We don't include time in today strings by default (config.js).
     it('should be greater than or equal to today()', () => {
-      assert.notOk(doc.xEval(todayString + ' >= today()').booleanValue);
+      assert.ok(doc.xEval(todayString + ' >= today()').booleanValue);
     });
   });
 
@@ -72,17 +74,18 @@ describe('date comparison', () => {
       assert.ok(doc.xEval('today() >= ' + yesterdayString).booleanValue);
     });
 
-
     it('should not be less than today', () => {
       assert.notOk(doc.xEval('today() < ' + todayString).booleanValue);
     });
 
+    // We don't include time in today strings by default (config.js).
     it('because it is a precise moment, should not be less than or equal to today', () => {
-      assert.notOk(doc.xEval('today() <= ' + todayString).booleanValue);
+      assert.ok(doc.xEval('today() <= ' + todayString).booleanValue);
     });
 
+    // We don't include time in today strings by default (config.js).
     it('because it is a precise moment, should be greater than today', () => {
-      assert.ok(doc.xEval('today() > ' + todayString).booleanValue);
+      assert.notOk(doc.xEval('today() > ' + todayString).booleanValue);
     });
 
     it('because it is a precise moment, should be greater than or equal to today', () => {

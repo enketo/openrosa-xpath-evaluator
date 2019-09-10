@@ -1,4 +1,4 @@
-const {assertBoolean, assertString} = require('../helpers');
+const {assertBoolean, assertString, assertNumberValue} = require('../helpers');
 
 describe('infix operators', () => {
   describe('math operators', () => {
@@ -147,12 +147,14 @@ describe('infix operators', () => {
         '"2" &gt;= "1"' : true,
         '"1" &lt;= "1"' : true,
         '"1" &gt;= "1"' : true,
-        '"aardvark" < "aligator"' : true,
-        '"aardvark" <= "aligator"' : true,
+        // We don't compare strings by default.
+        // We can configure this in config.js
+        '"aardvark" < "aligator"' : false,
+        '"aardvark" <= "aligator"' : false,
         '"aligator" < "aardvark"' : false,
         '"aligator" <= "aardvark"' : false,
-        '"possum" > "aligator"' : true,
-        '"possum" >= "aligator"' : true,
+        '"possum" > "aligator"' : false,
+        '"possum" >= "aligator"' : false,
         '"aligator" > "possum"' : false,
         '"aligator" >= "possum"' : false,
       }, (expectedBoolean, expr) => {
@@ -176,6 +178,23 @@ describe('infix operators', () => {
           assertBoolean(expr, expectedBoolean);
         });
       });
+    });
+  });
+  describe('number operations', () => {
+    it( '*,+,-,mod,div precendence rules are applied correctly', () => {
+      [
+          [ "1+2*3", 7 ],
+          [ "2*3+1", 7 ],
+          [ "1-10 mod 3 div 3", 0.6666666666666667 ],
+          [ "4-3*4+5-1", -4 ],
+          [ "(4-3)*4+5-1", 8 ],
+          [ "8 div 2 + 4", 8 ]
+      ].forEach(([expr, expected]) => {
+          assertNumberValue(expr, expected);
+      });
+
+      assertNumberValue('1-1', 0);
+      assertNumberValue('1 - 1', 0);
     });
   });
 });

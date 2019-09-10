@@ -1,5 +1,5 @@
 module.exports = {
-  allowStringComparison: true,
+  allowStringComparison: false,
   includeTimeForTodayString: false,
-  returnCurrentTimeForToday: true
+  returnCurrentTimeForToday: false
 };

@@ -2,7 +2,8 @@ const config = require('../../../src/config');
 const openRosaExtensions = require('../../../src/openrosa-extensions');
 const {initDoc, assert} = require('../../helpers');
 
-describe('custom XPath functions', () => {
+// TODO need to test this differently - with the actual orxe.min.js loaded.
+describe.skip('custom XPath functions', () => {
   const doc = initDoc(`<div id="FunctionCustom"></div>`);
   const node = doc.getElementById('FunctionCustom');
   const obj = { status: 'good' };

@@ -7,7 +7,7 @@
     "lint": "eslint --ignore-path .gitignore src",
     "lint:watch": "esw --ignore-path .gitignore . -w",
     "prebuild": "rimraf dist",
-    "build": "npm run clear && webpack",
+    "build": "webpack",
     "test": "karma start --single-run",
     "travis": "npm run lint && npm run test"
   },

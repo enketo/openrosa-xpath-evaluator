@@ -549,6 +549,23 @@ var openrosa_xpath_extensions = function(config) {
     }
     return t;
   };
+  ret.customXPathFunction = {
+    type: {
+      StringType: XPR.string,
+      NumberType: XPR.number,
+      BooleanType: XPR.boolean,
+      DateType: XPR.date
+    },
+    add: function(name, fnObj) {
+      func[name] = fnObj;
+    },
+    remove: function(name) {
+      delete func[name];
+    },
+    all: function() {
+      return func;
+    }
+  };
 
   return ret;
 };

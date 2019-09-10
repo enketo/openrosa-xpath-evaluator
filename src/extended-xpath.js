@@ -159,7 +159,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       if(args.length && args[0].length && !isNaN(args[0])) { throw INVALID_ARGS; }
       if(input === 'lang()') throw TOO_FEW_ARGS;
       if(/^lang\(/.test(input) && cN.nodeType === 2) cN = cN.ownerElement;
-      const res = wrapped(input, cN);
+      var res = wrapped(input, cN);
       if(rT === XPathResult.NUMBER_TYPE &&
         (res.resultType === XPathResult.UNORDERED_NODE_ITERATOR_TYPE ||
          res.resultType === XPathResult.UNORDERED_NODE_ITERATOR_TYPE)) {
@@ -348,6 +348,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           if(cur.v !== '') handleXpathExpr();
           backtrack();
           cur = stack.pop();
+
           if(cur.t !== 'fn') err();
           if(cur.v) {
             var expectedReturnType = rT;
@@ -478,24 +479,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     if(stack[0].tokens.length >= 3) backtrack();
     if(stack[0].tokens.length > 1) err('Too many tokens.');
     return toExternalResult(stack[0].tokens[0], rT);
-  };
-
-  this.customXPathFunction = {
-    type: {
-      StringType: xpr.string,
-      NumberType: xpr.number,
-      BooleanType: xpr.boolean,
-      DateType: xpr.date
-    },
-    add: function(name, fnObj) {
-      extendedFuncs[name] = fnObj;
-    },
-    remove: function(name) {
-      delete extendedFuncs[name];
-    },
-    all: function() {
-      return extendedFuncs;
-    }
   };
 
 };
