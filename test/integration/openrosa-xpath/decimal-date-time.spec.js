@@ -1,4 +1,4 @@
-const {assertThrow, assertNumberValue, assertNumberRounded } = require('../../helpers');
+const { assertThrow, assertNumberValue } = require('../../helpers');
 
 describe('#decimal-date-time()', () => {
   [
@@ -16,6 +16,7 @@ describe('#decimal-date-time()', () => {
   });
 
   it('different format', () => {
-    assertNumberRounded('decimal-date-time("2018-04-24T15:30:00.000+06:00")', 17645.396, 1000);
+    // assertNumberRounded('decimal-date-time("2018-04-24T15:30:00.000+06:00")', 17645.396, 1000);
+    assertNumberValue('decimal-date-time("2018-04-24T15:30:00.000+06:00")', 17645.395833333332);
   });
 });

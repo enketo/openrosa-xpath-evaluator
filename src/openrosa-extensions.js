@@ -230,7 +230,7 @@ var openrosa_xpath_extensions = function(config) {
     'decimal-date': function(date) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
       var res = Date.parse(_str(date)) / MILLIS_PER_DAY;
-      return XPR.number(Math.round(res * 1000)/1000);
+      return XPR.number(res);
     },
     'decimal-time': function(r) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
@@ -239,7 +239,6 @@ var openrosa_xpath_extensions = function(config) {
       // There is no Time type, and so far we don't need it so we do all validation
       // and conversion here, manually.
       var	m = time.match(/^(\d\d):(\d\d):(\d\d)(\.\d\d?\d?)?(\+|-)(\d\d):(\d\d)$/);
-      var PRECISION = 1000;
       var dec;
       if (m &&
         m[1] < 24 && m[1] >= 0 &&
@@ -254,7 +253,7 @@ var openrosa_xpath_extensions = function(config) {
         if(d.toString() === 'Invalid Date'){
           dec = NaN;
         } else {
-          dec = Math.round((d.getSeconds()/3600 + d.getMinutes()/60 + d.getHours()) * PRECISION/24) / PRECISION;
+          dec = (d.getSeconds()/3600 + d.getMinutes()/60 + d.getHours()) / 24;
         }
       } else {
         dec = NaN;
