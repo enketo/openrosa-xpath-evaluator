@@ -113,6 +113,166 @@ But the odk digest function can be supported by installing the node-forge librar
 * `x/y[position() = 1]`
 * `(book/author)[last()]`
 * `(x/y)[1]`
+* `today() < (today() + 1)
+* `today() < '1970-06-03'
+* `today() + 1 < '1970-06-03'
+* `today() + 1 > '1970-06-03'
+* `../some-path='some-value'`
+* `'some-value'=../some-path`
+* `/simple/xpath/to/node < today() + 1`
+* `"aardvark" < "aligator"`
+* `self::node()`
+* `namespace::node()`
+* `child::node()`
+* `descendant::node()`
+* `descendant-or-self::node()`
+* `parent::node()`
+* `following-sibling::node()`
+* `preceding-sibling::node()`
+* `namespace::node()`
+* `preceding-sibling::node()`
+* `following::node()`
+* `preceding::node()`
+* `attribute::node()`
+* `boolean('a')`
+* `boolean('')`
+* `boolean(true())`
+* `boolean(false())`
+* `boolean(1)`
+* `boolean(-1)`
+* `boolean(1 div 0)`
+* `boolean(0.1)`
+* `boolean('0.0001')`
+* `boolean(0)`
+* `boolean(0.0)`
+* `boolean(number(''))`
+* `boolean(/xhtml:html)`
+* `boolean(/asdf)`
+* `boolean(//xhtml:article)`
+* `boolean(self::node())`
+* `ceiling(-1.55)`
+* `ceiling(2.44)`
+* `ceiling(0.001)`
+* `ceiling(1.5)`
+* `id('ComparisonOperatorCaseNodesetNegative5to5')/* < * `
+* `lang('en')`
+* `lang('EN-us')`
+* `attribute::*`
+* `namespace::*`
+* `child::*`
+* `ancestor-or-self::*`
+* `namespace::ns2:*`
+* `namespace::ns2:ns2`
+* `attribute::attrib3`
+* `child::node()`
+* `child::text()`
+* `child::comment()`
+* `child::processing-instruction()`
+* `child::processing-instruction('custom-process-instruct')`
+* `id('FunctionNodesetIdCaseSimple')`
+* `last()`
+* `xhtml:p[last()]`
+* `last(1)`
+* `*[position()=last()]`
+* `count(xhtml:p)`
+* `local-name(namespace::node())`
+* `local-name(1, 2)`
+* `local-name(1)`
+* `namespace-uri(1, 2)`
+* `namespace-uri(1)`
+* `number(-1.0)`
+* `number(1)`
+* `number(0.199999)`
+* `sum(1, 2)`
+* `ceiling(-1.55)`
+* `round(-1.55)`
+* `sum(self::*)`
+* `sum(*)`
+* `sum(node())`
+* `string('As Df')`
+* `string(attribute::node()[1])`
+* `string(namespace-uri(/*))`
+* `string(namespace::node())`
+* `starts-with('a', '')`
+* `contains('asdf', 'sd')`
+* `substring-before('ab', 'a')`
+* `substring-after('aab', 'a')`
+* `substring('12345', 2)`
+* `string-length('a')`
+* `normalize-space('  a')`
+* `translate('aabb', 'ab', 'ba')`
+* `id('eee40') | id('eee20') | id('eee25') | id('eee10') | id('eee30') | id('eee50')`
+* `id('eee40')/attribute::*[1] | id('eee30')`
+* `id('nss25')/namespace::*`
+* `id('nss40')/namespace::* | id('nss40')/namespace::*`
+* `abs(10.5)`
+* `area("7.9377 -11.5845 0 0;7.9324 -11.5902 0 0;7.927 -11.5857 0 0;7.925 -11.578 0 0;7.9267 -11.5722 0 0;7.9325 -11.5708 0 0;7.9372 -11.5737 0 0;7.9393 -11.579 0 0;7.9377 -11.5845 0 0")`
+* `distance("7.9377 -11.5845 0 0;7.9324 -11.5902 0 0;7.927 -11.5857 0 0;7.925 -11.578 0 0;7.9267 -11.5722 0 0;7.9325 -11.5708 0 0;7.9372 -11.5737 0 0;7.9393 -11.579 0 0;7.9377 -11.5845 0 0")`
+* `boolean-from-string('whatever')`
+* `checklist(-1, 2, 2>1)`
+* `coalesce(/simple/xpath/to/node, "whatever")`
+* `coalesce("FIRST", "whatever")`
+* `count-non-empty(//xhtml:div[@id="FunctionCountNonEmpty"]/xhtml:div)`
+* `count-selected(self::node())`
+* `date-time('1970-01-01')`
+* `number(date('1970-01-01'))`
+* `date('2100-01-02') > now()`
+* `today() > ('2012-01-01' + 10)`
+* `decimal-date-time("1969-12-31T00:00:00Z")`
+* `decimal-date("1969-12-31")`
+* `decimal-time("06:60:00.000-07:00")`
+* `digest("abc", "MD5", "hex")`
+* `ends-with("ba", "a")`
+* `false("a")`
+* `floor(-1.005)`
+* `format-date-time("2001-12-31", "%b %e, %Y")`
+* `if(true(), 5, "abc")`
+* `if(self::node(), "exists", "does not exist")`
+* `int(/simple/xpath/to/node)`
+* `int(7.922021953507237e-12)`
+* `join(" :: ", //item)`
+* `join(" ", "This", "is", "a", "sentence.")`
+* `max(/simple/xpath/to/node)`
+* `max(self::*)`
+* `max(*)`
+* `min(/simple/xpath/to/node)`
+* `not(true())`
+* `not(false())`
+* `once("aa")`
+* `once(. * 10)`
+* `position(..)`
+* `position(.)`
+* `position(../..)`
+* `pow(/simple/xpath/to/node, 0)`
+* `pow(2.5, 2)`
+* `random()`
+* `randomize(//xhtml:div[@id="FunctionRandomize"]/xhtml:div, 'a')`
+* `regex(/simple/xpath/to/node, "[0-9]{3}")`
+* `round("-50.55", "-2")`
+* `selected-at('zero one two three', '4')`
+* `selected("apple baby crimson", "  baby  ")`
+* `substr(/simple/xpath/to/node, 5)`
+* `sum(*)`
+* `sum(self::*)`
+* `sum(node())`
+* `sum(*)`
+* `sum(/root/item)`
+* `sin(2)`
+* `cos(2)`
+* `tan(2)`
+* `acos(0.5)`
+* `asin(0.5)`
+* `atan(0.5)`
+* `log(2)`
+* `log10("a")`
+* `pi()`
+* `exp(2)`
+* `exp10(2)`
+* `sqrt(4)`
+* `uuid()`
+* `uuid(6)`
+* `weighted-checklist(-1, 2, 2>1, 2)`
+
 
 
 ## Unsupported XPath expressions:

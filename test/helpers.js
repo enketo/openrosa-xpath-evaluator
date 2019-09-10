@@ -157,12 +157,10 @@ before(() => {
   _document('');
 });
 
-
-after(() => {
-  // console.log('1234644444444444444444444444444')
-  // console.log(docs);
-});
-
+// Capture all tested functions/docs
+// after(() => {
+//   console.log(docs);
+// });
 
 const getNextChildElementNode = (parentNode) => {
   let childNode = parentNode.firstChild;
@@ -181,46 +179,6 @@ const setAttribute = (node, namespace, name, value) => {
     node.setAttribute(name, value);
   }
 };
-
-// const getXhtmlResolver = (doc) => {
-//   return {
-//     lookupNamespaceURI: (prefix) => {
-//       var namespaces = {
-//         'xhtml': 'http://www.w3.org/1999/xhtml',
-//         'ns2': 'http://asdf/'
-//       };
-//
-//       if (namespaces[prefix]) {
-//         return namespaces[prefix];
-//       }
-//
-//       //var resolver = helpers.documentCreateNSResolver(doc.documentElement);
-//       var resolver = doc.createNSResolver(doc.documentElement);
-//       return resolver.lookupNamespaceURI(prefix);
-//     }
-//   };
-// };
-
-// const getComparableNode = (node) => {
-//   switch (node.nodeType) {
-//     case 2: // attribute
-//     case 13: // namespace
-//         // TODO: IE support
-//         //return node.ownerElement;
-//         throw new Error('Internal Error: getComparableNode - Node type not implemented: ' + node.nodeType);
-//     case 3: // text
-//     case 4: // CDATASection
-//     case 7: // processing instruction
-//     case 8: // comment
-//         return node.parentNode;
-//     case 1: // element
-//     case 9: // document
-//         // leave as is
-//         return node;
-//     default:
-//         throw new Error('Internal Error: getComparableNode - Node type not supported: ' + node.nodeType);
-//   }
-// };
 
 /**
  * @see http://ejohn.org/blog/comparing-document-position/
@@ -421,16 +379,6 @@ const getAllNodes = (node) => {
   return nodes;
 };
 
-/*
-helpers.documentCreateExpression = function(expression, resolver) {
-    return doc.createExpression.call(doc, expression, resolver);
-},*/
-/*
-helpers.documentCreateNSResolver = function(node) {
-    return doc.createNSResolver.call(doc, node);
-};
-*/
-
 const filterAttributes = (attributes) => {
   var i, name, specifiedAttributes = [];
 
@@ -450,21 +398,6 @@ const filterAttributes = (attributes) => {
   }
   return specifiedAttributes;
 };
-
-// const filterSpecifiedAttributes = (attributes) => {
-//   var specifiedAttributes = [], i;
-//
-//   for(i = 0; i < attributes.length; i++) {
-//     if(!attributes[i].specified) {
-//       // ignore non-specified attributes
-//       continue;
-//     }
-//
-//     specifiedAttributes.push(attributes[i]);
-//   }
-//   return specifiedAttributes;
-// },
-//
 
 const assertNodesNamespace = (expr, node, expected) => {
   const result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
