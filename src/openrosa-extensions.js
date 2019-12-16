@@ -2,6 +2,7 @@ var {area, distance, areaOrDistance} = require('./geo');
 var {digest} = require('./digest');
 var {randomToken} = require('./random-token');
 var xpr = require('./xpr');
+var {isValidDate} = require('./utils/date');
 
 var openrosa_xpath_extensions = function(config) {
   var
@@ -55,8 +56,9 @@ var openrosa_xpath_extensions = function(config) {
           t = it.indexOf('T');
           if(t !== -1) it = it.substring(0, t);
           temp = it.split('-');
-          temp = new Date(temp[0], temp[1]-1, temp[2]);
-          return temp;
+          if(isValidDate(temp[0], temp[1], temp[2])) {
+            return new Date(temp[0], temp[1]-1, temp[2]);
+          }
         }
         var d = new Date(it);
         return d == 'Invalid Date' ? null : d;
@@ -71,7 +73,9 @@ var openrosa_xpath_extensions = function(config) {
           return XPR.number((new Date(it).getTime()) / (1000 * 60 * 60 * 24));
         }
         if(rt === XPathResult.STRING_TYPE) {
-          if(!it) return XPR.string('Invalid Date');
+          if(!it) {
+            return XPR.string(config.returnEmptyStringForInvalidDate ? '' : 'Invalid Date');
+          }
           return XPR.string(new Date(it).toISOLocalString());
         }
         if(!it) return XPR.string('Invalid Date');
@@ -171,8 +175,11 @@ var openrosa_xpath_extensions = function(config) {
       }
       return XPR.number(Math.atan2(r.v));
     },
-    'boolean-from-string': function(string) {
-      string = _str(string);
+    'boolean-from-string': function(r) {
+      if(r.t === 'num' && r.v > 0 && !r.decimal) {
+        return XPR.boolean(true);
+      }
+      const string = _str(r);
       return XPR.boolean(string === '1' || string === 'true');
     },
     area: function(r) {

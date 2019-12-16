@@ -74,7 +74,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
 
       if(rt > 3) {
         r = shuffle(r[0], r[1]);
-        return toSnapshotResult(r, XPathResult.UNORDERED_SNAPSHOT_TYPE);
+        return toSnapshotResult(r, rt);
       }
 
       if(!r.t && Array.isArray(r)) {
@@ -154,7 +154,10 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     input = preprocessInput(input, rT);
     if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
 
-    if(isNativeFunction(input)) {
+    if(isNativeFunction(input)
+      && input.indexOf('[selected(') < 0
+      && !(input.startsWith('/') && input.indexOf(' ')>0)
+      && input !== '/') {
       var args = inputArgs(input);
       if(args.length && args[0].length && !isNaN(args[0])) { throw INVALID_ARGS; }
       if(input === 'lang()') throw TOO_FEW_ARGS;
@@ -169,6 +172,32 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           numberValue: val,
           stringValue: val
         };
+      }
+      if(rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.STRING_TYPE &&
+        res.stringValue.startsWith('<xpath:')) {
+        return {
+          resultType: XPathResult.STRING_TYPE,
+          stringValue: res.stringValue.substring(7, res.stringValue.length-1)
+        }
+      }
+      if(rT === XPathResult.STRING_TYPE && res.resultType >= 6) {
+        if(res.snapshotLength) {
+          var firstNode = res.snapshotItem(0);
+          return { resultType: rT, stringValue: firstNode.textContent };
+        }
+        return { resultType: rT, stringValue: '' };
+      }
+      if(rT === XPathResult.STRING_TYPE && res.resultType >= 4) {
+          var firstNode = res.iterateNext();
+          var firstNodeValue =  firstNode ? firstNode.textContent : '';
+          return { resultType: rT, stringValue: firstNodeValue };
+      }
+      if(rT === XPathResult.BOOLEAN_TYPE && res.resultType >= 4) {
+        var firstNode = res.iterateNext();
+        return { resultType: rT, booleanValue: firstNode ? true : false };
+      }
+      if(rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.NUMBER_TYPE) {
+        return { resultType: rT, stringValue: res.numberValue.toString() };
       }
       return res;
     }
@@ -187,16 +216,40 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         if(bargs.length > 1) throw TOO_MANY_ARGS;
       }
       if(input === '/') cN = cN.ownerDocument || cN;
-      return wrapped(input, cN);
+
+      var selectedExprIdx = input.indexOf('[selected(');
+      if(selectedExprIdx > 0) {
+        var selectedExpr = input.substring(0, selectedExprIdx);
+        var selection = input.substring(selectedExprIdx+10, input.indexOf(')]'));
+        var selectionExpr = selection.split(',').map(s => s.trim());
+        var selectionResult = wrapped(`${selectionExpr[0]}/text()`)
+        if(selectionResult.snapshotLength) {
+          var values = selectionResult.snapshotItem(0)
+            .textContent.split(' ').map(v => `${selectionExpr[1]}=\"${v}\"`);
+          return wrapped(`${selectedExpr}[${values.join(' or ')}]`)
+        }
+        return toSnapshotResult([], rT);
+      }
+
+      const res = wrapped(input, cN, nR, rT);
+      if(rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.NUMBER_TYPE) {
+        return {
+          type: XPathResult.STRING_TYPE,
+          stringValue: xx.numberValue.toString()
+        }
+      }
+      return res;
     }
 
-    if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 &&
-        input.indexOf('/') < 0 && input.indexOf('=') < 0 &&
+    if(rT === XPathResult.BOOLEAN_TYPE &&
+        input.indexOf('(') < 0 &&
+        input.indexOf('/') < 0 &&
+        input.indexOf('=') < 0 &&
         input.indexOf('!=') < 0) {
       input = input.replace(/(\n|\r|\t)/g, '');
       input = input.replace(/"(\d)"/g, '$1');
       input = input.replace(/'(\d)'/g, '$1');
-      input = "boolean-from-string("+input+")";
+      input = `boolean-from-string(${input})`;
     }
 
     if(rT === XPathResult.NUMBER_TYPE && input.indexOf('string-length') < 0) {
@@ -247,7 +300,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           }
         }
       },
-      handleXpathExpr = function() {
+      handleXpathExpr = function(returnType) {
         var expr = cur.v;
         var evaluated;
         if(['position'].includes(peek().v)) {
@@ -255,12 +308,12 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         } else {
           if(rT > 3 || (cur.v.indexOf('position()=') >= 0 &&
             stack.length === 1 && !/^[a-z]*[(|[]{1}/.test(cur.v))) {
-            evaluated = toNodes(wrapped(expr));
+            evaluated = toNodes(wrapped(expr, cN, returnType));
           } else {
             if(expr.startsWith('$')) {
               evaluated = expr;
             } else {
-              evaluated = toInternalResult(wrapped(expr, cN));
+              evaluated = toInternalResult(wrapped(expr, cN, returnType));
             }
           }
         }
@@ -345,7 +398,9 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             break;
           }
 
-          if(cur.v !== '') handleXpathExpr();
+          var returnType = input.startsWith('randomize') ? 4 : null;
+          if(cur.v !== '') handleXpathExpr(returnType);
+
           backtrack();
           cur = stack.pop();
 
