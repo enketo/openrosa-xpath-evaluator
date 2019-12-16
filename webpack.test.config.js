@@ -1,6 +1,6 @@
 var path = require('path');
 
-var entryPath = './src/orxe.js';
+var entryPath = './src/XPathJS.js';
 
 module.exports = {
   target: 'web',

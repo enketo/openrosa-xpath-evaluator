@@ -4,13 +4,29 @@ var openrosaExtensions = require('./openrosa-extensions');
 var config = require('./config');
 var extensions = openrosaExtensions(config);
 
+function OpenrosaXPathEvaluator() {
+  var evaluator = new XPathEvaluator();
+  return {
+    createExpression: evaluator.createExpression,
+    createNSResolver: evaluator.createNSResolver,
+    evaluate: function (expr, contextPath, namespaceResolver, resultType, result) {
+      var wrappedXpathEvaluator = function(v, node, rt) {
+        if(resultType < 7 || v.startsWith('//')) resultType = null;
+        var wrappedResultType = rt || resultType || XPathResult.ANY_TYPE;
+        return evaluator.evaluate(v, node || contextPath, namespaceResolver, wrappedResultType || XPathResult.ANY_TYPE, result);
+      };
+      var xevaluator = new ExtendedXPathEvaluator(wrappedXpathEvaluator, extensions);
+      return xevaluator.evaluate.apply(xevaluator, arguments);
+    }
+  }
+}
+
 module.exports = (function(){
 
   var module = {
-    extendedXPathEvaluator: ExtendedXPathEvaluator,
-    openrosaXPathExtensions: openrosaExtensions,
     config: config,
     customXPathFunction: extensions.customXPathFunction,
+    XPathEvaluator: OpenrosaXPathEvaluator,
 
     /**
 		 * Get the current list of DOM Level 3 XPath window and document objects
@@ -46,19 +62,11 @@ module.exports = (function(){
 		 */
 		createDomLevel3XPathBindings: function(options)
 		{
-			var evaluator = new XPathEvaluator(options);
+      var openrosaEvaluator = new OpenrosaXPathEvaluator(options);
 
 			return {
 				'document': {
-          evaluate: function(e, contextPath, namespaceResolver, resultType, result) {
-            var wrappedXpathEvaluator = function(v, node, rt) {
-              if(resultType < 7 || v.startsWith('//')) resultType = null;
-              var wrappedResultType = rt || resultType || XPathResult.ANY_TYPE;
-              return evaluator.evaluate(v, node || contextPath, namespaceResolver, wrappedResultType || XPathResult.ANY_TYPE, result);
-            };
-            var xevaluator = new ExtendedXPathEvaluator(wrappedXpathEvaluator, extensions);
-            return xevaluator.evaluate.apply(xevaluator, arguments);
-          }
+          evaluate: openrosaEvaluator.evaluate
 				}
 			};
 		},

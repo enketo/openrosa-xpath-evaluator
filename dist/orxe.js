@@ -105,7 +105,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   var DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d\.?\d?\d?(?:Z|[+-]\d\d:\d\d)|.*)?$/;
@@ -124,9 +124,31 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return rounded === false ? r : Math.round(r * 100000) / 100000;
   }
 
+  var daysInMonth = function daysInMonth(m, y) {
+    switch (m) {
+      case 1:
+        return y % 4 == 0 && y % 100 || y % 400 == 0 ? 29 : 28;
+
+      case 8:
+      case 3:
+      case 5:
+      case 10:
+        return 30;
+
+      default:
+        return 31;
+    }
+  };
+
+  var isValidDate = function isValidDate(y, m, d) {
+    m = parseInt(m, 10) - 1;
+    return m >= 0 && m < 12 && d > 0 && d <= daysInMonth(m, y);
+  };
+
   module.exports = {
     DATE_STRING: DATE_STRING,
-    dateToDays: dateToDays
+    dateToDays: dateToDays,
+    isValidDate: isValidDate
   };
 });
 
@@ -141,13 +163,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   module.exports = {
     allowStringComparison: false,
     includeTimeForTodayString: false,
-    returnCurrentTimeForToday: false
+    returnCurrentTimeForToday: false,
+    returnEmptyStringForInvalidDate: true
   };
 });
 
@@ -162,7 +185,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   function toNodes(r) {
@@ -222,7 +245,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -273,7 +296,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   module.exports = __webpack_require__(5);
@@ -290,7 +313,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   __webpack_require__(6);
@@ -303,12 +326,29 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   var extensions = openrosaExtensions(config);
 
+  function OpenrosaXPathEvaluator() {
+    var evaluator = new XPathEvaluator();
+    return {
+      createExpression: evaluator.createExpression,
+      createNSResolver: evaluator.createNSResolver,
+      evaluate: function evaluate(expr, contextPath, namespaceResolver, resultType, result) {
+        var wrappedXpathEvaluator = function wrappedXpathEvaluator(v, node, rt) {
+          if (resultType < 7 || v.startsWith('//')) resultType = null;
+          var wrappedResultType = rt || resultType || XPathResult.ANY_TYPE;
+          return evaluator.evaluate(v, node || contextPath, namespaceResolver, wrappedResultType || XPathResult.ANY_TYPE, result);
+        };
+
+        var xevaluator = new ExtendedXPathEvaluator(wrappedXpathEvaluator, extensions);
+        return xevaluator.evaluate.apply(xevaluator, arguments);
+      }
+    };
+  }
+
   module.exports = function () {
     var module = {
-      extendedXPathEvaluator: ExtendedXPathEvaluator,
-      openrosaXPathExtensions: openrosaExtensions,
       config: config,
       customXPathFunction: extensions.customXPathFunction,
+      XPathEvaluator: OpenrosaXPathEvaluator,
       getCurrentDomLevel3XPathBindings: function getCurrentDomLevel3XPathBindings() {
         return {
           'window': {
@@ -326,19 +366,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         };
       },
       createDomLevel3XPathBindings: function createDomLevel3XPathBindings(options) {
-        var evaluator = new XPathEvaluator(options);
+        var openrosaEvaluator = new OpenrosaXPathEvaluator(options);
         return {
           'document': {
-            evaluate: function evaluate(e, contextPath, namespaceResolver, resultType, result) {
-              var wrappedXpathEvaluator = function wrappedXpathEvaluator(v, node, rt) {
-                if (resultType < 7 || v.startsWith('//')) resultType = null;
-                var wrappedResultType = rt || resultType || XPathResult.ANY_TYPE;
-                return evaluator.evaluate(v, node || contextPath, namespaceResolver, wrappedResultType || XPathResult.ANY_TYPE, result);
-              };
-
-              var xevaluator = new ExtendedXPathEvaluator(wrappedXpathEvaluator, extensions);
-              return xevaluator.evaluate.apply(xevaluator, arguments);
-            }
+            evaluate: openrosaEvaluator.evaluate
           }
         };
       },
@@ -370,7 +401,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   Date.prototype.toISOLocalString = function () {
@@ -420,7 +451,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   var config = __webpack_require__(1);
@@ -531,7 +562,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       if (rt > 3) {
         r = shuffle(r[0], r[1]);
-        return toSnapshotResult(r, XPathResult.UNORDERED_SNAPSHOT_TYPE);
+        return toSnapshotResult(r, rt);
       }
 
       if (!r.t && Array.isArray(r)) {
@@ -635,7 +666,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       input = preprocessInput(input, rT);
       if (isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
 
-      if (isNativeFunction(input)) {
+      if (isNativeFunction(input) && input.indexOf('[selected(') < 0 && !(input.startsWith('/') && input.indexOf(' ') > 0) && input !== '/') {
         var args = inputArgs(input);
 
         if (args.length && args[0].length && !isNaN(args[0])) {
@@ -652,6 +683,52 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             resultType: XPathResult.NUMBER_TYPE,
             numberValue: val,
             stringValue: val
+          };
+        }
+
+        if (rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.STRING_TYPE && res.stringValue.startsWith('<xpath:')) {
+          return {
+            resultType: XPathResult.STRING_TYPE,
+            stringValue: res.stringValue.substring(7, res.stringValue.length - 1)
+          };
+        }
+
+        if (rT === XPathResult.STRING_TYPE && res.resultType >= 6) {
+          if (res.snapshotLength) {
+            var firstNode = res.snapshotItem(0);
+            return {
+              resultType: rT,
+              stringValue: firstNode.textContent
+            };
+          }
+
+          return {
+            resultType: rT,
+            stringValue: ''
+          };
+        }
+
+        if (rT === XPathResult.STRING_TYPE && res.resultType >= 4) {
+          var firstNode = res.iterateNext();
+          var firstNodeValue = firstNode ? firstNode.textContent : '';
+          return {
+            resultType: rT,
+            stringValue: firstNodeValue
+          };
+        }
+
+        if (rT === XPathResult.BOOLEAN_TYPE && res.resultType >= 4) {
+          var firstNode = res.iterateNext();
+          return {
+            resultType: rT,
+            booleanValue: firstNode ? true : false
+          };
+        }
+
+        if (rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.NUMBER_TYPE) {
+          return {
+            resultType: rT,
+            stringValue: res.numberValue.toString()
           };
         }
 
@@ -672,14 +749,43 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
 
         if (input === '/') cN = cN.ownerDocument || cN;
-        return wrapped(input, cN);
+        var selectedExprIdx = input.indexOf('[selected(');
+
+        if (selectedExprIdx > 0) {
+          var selectedExpr = input.substring(0, selectedExprIdx);
+          var selection = input.substring(selectedExprIdx + 10, input.indexOf(')]'));
+          var selectionExpr = selection.split(',').map(function (s) {
+            return s.trim();
+          });
+          var selectionResult = wrapped("".concat(selectionExpr[0], "/text()"));
+
+          if (selectionResult.snapshotLength) {
+            var values = selectionResult.snapshotItem(0).textContent.split(' ').map(function (v) {
+              return "".concat(selectionExpr[1], "=\"").concat(v, "\"");
+            });
+            return wrapped("".concat(selectedExpr, "[").concat(values.join(' or '), "]"));
+          }
+
+          return toSnapshotResult([], rT);
+        }
+
+        var _res = wrapped(input, cN, nR, rT);
+
+        if (rT === XPathResult.STRING_TYPE && _res.resultType === XPathResult.NUMBER_TYPE) {
+          return {
+            type: XPathResult.STRING_TYPE,
+            stringValue: xx.numberValue.toString()
+          };
+        }
+
+        return _res;
       }
 
       if (rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 && input.indexOf('/') < 0 && input.indexOf('=') < 0 && input.indexOf('!=') < 0) {
         input = input.replace(/(\n|\r|\t)/g, '');
         input = input.replace(/"(\d)"/g, '$1');
         input = input.replace(/'(\d)'/g, '$1');
-        input = "boolean-from-string(" + input + ")";
+        input = "boolean-from-string(".concat(input, ")");
       }
 
       if (rT === XPathResult.NUMBER_TYPE && input.indexOf('string-length') < 0) {
@@ -753,7 +859,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         }
       },
-          handleXpathExpr = function handleXpathExpr() {
+          handleXpathExpr = function handleXpathExpr(returnType) {
         var expr = cur.v;
         var evaluated;
 
@@ -761,12 +867,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           evaluated = wrapped(expr);
         } else {
           if (rT > 3 || cur.v.indexOf('position()=') >= 0 && stack.length === 1 && !/^[a-z]*[(|[]{1}/.test(cur.v)) {
-            evaluated = toNodes(wrapped(expr));
+            evaluated = toNodes(wrapped(expr, cN, returnType));
           } else {
             if (expr.startsWith('$')) {
               evaluated = expr;
             } else {
-              evaluated = toInternalResult(wrapped(expr, cN));
+              evaluated = toInternalResult(wrapped(expr, cN, returnType));
             }
           }
         }
@@ -865,7 +971,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
             }
 
-            if (cur.v !== '') handleXpathExpr();
+            var returnType = input.startsWith('randomize') ? 4 : null;
+            if (cur.v !== '') handleXpathExpr(returnType);
             backtrack();
             cur = stack.pop();
             if (cur.t !== 'fn') err();
@@ -1068,7 +1175,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   var MAX_INT32 = 2147483647;
@@ -1133,7 +1240,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   var _require = __webpack_require__(2),
@@ -1255,7 +1362,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   var _require = __webpack_require__(0),
@@ -1708,7 +1815,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   var _require = __webpack_require__(0),
@@ -1718,7 +1825,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var TOO_MANY_ARGS = new Error('too many args');
   var TOO_FEW_ARGS = new Error('too few args');
   var INVALID_ARGS = new Error('invalid args');
-  var NATIVE_FUNS = /^id\(|^\([1-9]|^\([a-zA-Z]|lang\(|local-name|namespace-uri|last\(|name\(|child::|parent::|descendant::|descendant-or-self::|ancestor::|ancestor-or-self::sibling|following::|following-sibling::|preceding-sibling::|preceding::|attribute::/;
+  var NATIVE_FUNS = /^id\(|^\([1-9]|^\([a-zA-Z]|lang\(|local-name|namespace-uri|last\(|name\(|child::|parent::|descendant::|descendant-or-self::|ancestor::|ancestor-or-self::sibling|following::|following-sibling::|preceding-sibling::|preceding::|attribute::|^\/.*$/;
 
   function isNativeFunction(input) {
     return NATIVE_FUNS.test(input);
@@ -1811,7 +1918,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   function isOperation(input, rT) {
@@ -1862,7 +1969,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   var _require = __webpack_require__(14),
@@ -1877,6 +1984,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       randomToken = _require3.randomToken;
 
   var xpr = __webpack_require__(3);
+
+  var _require4 = __webpack_require__(0),
+      isValidDate = _require4.isValidDate;
 
   var openrosa_xpath_extensions = function openrosa_xpath_extensions(config) {
     var TOO_MANY_ARGS = new Error('too many args'),
@@ -1937,8 +2047,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         t = it.indexOf('T');
         if (t !== -1) it = it.substring(0, t);
         temp = it.split('-');
-        temp = new Date(temp[0], temp[1] - 1, temp[2]);
-        return temp;
+
+        if (isValidDate(temp[0], temp[1], temp[2])) {
+          return new Date(temp[0], temp[1] - 1, temp[2]);
+        }
       }
 
       var d = new Date(it);
@@ -1956,7 +2068,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       if (rt === XPathResult.STRING_TYPE) {
-        if (!it) return XPR.string('Invalid Date');
+        if (!it) {
+          return XPR.string(config.returnEmptyStringForInvalidDate ? '' : 'Invalid Date');
+        }
+
         return XPR.string(new Date(it).toISOLocalString());
       }
 
@@ -2074,8 +2189,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         return XPR.number(Math.atan2(r.v));
       },
-      'boolean-from-string': function booleanFromString(string) {
-        string = _str(string);
+      'boolean-from-string': function booleanFromString(r) {
+        if (r.t === 'num' && r.v > 0 && !r.decimal) {
+          return XPR["boolean"](true);
+        }
+
+        var string = _str(r);
+
         return XPR["boolean"](string === '1' || string === 'true');
       },
       area: function area(r) {
@@ -2543,7 +2663,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   var EARTH_EQUATORIAL_RADIUS_METERS = 6378100;
@@ -2660,7 +2780,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   var forge = __webpack_require__(16);
@@ -2711,7 +2831,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var mod; }
-})(this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
   function _random13chars() {

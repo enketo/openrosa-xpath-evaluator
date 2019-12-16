@@ -1,8 +1,8 @@
 {
   "name": "openrosa-xpath-evaluator",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.6",
   "description": "Wrapper for browsers' XPath evaluator with added support for OpenRosa extensions.",
-  "main": "src/orxe.js",
+  "main": "src/XPathJS.js",
   "scripts": {
     "lint": "eslint --ignore-path .gitignore src",
     "lint:watch": "esw --ignore-path .gitignore . -w",
