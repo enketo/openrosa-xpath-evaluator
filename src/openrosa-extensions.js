@@ -1,3 +1,4 @@
+require('./date-extensions');
 var {area, distance, areaOrDistance} = require('./geo');
 var {digest} = require('./digest');
 var {randomToken} = require('./random-token');
@@ -57,6 +58,11 @@ var openrosa_xpath_extensions = function(config) {
           if(t !== -1) it = it.substring(0, t);
           temp = it.split('-');
           if(isValidDate(temp[0], temp[1], temp[2])) {
+            if(config.includeLocalTimeForDatesWithoutTime) {
+              var time = `${_zeroPad(temp[0])}-${_zeroPad(temp[1])}-${_zeroPad(temp[2])}`+
+                'T00:00:00.000' + (new Date(it)).getTimezoneOffsetAsTime();
+              return new Date(time);
+            }
             return new Date(temp[0], temp[1]-1, temp[2]);
           }
         }
@@ -179,8 +185,8 @@ var openrosa_xpath_extensions = function(config) {
       if(r.t === 'num' && r.v > 0 && !r.decimal) {
         return XPR.boolean(true);
       }
-      const string = _str(r);
-      return XPR.boolean(string === '1' || string === 'true');
+      r = _str(r);
+      return XPR.boolean(r === '1' || r === 'true');
     },
     area: function(r) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
@@ -397,7 +403,7 @@ var openrosa_xpath_extensions = function(config) {
       return XPR.number(position);
     },
     pow: function(x, y) { return XPR.number(Math.pow(_float(x), _float(y))); },
-    random: function() { return XPR.number(Math.random()); },
+    random: function() { return XPR.number(parseFloat(Math.random().toFixed(15))); },
     randomize: function(r) {
       if(arguments.length === 1) throw TOO_FEW_ARGS;//only rT passed
       if(arguments.length > 3) throw TOO_MANY_ARGS;
@@ -412,6 +418,7 @@ var openrosa_xpath_extensions = function(config) {
         if (r.v.length < 1) return '';
         return XPR.string(r.v[0]);
       }
+
       // nodes as seed
       if(Array.isArray(seed) && seed.length && seed[0].nodeType === 1) {
         return [r, parseInt(seed[0].textContent)];
@@ -477,14 +484,14 @@ var openrosa_xpath_extensions = function(config) {
         var w = arguments[i+1];
         if (v && w) {
           // value or weight might be a nodeset
-          values.push(v.t === 'arr' ? v.v[0] : v.v);
-          weights.push(w.t === 'arr' ? w.v[0] : w.v);
+          values = values.concat(v.t === 'arr' ?  v.v : [v.v]);
+          weights = weights.concat( w.t === 'arr' ? w.v : [w.v]);
         }
       }
-
       for(i=0; i < values.length; i++) {
         if(values[i]) {
-          weightedTrues += weights[i];
+          var weight = weights[i];
+          weightedTrues += isNaN(weight) ? 0 : parseFloat(weight);
         }
       }
       return XPR.boolean((min < 0 || weightedTrues >= min) && (max < 0 || weightedTrues <= max));
@@ -573,6 +580,7 @@ var openrosa_xpath_extensions = function(config) {
       return func;
     }
   };
+
 
   return ret;
 };

@@ -5,7 +5,7 @@ var TOO_FEW_ARGS = new Error('too few args');
 var INVALID_ARGS = new Error('invalid args');
 
 var NATIVE_FUNS = /^id\(|^\([1-9]|^\([a-zA-Z]|lang\(|local-name|namespace-uri|last\(|name\(|child::|parent::|descendant::|descendant-or-self::|ancestor::|ancestor-or-self::sibling|following::|following-sibling::|preceding-sibling::|preceding::|attribute::|^\/.*$/;
-
+  
 function isNativeFunction(input) {
   return NATIVE_FUNS.test(input);
 }

@@ -53,11 +53,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         if(res) return res;
       }
 
-      // returns promise
-      if(r.v && typeof r.v.then === 'function' && rt === XPathResult.STRING_TYPE) {
-        return {resultType: XPathResult.STRING_TYPE, stringValue: r.v};
-      }
-
       if((r.t === 'arr' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v[0])) ||
           (r.t === 'str' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v))) {
         var val = r.t === 'arr' ? r.v[0] : r.v;
@@ -154,10 +149,10 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     input = preprocessInput(input, rT);
     if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
 
-    if(isNativeFunction(input)
-      && input.indexOf('[selected(') < 0
-      && !(input.startsWith('/') && input.indexOf(' ')>0)
-      && input !== '/') {
+    if(isNativeFunction(input) &&
+      input.indexOf('[selected(') < 0 &&
+      !(input.startsWith('/') && input.indexOf(' ')>0) &&
+      input !== '/') {
       var args = inputArgs(input);
       if(args.length && args[0].length && !isNaN(args[0])) { throw INVALID_ARGS; }
       if(input === 'lang()') throw TOO_FEW_ARGS;
@@ -173,7 +168,9 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           stringValue: val
         };
       }
-      if(rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.STRING_TYPE &&
+
+      if(rT === XPathResult.STRING_TYPE &&
+        res.resultType === XPathResult.STRING_TYPE &&
         res.stringValue.startsWith('<xpath:')) {
         return {
           resultType: XPathResult.STRING_TYPE,
@@ -182,22 +179,21 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       }
       if(rT === XPathResult.STRING_TYPE && res.resultType >= 6) {
         if(res.snapshotLength) {
-          var firstNode = res.snapshotItem(0);
-          return { resultType: rT, stringValue: firstNode.textContent };
+          return { resultType: rT, stringValue: res.snapshotItem(0).textContent };
         }
         return { resultType: rT, stringValue: '' };
       }
+      if(rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.NUMBER_TYPE) {
+        return { resultType: rT, numberValue: res.numberValue, stringValue: res.numberValue.toString() };
+      }
       if(rT === XPathResult.STRING_TYPE && res.resultType >= 4) {
-          var firstNode = res.iterateNext();
-          var firstNodeValue =  firstNode ? firstNode.textContent : '';
-          return { resultType: rT, stringValue: firstNodeValue };
+        var firstNode = res.iterateNext();
+        var firstNodeValue =  firstNode ? firstNode.textContent : '';
+        return { resultType: rT, stringValue: firstNodeValue };
       }
       if(rT === XPathResult.BOOLEAN_TYPE && res.resultType >= 4) {
         var firstNode = res.iterateNext();
         return { resultType: rT, booleanValue: firstNode ? true : false };
-      }
-      if(rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.NUMBER_TYPE) {
-        return { resultType: rT, stringValue: res.numberValue.toString() };
       }
       return res;
     }
@@ -231,20 +227,21 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         return toSnapshotResult([], rT);
       }
 
-      const res = wrapped(input, cN, nR, rT);
-      if(rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.NUMBER_TYPE) {
+      var wrappedResult = wrapped(input, cN, nR, rT);
+      // Native count always returns Number even when result type is asking
+      // for a string.
+      if(rT === XPathResult.STRING_TYPE &&
+        wrappedResult.resultType === XPathResult.NUMBER_TYPE) {
         return {
           type: XPathResult.STRING_TYPE,
-          stringValue: xx.numberValue.toString()
+          stringValue: wrappedResult.numberValue.toString()
         }
       }
-      return res;
+      return wrappedResult;
     }
 
-    if(rT === XPathResult.BOOLEAN_TYPE &&
-        input.indexOf('(') < 0 &&
-        input.indexOf('/') < 0 &&
-        input.indexOf('=') < 0 &&
+    if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 &&
+        input.indexOf('/') < 0 && input.indexOf('=') < 0 &&
         input.indexOf('!=') < 0) {
       input = input.replace(/(\n|\r|\t)/g, '');
       input = input.replace(/"(\d)"/g, '$1');
@@ -398,12 +395,11 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             break;
           }
 
-          var returnType = input.startsWith('randomize') ? 4 : null;
-          if(cur.v !== '') handleXpathExpr(returnType);
-
+          if(cur.v !== '') {
+            handleXpathExpr(input.startsWith('randomize') ? 4 : null);
+          }
           backtrack();
           cur = stack.pop();
-
           if(cur.t !== 'fn') err();
           if(cur.v) {
             var expectedReturnType = rT;
@@ -535,7 +531,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     if(stack[0].tokens.length > 1) err('Too many tokens.');
     return toExternalResult(stack[0].tokens[0], rT);
   };
-
 };
 
 module.exports = ExtendedXPathEvaluator;
