@@ -305,12 +305,12 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         } else {
           if(rT > 3 || (cur.v.indexOf('position()=') >= 0 &&
             stack.length === 1 && !/^[a-z]*[(|[]{1}/.test(cur.v))) {
-            evaluated = toNodes(wrapped(expr, cN, returnType));
+            evaluated = toNodes(wrapped(expr, cN, nR, returnType));
           } else {
             if(expr.startsWith('$')) {
               evaluated = expr;
             } else {
-              evaluated = toInternalResult(wrapped(expr, cN, returnType));
+              evaluated = toInternalResult(wrapped(expr, cN, nR, returnType));
             }
           }
         }

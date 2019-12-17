@@ -1,4 +1,4 @@
-const { initDoc, assert, assertNumber, assertNumberValue } = require('../../helpers');
+const { initDoc, assert, assertNumber, assertNumberValue, assertBoolean } = require('../../helpers');
 
 describe('number operators', () => {
 
@@ -236,10 +236,16 @@ describe('number operators', () => {
       ["2*3+1", 7],
       ["1-10 mod 3 div 3", 0.6666666666666667],
       ["4-3*4+5-1", -4],
-      // ["(4-3)*4+5-1", 8],
+      ["(4-3)*4+5-1", 8],
       ["8 div 2 + 4", 8]
-    ].forEach(t => {
-      assertNumber(t[0], t[1]);
+    ].forEach(([expr, expected]) => {
+      assertNumber(expr, expected);
     });
   });
+
+  it('works with different return type', () => {
+    assertBoolean('1 + 1', true);
+    assertBoolean('0 + 1', true);
+    assertBoolean('0 + 0', false);
+  })
 });

@@ -1,4 +1,5 @@
-const { initDoc, filterAttributes, assert } = require('../../helpers');
+const { initDoc, nsResolver, filterAttributes, assert } = require('../../helpers');
+const { toNodes } = require('../../../src/utils/result');
 
 describe('XPath expression evaluation', () => {
   let doc;
@@ -62,5 +63,79 @@ describe('XPath expression evaluation', () => {
       doc.evaluate(".", doc.createDocumentFragment(), null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);
     };
     assert.throw(test, Error);
+  });
+});
+
+describe('XPath expression evaluation3', () => {
+  const doc = initDoc(`<model>
+      <instance>
+        <nested_repeats id="nested_repeats">
+          <formhub><uuid/></formhub>
+          <kids>
+            <has_kids>1</has_kids>
+          </kids>
+        </nested_repeats>
+      </instance>
+    </model>`);
+
+  it('works with expected return type', () => {
+    let expr = `/model/instance[1]/nested_repeats/kids/has_kids='1'`;
+    let res = doc.xEval(expr, doc, 3);
+    assert.equal(res.resultType, 3);
+    assert.equal(res.booleanValue, true);
+
+    expr = `/model/instance[1]/nested_repeats/kids/has_kids='2'`;
+    res = doc.xEval(expr, doc, 3);
+    assert.equal(res.resultType, 3);
+    assert.equal(res.booleanValue, false);
+  });
+});
+
+
+describe('XPath expression evaluation4', () => {
+  const doc = initDoc(`<thedata id="thedata">
+      <nodeA/>
+      <nodeB>b</nodeB>
+    </thedata>`);
+
+  [
+    ['/thedata/nodeA', true],
+    ['/thedata/nodeB', true],
+    ['/thedata/nodeC', false],
+  ].forEach(([expr, expected]) => {
+    it('returns correct result type', () => {
+      const res = doc.xEval(expr, doc, 3);
+      assert.equal(res.resultType, 3);
+      assert.equal(res.booleanValue, expected);
+    });
+  })
+});
+
+describe('XPath expression evaluation5', () => {
+  const doc = initDoc(`
+    <html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml"
+      xmlns:jr="http://openrosa.org/javarosa"
+      xmlns:orx="http://openrosa.org/xforms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <model>
+      <instance>
+        <data id="nested-repeat-v5">
+          <region jr:template="">
+            <livestock jr:template="">
+              <type/>
+              <type_other/>
+            </livestock>
+          </region>
+          <meta>
+            <instanceID/>
+          </meta>
+        </data>
+      </instance>
+    </model></html>`);
+
+  it('returns correct result type', () => {
+    const expr = '/model/instance[1]/*//*[@template] | /model/instance[1]/*//*[@jr:template]';
+    const res = doc.xEval(expr, doc, 7, nsResolver);
+    assert.equal(res.resultType, 7);
+    assert.equal(res.snapshotLength, 0);
   });
 });

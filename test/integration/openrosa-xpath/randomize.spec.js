@@ -57,12 +57,12 @@ describe('randomize()', () => {
     [
       [42, 'AFCBDE'],
       ['42', 'AFCBDE'],
-      // [-42, 'EDAFBC'],
+      [-42, 'EDAFBC'],
       [1, 'BFEACD'],
       [11111111, 'ACDBFE'],
       ['int(1)', 'BFEACD'],
       ['floor(1.1)', 'BFEACD'],
-      // ['//xhtml:div[@id="testFunctionNodeset2"]/xhtml:p', 'BFEACD']
+      ['//xhtml:div[@id="testFunctionNodeset2"]/xhtml:p', 'BFEACD']
     ].forEach(([seed, expected]) => {
       it(`with a seed: ${seed}`, () => {
         const result = doc.xEval(`randomize(${SELECTOR}, ${seed})`, doc,
@@ -80,5 +80,58 @@ describe('randomize()', () => {
     assertThrow('randomize()');
     assertThrow(`randomize(${SELECTOR}, 'a')`);
     assertThrow(`randomize(${SELECTOR}, 1, 2)`);
+  });
+});
+
+describe('randomize()', () => {
+  const doc = initDoc(`
+    <model>
+        <instance>
+            <rank id="rank">
+                <s1/>
+                <r1/>
+                <r2/>
+                <r3>foddertree beans cacao coffee foddergrass banana</r3>
+                <r4/>
+                <meta>
+                    <instanceID/>
+                </meta>
+            </rank>
+        </instance>
+        <instance id="crop_list">
+            <root>
+                <item>
+                    <label>Banana</label>
+                    <name>banana</name>
+                </item>
+                <item>
+                    <label>Beans</label>
+                    <name>beans</name>
+                </item>
+                <item>
+                    <label>Cacao</label>
+                    <name>cacao</name>
+                </item>
+                <item>
+                    <label>Coffee</label>
+                    <name>coffee</name>
+                </item>
+                <item>
+                    <label>Fodder Grass</label>
+                    <name>foddergrass</name>
+                </item>
+                <item>
+                    <label>Fodder Tree</label>
+                    <name>foddertree</name>
+                </item>
+            </root>
+        </instance>
+      </model>`);
+
+  it('randomizes nodes', () => {
+    const expr = 'randomize(/model/instance[@id="crop_list"]/root/item)';
+    const res = doc.xEval(expr, doc, 7);
+    assert.equal(res.resultType, 7)
+    assert.equal(res.snapshotLength, 6)
   });
 });

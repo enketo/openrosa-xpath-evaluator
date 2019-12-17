@@ -4,6 +4,7 @@ const assert = chai.assert;
 const openRosaXPathExtensions = require('../src/openrosa-extensions');
 const ExtendedXPathEvaluator = require('../src/extended-xpath');
 const config = require('../src/config');
+const engine = require('../src/engine');
 
 let doc, xEval, evaluator, nsr, rt, node, docs = [];
 
@@ -14,27 +15,20 @@ const _document = (line) => {
 const nsResolver = (prefix) => {
   var ns = {
     'xhtml' : 'http://www.w3.org/1999/xhtml',
-    'mathml': 'http://www.w3.org/1998/Math/MathML'
+    'mathml': 'http://www.w3.org/1998/Math/MathML',
+    'jr': 'http://openrosa.org/javarosa'
   };
   return ns[prefix] || null;
 };
-
 
 const initDoc = (xml, xnsr) => {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
   node = null;
   nsr = xnsr;
-  evaluator = new ExtendedXPathEvaluator(
-    (v, xnode) => {
-      if(!rt || rt<7 || v.startsWith('//')) rt = null; //TODO ???
-      const result = doc.evaluate.call(doc, v, xnode || node || doc, nsr, rt || XPathResult.ANY_TYPE, null);
-      // console.log(`${v} => ${result.resultType}`);
-      return result;
-    },
-    openRosaXPathExtensions(config));
-  xEval = function(e, xnode, resultType, xnsr) {
-    node = xnode;
-    rt = resultType;
+  evaluator = new engine.XPathEvaluator();
+  xEval = function(e, xnode, xrt, xnsr) {
+    node = xnode || doc;
+    rt = xrt;
     _document(e);
     return evaluator.evaluate(e, node, xnsr || nsr, rt, null);
   };

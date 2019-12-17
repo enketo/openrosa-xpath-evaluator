@@ -9,15 +9,18 @@ function OpenrosaXPathEvaluator() {
   return {
     createExpression: evaluator.createExpression,
     createNSResolver: evaluator.createNSResolver,
-    evaluate: function (expr, contextPath, namespaceResolver, resultType, result) {
-      var wrappedXpathEvaluator = function(v, node, rt) {
-        if(resultType < 7 || v.startsWith('//')) resultType = null;
-        var wrappedResultType = rt || resultType || XPathResult.ANY_TYPE;
-        return evaluator.evaluate(v, node || contextPath, namespaceResolver, wrappedResultType || XPathResult.ANY_TYPE, result);
-      };
-      var xevaluator = new ExtendedXPathEvaluator(wrappedXpathEvaluator, extensions);
-      return xevaluator.evaluate.apply(xevaluator, arguments);
-    }
+    evaluate: function (expr, node, nsr, rt, result) {
+      const xevaluator = new ExtendedXPathEvaluator(
+        (v, xnode, xnsr, xrt) => {
+          if(!rt || rt<7 || v.startsWith('//')) rt = null;
+          xrt = xrt || rt || XPathResult.ANY_TYPE;
+          const result = evaluator.evaluate(v, xnode || node, xnsr || nsr, xrt, null);
+          // console.log(`${v} => ${result.resultType}`);
+          return result;
+        },
+        extensions);
+      return xevaluator.evaluate(...arguments);
+    },
   }
 }
 

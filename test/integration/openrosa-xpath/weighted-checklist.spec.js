@@ -42,3 +42,28 @@ describe('#weighted-checklist()', () => {
     assertTrue(node, null, 'weighted-checklist(3, 3, 1=1, self::node())');
   });
 });
+
+describe('#weighted-checklist()', () => {
+  const doc = initDoc(`
+    <thedata id="thedata">
+      <somenodes>
+        <A>one</A>
+        <B>one</B>
+        <C>one</C>
+      </somenodes>
+      <someweights>
+        <w1>1</w1>
+        <w2>3</w2>
+        <w.3>5</w.3>
+      </someweights>
+    </thedata>`);
+
+  it('with more nodes', () => {
+    let expr = 'weighted-checklist(9, 9, /thedata/somenodes/*, /thedata/someweights/*)';
+    assertTrue(doc, null, expr);
+    expr = 'weighted-checklist(8, 8, /thedata/somenodes/*, /thedata/someweights/*)';
+    assertFalse(doc, null, expr);
+    expr = 'weighted-checklist(10, 10, /thedata/somenodes/*, /thedata/someweights/*)';
+    assertFalse(doc, null, expr);
+  });
+});
