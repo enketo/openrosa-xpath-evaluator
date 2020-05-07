@@ -1,4 +1,4 @@
-const { assertTrue, assertFalse, simpleValueIs, initDoc } = require('../../helpers');
+const { assertTrue, assertFalse, assertNumber, simpleValueIs, initDoc } = require('../../helpers');
 
 describe('#selected()', () => {
   it('should return true if requested item is in list', () => {
@@ -61,5 +61,16 @@ describe('#selected()', () => {
     assertTrue(node, null, 'selected(self::node(), "ab")');
     assertTrue(node, null, 'selected(self::node(), "cd")');
     assertFalse(node, null, 'selected(self::node(), "ij")');
+  });
+
+  it('used inside a predicate', () => {
+    const doc = initDoc(`
+      <data>
+        <a>a</a>
+        <a>b</a>
+        <a>c</a>
+      </data>`);
+
+    assertNumber('count(/data/a[selected("a b", "a")])', 3);
   });
 });

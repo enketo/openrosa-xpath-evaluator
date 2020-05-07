@@ -130,6 +130,17 @@ describe('native number functions', () => {
     assertNumber("round(33.33, -1)", 30);
   });
 
+  it('round() used inside a predicate', () => {
+    const doc = initDoc(`
+      <data>
+        <a>a</a>
+        <a>b</a>
+        <a>c</a>
+      </data>`);
+
+    assertNumber('count(/data/a[round(2.44) = 2])', 3);
+  });
+
   it('round() fails when too many arguments are provided', () => {
     assertThrow("round(1, 2, 3)");
   });

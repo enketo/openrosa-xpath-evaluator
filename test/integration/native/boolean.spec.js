@@ -47,6 +47,17 @@ describe('native boolean functions', () => {
     assertTrue(node, null, "boolean(self::node())");
   });
 
+  it('boolean() used inside a predicate', () => {
+    const doc = initDoc(`
+      <data>
+        <a>a</a>
+        <a>b</a>
+        <a>c</a>
+      </data>`);
+
+    assertTrue('count(/data/a[true()]) = 3');
+  });
+
   it('boolean() fails when too few arguments are provided', () => {
     assertThrow("boolean()");
   });
