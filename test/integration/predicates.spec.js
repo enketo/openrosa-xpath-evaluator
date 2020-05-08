@@ -1,4 +1,4 @@
-const { assertNumberValue, assertTrue, initDoc } = require('../../helpers');
+const { assertNumberValue, assertTrue, initDoc } = require('../helpers');
 
 describe('predicates with function calls', ()=> {
 
