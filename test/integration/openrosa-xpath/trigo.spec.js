@@ -82,16 +82,6 @@ describe('math functions', () => {
     assertNumberValue('pi()', 3.141592653589793);
   });
 
-  it('pi() in predicate', () => {
-    initDoc(`
-    <data>
-      <item>
-        <number>4</number>
-      </item>
-    </data>`);
-    assertNumberValue('/data/item[pi() > 3 and pi() < 4]/number', 4);
-  });
-
   it('exp()', () => {
     assertNumberValue('exp(2)', 7.38905609893065);
     assertNumberValue('exp("NaN")', NaN);
