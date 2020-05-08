@@ -1,4 +1,4 @@
-const {assertBoolean, assertString, assertNumberValue} = require('../helpers');
+const {assertBoolean, assertString, assertNumberValue, initDoc} = require('../helpers');
 
 describe('infix operators', () => {
   describe('math operators', () => {
@@ -195,6 +195,33 @@ describe('infix operators', () => {
 
       assertNumberValue('1-1', 0);
       assertNumberValue('1 - 1', 0);
+    });
+
+    it('calculation with node operand returned as string', () => {
+      var doc = initDoc(`
+      <data>
+        <number>4</number>
+      </data>`);
+
+      // It doesn't matter whether a string or number is requested, an infix operator should ensure that both 
+      // left and right operands are converted to numbers during evaluation.
+      // If multiple nodes are returned, the value of the first node will be used.
+      assertString('/data/number + 1', '5'); // returns '41'
+
+    });
+
+    it('calculation with multiple nodes operand returned as string', () => {
+      var doc = initDoc(`
+      <data>
+        <number>4</number>
+        <number>10</number>
+      </data>`);
+
+      // It doesn't matter whether a string or number is requested, an infix operator should ensure that both 
+      // left and right operands are converted to numbers during evaluation.
+      // If multiple nodes are returned, the value of the first node will be used.
+      assertString('/data/number + 1', '5'); // returns '4,101'
+
     });
   });
 });

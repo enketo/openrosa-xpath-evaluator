@@ -10,10 +10,27 @@ function isNumber(value) {
 }
 
 function handleOperation(lhs, op, rhs, config) {
-  //Removes quotes for numbers
-  if(op.v === '+' && isNumber(lhs.v) && isNumber(rhs.v)) {
-    lhs.v = Number(lhs.v);
-    rhs.v = Number(rhs.v);
+  //Removes quotes for numbers, detect and convert date/datetime strings
+  if(op.v === '+' ) {
+    // Operands will always be converted to numbers, no concatenation.
+    if (lhs.t === 'arr'){
+      // only take first of nodeset
+      lhs = {t: 'num', v: lhs.v[0]};
+    }
+    if (rhs.t === 'arr'){
+      // only take first of nodeset
+      rhs = {t: 'num', v: rhs.v[0]};
+    }
+    if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(lhs.v)) {
+      lhs.v = dateToDays(lhs.v, false);
+    } else {
+      lhs.v = Number(lhs.v);
+    }
+    if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(rhs.v)){
+      rhs.v = dateToDays(rhs.v, false);
+    } else {
+      rhs.v = Number(rhs.v);
+    }
   }
 
   //Comparing node expressions with numbers/strings/etc

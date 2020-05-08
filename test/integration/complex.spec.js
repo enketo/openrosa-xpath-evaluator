@@ -138,6 +138,7 @@ describe('some complex examples', () => {
     "(2+3)": 5,
     "2 + 3": 5,
     "(2 + 3)": 5,
+    "2 + 3": "5", // For some reason, it is evaluated correctly here.
     "today() < (today() + 1)": true,
     "today() > (today() + 1)": false,
     "today() < '1970-06-03'": false,
