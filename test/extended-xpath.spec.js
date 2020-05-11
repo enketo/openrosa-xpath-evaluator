@@ -27,33 +27,21 @@ var docs = '',
       'concat("a", "b", "c")':
           /^abc$/,
       '"plus" + "one"':
-          /^plusone$/,
-      '"plus" + "one" + "plus" + "two"':
-          /^plusoneplustwo$/,
-      'upcase("what") + upcase("ever")':
-          /^WHATEVER$/,
-      'downcase("Fox"+"Trot")':
-          /^foxtrot$/,
-      'downcase("Fox" + "Trot")':
-          /^foxtrot$/,
+          /^NaN$/,
+      'upcase("what")':
+          /^WHAT$/,
       'concat(date())':
           new RegExp('^' + DATE_MATCH + '$'),
       'concat(date(), "X")':
           new RegExp('^' + DATE_MATCH + 'X$'),
       'concat("X", date())':
           new RegExp('^X' + DATE_MATCH + '$'),
-      '"Today\'s date: " + date()':
-          new RegExp('^Today\'s date: ' + DATE_MATCH + '$'),
-      'concat("Report::", "Today\'s date: " + date())':
+      'concat("Report::", "Today\'s date: ", date())':
           new RegExp('^Report::Today\'s date: ' + DATE_MATCH + '$'),
-      'concat(concat(upcase("Big") + downcase("Little")) + "Average", " by ", concat("Some", " ", "Author"))':
+      'concat(concat(upcase("Big"), downcase("Little")), "Average", " by ", concat("Some", " ", "Author"))':
           /^BIGlittleAverage by Some Author$/,
       '/xpath/expression':
           /^<xpath:\/xpath\/expression>$/,
-      '"string-prefix-" + /xpath/expression':
-          /^string-prefix-<xpath:\/xpath\/expression>$/,
-      '/xpath/expression + "-string-suffix"':
-          /^<xpath:\/xpath\/expression>-string-suffix$/,
       'concat("Evaluates to: ", /xpath/expression)':
           /^Evaluates to: <xpath:\/xpath\/expression>$/,
       '3':
@@ -76,10 +64,8 @@ var docs = '',
           /^(0\.0\d+)|(\d\.\d+e-\d)$/,
       '12 mod 5':
           /^2$/,
-      'reverse("hello " + "friend")':
-          /^dneirf olleh$/,
-      'reverse("hello ") + reverse("friend")':
-          /^ ollehdneirf$/,
+      'reverse("hello")':
+          /^olleh$/,
       'native_function()':
           /^<xpath:native_function\(\)>$/,
       'native_function(3)':
@@ -98,8 +84,11 @@ var docs = '',
           /^<xpath:native-function\("string-arg"\)>$/,
       'native-function(1, 2, 3, "a", \'b\', "c")':
           /^<xpath:native-function\(1, 2, 3, "a", "b", "c"\)>$/,
+      /* 
+      // Not clear what to do here as correcting this requires knowledge of return types of native functions.
       'native-function1(native-function2() + native-function3()) + native-function4(native-function5() + native-function6())':
           /^<xpath:native-function1\("<xpath:native-function2\(\)><xpath:native-function3\(\)>"\)><xpath:native-function4\("<xpath:native-function5\(\)><xpath:native-function6\(\)>"\)>$/,
+      */
       'native-function-with-space-before-bracket ()':
           /^<xpath:native-function-with-space-before-bracket\(\)>$/,
       '3 * 2 + 1':
