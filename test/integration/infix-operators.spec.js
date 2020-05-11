@@ -201,13 +201,26 @@ describe('infix operators', () => {
       var doc = initDoc(`
       <data>
         <number>4</number>
-        <number>10</number>
       </data>`);
 
       // It doesn't matter whether a string or number is requested, an infix operator should ensure that both 
       // left and right operands are converted to numbers during evaluation.
       // If multiple nodes are returned, the value of the first node will be used.
       assertString('/data/number + 1', '5'); // returns '41'
+
+    });
+
+    it('calculation with multiple nodes operand returned as string', () => {
+      var doc = initDoc(`
+      <data>
+        <number>4</number>
+        <number>10</number>
+      </data>`);
+
+      // It doesn't matter whether a string or number is requested, an infix operator should ensure that both 
+      // left and right operands are converted to numbers during evaluation.
+      // If multiple nodes are returned, the value of the first node will be used.
+      assertString('/data/number + 1', '5'); // returns '4,101'
 
     });
   });
