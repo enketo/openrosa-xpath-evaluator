@@ -8,17 +8,21 @@ describe('predicates with function calls', ()=> {
           <item>
             <number>4</number>
           </item>
+          <item>
+            <number>6</number>
+          </item>
           <b/>
           <b/>
         </data>`);
 
-        assertTrue('count(/data/item[true()]) = 1');
+        assertTrue('count(/data/item[true()]) = 2');
         assertNumberValue('count(/data/b[round(2.44) = 2])', 2);
         assertNumberValue('/data/item[true()]/number', 4);
         assertNumberValue('/data/item[true()]/number + 1', 5); // returns undefined, but probably not related to predicate
         assertStringValue('/data/item[true()]/number + 1', '5'); // returns '41', but probably not related to predicate
         assertNumberValue('/data/item[string-length("a") = 1]/number + 2', 6); // returns undefined, but probably not related to predicate
         assertNumberValue('/data/item[string-length(./number)=1]/number + 3', 7); // returns undefined, but probably not related to predicate
+        assertNumberValue('/data/item[(./number div 3.14) > 1.9]/number', 6);
      });
 
     it('with extended functions', () => {
@@ -27,10 +31,14 @@ describe('predicates with function calls', ()=> {
           <item>
             <number>4</number>
           </item>
+          <item>
+            <number>6</number>
+          </item>
         </data>`);
 
-        assertNumberValue('/data/item[pi() > 3]/number', 4);
-        assertNumberValue('/data/item[tan(./number) > 1]/number', 4);
+      assertNumberValue('/data/item[pi() > 3]/number', 4);
+      assertNumberValue('/data/item[tan(./number) > 1]/number', 4);
+      assertNumberValue('/data/item[(./number div pi()) > 1.9]/number', 6);
     });
     
     // I put this one separate as it has a different 'too many args' error, and there may be multiple causes for failure
