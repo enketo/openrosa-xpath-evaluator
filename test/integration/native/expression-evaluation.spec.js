@@ -12,14 +12,14 @@ describe('XPath expression evaluation', () => {
         </head>
         <body class="yui3-skin-sam" id="body">
           <div id="XPathExpressionEvaluateCase">
-      			<div id="testContextNodeParameter" style="display:block;">
-      				<div id="testContextNodeParameterText">some text</div>
-      				<div id="testContextNodeParameterCData"><![CDATA[aa<strong>some text</strong>]]></div>
-      				<div id="testContextNodeParameterComment"><!-- here is comment --></div>
-      				<div id="testContextNodeParameterProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
-      				<div id="testContextNodeParameterNamespace" xmlns:asdf="http://some-namespace/"></div>
-      			</div>
-  		    </div>
+            <div id="testContextNodeParameter" style="display:block;">
+              <div id="testContextNodeParameterText">some text</div>
+              <div id="testContextNodeParameterCData"><![CDATA[aa<strong>some text</strong>]]></div>
+              <div id="testContextNodeParameterComment"><!-- here is comment --></div>
+              <div id="testContextNodeParameterProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
+              <div id="testContextNodeParameterNamespace" xmlns:asdf="http://some-namespace/"></div>
+            </div>
+          </div>
         </body>
       </html>`);
   });

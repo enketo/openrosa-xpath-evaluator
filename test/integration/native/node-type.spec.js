@@ -5,24 +5,24 @@ describe('node-type', () => {
   beforeEach(() => {
     doc = initDoc(`
       <div id="StepNodeTestNodeTypeCase">
-  			some text
-  			<div></div>
-  			<div>
-  				<div></div>
-  			</div>
-  			<!-- comment --><!-- comment -->
-  			asdf
-  			asdfsdf sdf
-  			<div></div>
-  			<?xml-stylesheet type="text/xml" href="test.xsl"?>
-  			<div></div>
-  			sdfsdf
-  			<![CDATA[aa<strong>some text</strong>]]>
-  			<!-- comment -->
-  			<div></div>
-  			<?custom-process-instruct type="text/xml" href="test.xsl"?>
-  			<div></div>
-  		</div>`);
+        some text
+        <div></div>
+        <div>
+          <div></div>
+        </div>
+        <!-- comment --><!-- comment -->
+        asdf
+        asdfsdf sdf
+        <div></div>
+        <?xml-stylesheet type="text/xml" href="test.xsl"?>
+        <div></div>
+        sdfsdf
+        <![CDATA[aa<strong>some text</strong>]]>
+        <!-- comment -->
+        <div></div>
+        <?custom-process-instruct type="text/xml" href="test.xsl"?>
+        <div></div>
+      </div>`);
   });
 
   it('"node" is supported', () => {

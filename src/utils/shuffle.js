@@ -42,9 +42,9 @@ function shuffle(array, seed) {
  */
 function Random(seed) {
     this._seed = seed % MAX_INT32;
-	if(this._seed <= 0) {
-		this._seed += (MAX_INT32 - 1);
-	}
+  if(this._seed <= 0) {
+    this._seed += (MAX_INT32 - 1);
+  }
 }
 
 /**

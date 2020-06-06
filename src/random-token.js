@@ -3,8 +3,8 @@ function _random13chars() {
 }
 
 function randomToken(length) {
-	var loops = Math.ceil(length / 13);
-	return new Array(loops)
+  var loops = Math.ceil(length / 13);
+  return new Array(loops)
     .fill(_random13chars)
     .reduce((string, func) => {
       return string + func();

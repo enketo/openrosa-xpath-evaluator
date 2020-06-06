@@ -27,13 +27,13 @@ describe('#concat', () => {
   it('should concatenate nodeset', () => {
     const doc = initDoc(`
       <div id="testFunctionNodeset">
-			  <div id="testFunctionNodeset2">
-    			<p>1</p>
-    			<p>2</p>
-    			<p>3</p>
-    			<p>4</p>
-			  </div>
-			</div>`);
+        <div id="testFunctionNodeset2">
+          <p>1</p>
+          <p>2</p>
+          <p>3</p>
+          <p>4</p>
+        </div>
+      </div>`);
     const node = doc.getElementById('testFunctionNodeset2');
     assertStringValue(node, null, "concat(*, 'a')", '1234a');
     assertStringValue(node, null, "concat(*)", '1234');

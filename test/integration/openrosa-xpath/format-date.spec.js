@@ -5,12 +5,12 @@ describe('#format-date()', () => {
   it('format-date()', () => {
     const doc = initDoc(`
       <div id="FunctionDate">
-  			<div id="FunctionDateCase1">2012-07-23</div>
-  			<div id="FunctionDateCase2">2012-08-20T00:00:00.00+00:00</div>
-  			<div id="FunctionDateCase3">2012-08-08T00:00:00+00:00</div>
-  			<div id="FunctionDateCase4">2012-06-23</div>
-  			<div id="FunctionDateCase5">2012-08-08T06:07:08.123-07:00</div>
-  		</div>`);
+        <div id="FunctionDateCase1">2012-07-23</div>
+        <div id="FunctionDateCase2">2012-08-20T00:00:00.00+00:00</div>
+        <div id="FunctionDateCase3">2012-08-08T00:00:00+00:00</div>
+        <div id="FunctionDateCase4">2012-06-23</div>
+        <div id="FunctionDateCase5">2012-08-08T06:07:08.123-07:00</div>
+      </div>`);
     const date = new Date();
     [
       ['format-date(.,  "%Y/%n | %y/%m | %b" )', doc.getElementById('FunctionDateCase1'), '2012/7 | 12/07 | Jul'],

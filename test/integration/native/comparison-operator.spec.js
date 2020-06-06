@@ -97,18 +97,18 @@ describe('Comparison operator', () => {
       doc = initDoc(`
         <div id="ComparisonOperatorCase">
           <div id="ComparisonOperatorCaseNodesetNegative5to5">
-    				<div>-5</div>
-    				<div>-4</div>
-    				<div>-3</div>
-    				<div>-2</div>
-    				<div>-1</div>
-    				<div>0</div>
-    				<div>1</div>
-    				<div>2</div>
-    				<div>3</div>
-    				<div>4</div>
-    				<div>5</div>
-    			</div>
+            <div>-5</div>
+            <div>-4</div>
+            <div>-3</div>
+            <div>-2</div>
+            <div>-1</div>
+            <div>0</div>
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+          </div>
           <div id="ComparisonOperatorCaseNodesetEmpty">
           </div>
           <div id="ComparisonOperatorCaseNodesetStrings">

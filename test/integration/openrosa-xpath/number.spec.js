@@ -89,19 +89,19 @@ describe('#number()', () => {
     it('number() conversion of nodesets', () => {
       const doc = initDoc(`
         <div id="FunctionNumberCase">
-    			<div id="FunctionNumberCaseNumber">123</div>
-    			<div id="FunctionNumberCaseNotNumber">  a a  </div>
-    			<div id="FunctionNumberCaseNumberMultiple">
-    				<div>-10</div>
-    				<div>11</div>
-    				<div>99</div>
-    			</div>
-    			<div id="FunctionNumberCaseNotNumberMultiple">
-    				<div>-10</div>
-    				<div>11</div>
-    				<div>a</div>
-    			</div>
-    		</div>`);
+          <div id="FunctionNumberCaseNumber">123</div>
+          <div id="FunctionNumberCaseNotNumber">  a a  </div>
+          <div id="FunctionNumberCaseNumberMultiple">
+            <div>-10</div>
+            <div>11</div>
+            <div>99</div>
+          </div>
+          <div id="FunctionNumberCaseNotNumberMultiple">
+            <div>-10</div>
+            <div>11</div>
+            <div>a</div>
+          </div>
+        </div>`);
 
       let node = doc.getElementById('FunctionNumberCaseNumber');
       assertNumberValue(node, null, 'number(self::node())', 123);
