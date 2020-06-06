@@ -5,12 +5,6 @@
     "browser": true,
     "commonjs": true
   },
-  "globals": {
-    "Promise": true,
-    "_": false,
-    "__dirname": false,
-    "chai": false
-  },
   "extends": "eslint:recommended",
   "parserOptions": {
     "sourceType": "module",
