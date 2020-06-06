@@ -1,5 +1,4 @@
-const { initDoc, assert, assertThrow, assertTrue, nsResolver,
-  assertStringValue} = require('../../helpers');
+const { initDoc, assert, assertThrow, assertTrue, nsResolver } = require('../helpers');
 
 
 describe('randomize()', () => {
@@ -36,7 +35,7 @@ describe('randomize()', () => {
 
     it('without a seed', () => {
       assertTrue(`randomize(${SELECTOR})`);
-      assertStringValue(`randomize(${SELECTOR})`, 'A');
+      //assertStringValue(`randomize(${SELECTOR})`, 'A'); REVIEW the whole point of unseeded randomize() is that the order is random, so will be A one out of six times
       const getNodesAndText = (expr) => {
         let result = doc.xEval(expr, doc, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
         const nodes = [];
@@ -51,7 +50,7 @@ describe('randomize()', () => {
       const [nodes, text] = getNodesAndText(`randomize(${SELECTOR})`);
       assert.equal(nodes.length, 6);
       assert.equal(text.length, 6);
-      assert.equal(text !== 'ABCDEF', true);
+      assert.equal(text !== 'ABCDEF', true); // this will not always be true
     });
 
     [
@@ -66,7 +65,7 @@ describe('randomize()', () => {
     ].forEach(([seed, expected]) => {
       it(`with a seed: ${seed}`, () => {
         const result = doc.xEval(`randomize(${SELECTOR}, ${seed})`, doc,
-          XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+          XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE);
         let text = '';
         for (let j = 0; j < result.snapshotLength; j++) {
           text += result.snapshotItem(j).textContent;

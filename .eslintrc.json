@@ -6,15 +6,14 @@
     "commonjs": true
   },
   "globals": {
-    "Promise": true,
-    "_": false,
+    "Promise": false,
     "__dirname": false,
     "chai": false
   },
   "extends": "eslint:recommended",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 6
+    "ecmaVersion": 8
   },
   "rules": {
     "semi": [ "error", "always" ],
