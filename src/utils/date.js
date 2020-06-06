@@ -26,7 +26,7 @@ var daysInMonth = function (m, y) {
     case 8 : case 3 : case 5 : case 10 :
       return 30;
     default :
-      return 31
+      return 31;
   }
 };
 
