@@ -247,5 +247,5 @@ describe('number operators', () => {
     assertBoolean('1 + 1', true);
     assertBoolean('0 + 1', true);
     assertBoolean('0 + 0', false);
-  })
+  });
 });

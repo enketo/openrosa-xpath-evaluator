@@ -1,5 +1,5 @@
 const { initDoc, nsResolver, filterAttributes,
-  parseNamespacesFromAttributes, getAllNodes, comparePosition,
+  parseNamespacesFromAttributes, getAllNodes,
   assert, assertNodes, assertNodesNamespace
 } = require('../../helpers');
 
@@ -143,7 +143,7 @@ describe('axes', () => {
               node2 = nodesAll[i]; //
               if (node2.nodeType == 10) // document type node
                   continue; //
-              result = comparePosition(node, node2);
+              result = node.compareDocumentPosition(node2);
               if (4 === result) {
                   nodes.push(node2);
               }
@@ -164,7 +164,7 @@ describe('axes', () => {
           for (i = 0; i < nodesAll.length; i++) {
             node2 = nodesAll[i];
 
-            result = comparePosition(node, node2);
+            result = node.compareDocumentPosition(node2);
             if (2 == result) {
               nodes.push(node2);
             }

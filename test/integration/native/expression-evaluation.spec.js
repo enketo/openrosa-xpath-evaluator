@@ -1,5 +1,4 @@
 const { initDoc, nsResolver, filterAttributes, assert } = require('../../helpers');
-const { toNodes } = require('../../../src/utils/result');
 
 describe('XPath expression evaluation', () => {
   let doc;
@@ -108,7 +107,7 @@ describe('XPath expression evaluation4', () => {
       assert.equal(res.resultType, 3);
       assert.equal(res.booleanValue, expected);
     });
-  })
+  });
 });
 
 describe('XPath expression evaluation5', () => {

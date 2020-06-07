@@ -1,5 +1,3 @@
-const config = require('../../../src/config');
-const openRosaExtensions = require('../../../src/openrosa-extensions');
 const {initDoc, assert} = require('../../helpers');
 
 // TODO need to test this differently - with the actual orxe.min.js loaded.
