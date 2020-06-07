@@ -9,7 +9,7 @@ function OpenrosaXPathEvaluator() {
   return {
     createExpression: evaluator.createExpression,
     createNSResolver: evaluator.createNSResolver,
-    evaluate: function (expr, node, nsr, rt, result) {
+    evaluate: function (expr, node, nsr, rt) {
       const xevaluator = new ExtendedXPathEvaluator(
         (v, xnode, xnsr, xrt) => {
           if(!rt || rt<7 || v.startsWith('//')) rt = null;
@@ -21,7 +21,7 @@ function OpenrosaXPathEvaluator() {
         extensions);
       return xevaluator.evaluate(...arguments);
     },
-  }
+  };
 }
 
 module.exports = (function(){

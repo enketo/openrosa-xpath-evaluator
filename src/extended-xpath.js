@@ -6,7 +6,6 @@ var {isNativeFunction, preprocessNativeArgs} = require('./utils/native');
 var {DATE_STRING, dateToDays} = require('./utils/date');
 var {toNodes, toSnapshotResult} = require('./utils/result');
 var {inputArgs, preprocessInput} = require('./utils/input');
-var xpr = require('./xpr');
 /*
  * From http://www.w3.org/TR/xpath/#section-Expressions XPath infix
  * operator precedence is left-associative, and as follows:
@@ -175,7 +174,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         return {
           resultType: XPathResult.STRING_TYPE,
           stringValue: res.stringValue.substring(7, res.stringValue.length-1)
-        }
+        };
       }
       if(rT === XPathResult.STRING_TYPE && res.resultType >= 6) {
         if(res.snapshotLength) {
@@ -192,8 +191,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         return { resultType: rT, stringValue: firstNodeValue };
       }
       if(rT === XPathResult.BOOLEAN_TYPE && res.resultType >= 4) {
-        var firstNode = res.iterateNext();
-        return { resultType: rT, booleanValue: firstNode ? true : false };
+        return { resultType: rT, booleanValue: !!res.iterateNext() };
       }
       return res;
     }
@@ -218,11 +216,11 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         var selectedExpr = input.substring(0, selectedExprIdx);
         var selection = input.substring(selectedExprIdx+10, input.indexOf(')]'));
         var selectionExpr = selection.split(',').map(s => s.trim());
-        var selectionResult = wrapped(`${selectionExpr[0]}/text()`)
+        var selectionResult = wrapped(`${selectionExpr[0]}/text()`);
         if(selectionResult.snapshotLength) {
           var values = selectionResult.snapshotItem(0)
-            .textContent.split(' ').map(v => `${selectionExpr[1]}=\"${v}\"`);
-          return wrapped(`${selectedExpr}[${values.join(' or ')}]`)
+            .textContent.split(' ').map(v => `${selectionExpr[1]}="${v}"`);
+          return wrapped(`${selectedExpr}[${values.join(' or ')}]`);
         }
         return toSnapshotResult([], rT);
       }
@@ -235,7 +233,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         return {
           type: XPathResult.STRING_TYPE,
           stringValue: wrappedResult.numberValue.toString()
-        }
+        };
       }
       return wrappedResult;
     }
@@ -410,7 +408,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
                 expectedReturnType = XPathResult.STRING_TYPE;
               }
             }
-            var res = callFn(cur.v, cur.tokens, expectedReturnType);
+            const res = callFn(cur.v, cur.tokens, expectedReturnType);
             if(cur.v === 'node' && res.t === 'arr' && res.v.length > 0)
               res.v = [res.v[0]]; // only interested in first element
             peek().tokens.push(res);
