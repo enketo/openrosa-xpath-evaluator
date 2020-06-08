@@ -11,65 +11,65 @@ describe('axes', () => {
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
         <head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="StepAxisCase">
 
-      			<div id="testStepAxisNodeElement"></div>
-      			<div id="testStepAxisNodeAttribute" style="sss:asdf;" width="100%"></div>
-      			<div id="testStepAxisNodeCData"><![CDATA[aa<strong>some text</strong>]]><div></div>asdf</div>
-      			<div id="testStepAxisNodeComment"><!-- here is comment --><div></div>asdf</div>
-      			<div id="testStepAxisNodeProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?><div></div>asdf</div>
-      			<div id="testStepAxisNodeNamespace" xmlns:asdf="http://some-namespace/" width="100%"></div>
+            <div id="testStepAxisNodeElement"></div>
+            <div id="testStepAxisNodeAttribute" style="sss:asdf;" width="100%"></div>
+            <div id="testStepAxisNodeCData"><![CDATA[aa<strong>some text</strong>]]><div></div>asdf</div>
+            <div id="testStepAxisNodeComment"><!-- here is comment --><div></div>asdf</div>
+            <div id="testStepAxisNodeProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?><div></div>asdf</div>
+            <div id="testStepAxisNodeNamespace" xmlns:asdf="http://some-namespace/" width="100%"></div>
 
-      			<div id="testStepAxisChild">
-      				some text
-      				<![CDATA[aa<strong>some text</strong>]]>
-      				<div></div>
-      				<div></div>
-      				<div></div>
-      				<div></div>
-      				<div></div>
-      			</div>
+            <div id="testStepAxisChild">
+              some text
+              <![CDATA[aa<strong>some text</strong>]]>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
 
-      			<div id="testStepAxisDescendant">
-      				<div>
-      					<div></div>
-      					<div></div>
-      					<div></div>
-      					<div>
-      						<div></div>
-      						<div></div>
-      						<!-- here is comment -->
-      					</div>
-      				</div>
-      				<div></div>
-      			</div>
+            <div id="testStepAxisDescendant">
+              <div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div>
+                  <div></div>
+                  <div></div>
+                  <!-- here is comment -->
+                </div>
+              </div>
+              <div></div>
+            </div>
 
-      			<div id="testStepAxisAttribute">
-      				<div id="testStepAxisNodeAttribute0"></div>
-      				<div id="testStepAxisNodeAttribute1" class="test 123"></div>
-      				<div id="testStepAxisNodeAttribute3" style="aaa" class="test 123" width="100%"></div>
-      				<div id="testStepAxisNodeAttributeStartXml" xmlnswidth="100%" xml="sss"></div>
+            <div id="testStepAxisAttribute">
+              <div id="testStepAxisNodeAttribute0"></div>
+              <div id="testStepAxisNodeAttribute1" class="test 123"></div>
+              <div id="testStepAxisNodeAttribute3" style="aaa" class="test 123" width="100%"></div>
+              <div id="testStepAxisNodeAttributeStartXml" xmlnswidth="100%" xml="sss"></div>
 
-      				<div id="testStepAxisNodeNamespace0"></div>
-      				<div id="testStepAxisNodeNamespace1" xmlns:a="asdf"></div>
-      				<div id="testStepAxisNodeNamespace1b" xmlns:a="asdf"></div>
-      				<div id="testStepAxisNodeNamespace1defaultContainer"><div xmlns="asdf"></div></div>
-      				<div id="testStepAxisNodeNamespace1defaultContainer2"><div xmlns=""></div></div>
-      				<div id="testStepAxisNodeNamespace3" xmlns:a="asdf" xmlns:b="asdf2" xmlns:c="asdf3"></div>
-      				<div id="testStepAxisNodeNamespace3defaultContainer"><div xmlns:a="asdf" xmlns="asdf2" xmlns:c="asdf3"></div></div>
-      				<div id="testStepAxisNodeNamespaceXmlOverride" xmlns:ev="http://some-other-namespace/"></div>
+              <div id="testStepAxisNodeNamespace0"></div>
+              <div id="testStepAxisNodeNamespace1" xmlns:a="asdf"></div>
+              <div id="testStepAxisNodeNamespace1b" xmlns:a="asdf"></div>
+              <div id="testStepAxisNodeNamespace1defaultContainer"><div xmlns="asdf"></div></div>
+              <div id="testStepAxisNodeNamespace1defaultContainer2"><div xmlns=""></div></div>
+              <div id="testStepAxisNodeNamespace3" xmlns:a="asdf" xmlns:b="asdf2" xmlns:c="asdf3"></div>
+              <div id="testStepAxisNodeNamespace3defaultContainer"><div xmlns:a="asdf" xmlns="asdf2" xmlns:c="asdf3"></div></div>
+              <div id="testStepAxisNodeNamespaceXmlOverride" xmlns:ev="http://some-other-namespace/"></div>
 
-      				<div id="testStepAxisNodeAttrib1Ns1" class="test 123" xmlns:a="asdf"></div>
-      				<div id="testStepAxisNodeAttrib1Ns1reversed" xmlns:a="asdf" class="test 123"></div>
-      				<div id="testStepAxisNodeAttrib2Ns1" style="aaa" class="test 123" xmlns:c="asdf3"></div>
-      				<div id="testStepAxisNodeAttrib2Ns1reversedContainer"><div style="aaa" xmlns="asdf" class="test 123"></div></div>
-      				<div id="testStepAxisNodeAttrib2Ns2Container"><div xmlns:a="asdf" xmlns="asdf2" style="aaa" class="test 123"></div></div>
-      			</div>
-      		</div>
+              <div id="testStepAxisNodeAttrib1Ns1" class="test 123" xmlns:a="asdf"></div>
+              <div id="testStepAxisNodeAttrib1Ns1reversed" xmlns:a="asdf" class="test 123"></div>
+              <div id="testStepAxisNodeAttrib2Ns1" style="aaa" class="test 123" xmlns:c="asdf3"></div>
+              <div id="testStepAxisNodeAttrib2Ns1reversedContainer"><div style="aaa" xmlns="asdf" class="test 123"></div></div>
+              <div id="testStepAxisNodeAttrib2Ns2Container"><div xmlns:a="asdf" xmlns="asdf2" style="aaa" class="test 123"></div></div>
+            </div>
+          </div>
         </body>
       </html>`, nsResolver);
 

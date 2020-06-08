@@ -138,12 +138,12 @@ describe('#date()', () => {
   it('for nodes (where the date datatype is guessed)', () => {
     const doc = initDoc(`
       <div id="FunctionDate">
-  			<div id="FunctionDateCase1">2012-07-23</div>
-  			<div id="FunctionDateCase2">2012-08-20T00:00:00.00+00:00</div>
-  			<div id="FunctionDateCase3">2012-08-08T00:00:00+00:00</div>
-  			<div id="FunctionDateCase4">2012-06-23</div>
-  			<div id="FunctionDateCase5">2012-08-08T06:07:08.123-07:00</div>
-  		</div>`, nsResolver);
+        <div id="FunctionDateCase1">2012-07-23</div>
+        <div id="FunctionDateCase2">2012-08-20T00:00:00.00+00:00</div>
+        <div id="FunctionDateCase3">2012-08-08T00:00:00+00:00</div>
+        <div id="FunctionDateCase4">2012-06-23</div>
+        <div id="FunctionDateCase5">2012-08-08T06:07:08.123-07:00</div>
+      </div>`, nsResolver);
     [
       [".", doc.getElementById("FunctionDateCase1"), 15544.29],
       [".", doc.getElementById("FunctionDateCase2"), 15572]
@@ -183,12 +183,12 @@ describe('#date()', () => {
   it('datestring comparisons (date detection)', () => {
     const doc = initDoc(`
       <div id="FunctionDate">
-  			<div id="FunctionDateCase1">2012-07-23</div>
-  			<div id="FunctionDateCase2">2012-08-20T00:00:00.00+00:00</div>
-  			<div id="FunctionDateCase3">2012-08-08T00:00:00+00:00</div>
-  			<div id="FunctionDateCase4">2012-06-23</div>
-  			<div id="FunctionDateCase5">2012-08-08T06:07:08.123-07:00</div>
-  		</div>`);
+        <div id="FunctionDateCase1">2012-07-23</div>
+        <div id="FunctionDateCase2">2012-08-20T00:00:00.00+00:00</div>
+        <div id="FunctionDateCase3">2012-08-08T00:00:00+00:00</div>
+        <div id="FunctionDateCase4">2012-06-23</div>
+        <div id="FunctionDateCase5">2012-08-08T06:07:08.123-07:00</div>
+      </div>`);
     [
       [". < date('2012-07-24')", doc.getElementById("FunctionDateCase1" ), true],
       //returns false if strings are compared but true if dates are compared
@@ -210,9 +210,9 @@ describe('#date()', () => {
         </head>
         <body>
           <div id="FunctionDate">
-      			<div id="FunctionDateCase1">2012-07-23</div>
+            <div id="FunctionDateCase1">2012-07-23</div>
             <div id="FunctionDateCase4">2012-06-23</div>
-      		</div>
+          </div>
         </body>
       </html>`, nsResolver);
     [

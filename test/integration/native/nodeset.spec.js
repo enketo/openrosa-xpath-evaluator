@@ -7,19 +7,19 @@ describe('native nodeset functions', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-      	<head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="testFunctionNodeset">
-      			<div id="testFunctionNodeset2">
-      				<p>1</p>
-      				<p>2</p>
-      				<p>3</p>
-      				<p>4</p>
-      			</div>
-      		</div>
+            <div id="testFunctionNodeset2">
+              <p>1</p>
+              <p>2</p>
+              <p>3</p>
+              <p>4</p>
+            </div>
+          </div>
         </body>
       </html>`, nsResolver);
     const node = doc.getElementById('testFunctionNodeset2');
@@ -40,19 +40,19 @@ describe('native nodeset functions', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-      	<head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="testFunctionNodeset">
-      			<div id="testFunctionNodeset2">
-      				<p>1</p>
-      				<p>2</p>
-      				<p>3</p>
-      				<p>4</p>
-      			</div>
-      		</div>
+            <div id="testFunctionNodeset2">
+              <p>1</p>
+              <p>2</p>
+              <p>3</p>
+              <p>4</p>
+            </div>
+          </div>
         </body>
       </html>`, nsResolver);
     const node = doc.getElementById('testFunctionNodeset2');
@@ -80,19 +80,19 @@ describe('native nodeset functions', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-      	<head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="testFunctionNodeset">
-      			<div id="testFunctionNodeset2">
-      				<p>1</p>
-      				<p>2</p>
-      				<p>3</p>
-      				<p>4</p>
-      			</div>
-      		</div>
+            <div id="testFunctionNodeset2">
+              <p>1</p>
+              <p>2</p>
+              <p>3</p>
+              <p>4</p>
+            </div>
+          </div>
         </body>
       </html>`, nsResolver);
     const node = doc.getElementById('testFunctionNodeset2');
@@ -121,22 +121,22 @@ describe('native nodeset functions', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-      	<head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="testFunctionNodeset">
-      			<div id="testFunctionNodesetElement">aaa</div>
-      			<div id="testFunctionNodesetElementPrefix"><ev:div2></ev:div2></div>
-      			<div id="testFunctionNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
-      			<div id="testFunctionNodesetComment"><!-- hello world --></div>
-      			<div id="testFunctionNodesetText">here is some text</div>
-      			<div id="testFunctionNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
-      			<div id="testFunctionNodesetCData"><![CDATA[some cdata]]></div>
-      			<div id="testFunctionNodesetAttribute" ev:class="123" width="  1   00%  "></div>
-      			<div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
-      		</div>
+            <div id="testFunctionNodesetElement">aaa</div>
+            <div id="testFunctionNodesetElementPrefix"><ev:div2></ev:div2></div>
+            <div id="testFunctionNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
+            <div id="testFunctionNodesetComment"><!-- hello world --></div>
+            <div id="testFunctionNodesetText">here is some text</div>
+            <div id="testFunctionNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
+            <div id="testFunctionNodesetCData"><![CDATA[some cdata]]></div>
+            <div id="testFunctionNodesetAttribute" ev:class="123" width="  1   00%  "></div>
+            <div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
+          </div>
         </body>
       </html>`, nsResolver);
     let result;
@@ -191,11 +191,11 @@ describe('native nodeset functions', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-      	<head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
         </body>
       </html>`, nsResolver);
@@ -222,22 +222,22 @@ describe('native nodeset functions', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-      	<head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="testFunctionNodeset">
-      			<div id="testFunctionNodesetElement">aaa</div>
-      			<div id="testFunctionNodesetElementPrefix"><ev:div2></ev:div2></div>
-      			<div id="testFunctionNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
-      			<div id="testFunctionNodesetComment"><!-- hello world --></div>
-      			<div id="testFunctionNodesetText">here is some text</div>
-      			<div id="testFunctionNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
-      			<div id="testFunctionNodesetCData"><![CDATA[some cdata]]></div>
-      			<div id="testFunctionNodesetAttribute" ev:class="123" width="  1   00%  "></div>
-      			<div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
-      		</div>
+            <div id="testFunctionNodesetElement">aaa</div>
+            <div id="testFunctionNodesetElementPrefix"><ev:div2></ev:div2></div>
+            <div id="testFunctionNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
+            <div id="testFunctionNodesetComment"><!-- hello world --></div>
+            <div id="testFunctionNodesetText">here is some text</div>
+            <div id="testFunctionNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
+            <div id="testFunctionNodesetCData"><![CDATA[some cdata]]></div>
+            <div id="testFunctionNodesetAttribute" ev:class="123" width="  1   00%  "></div>
+            <div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
+          </div>
         </body>
       </html>`, nsResolver);
 
@@ -303,22 +303,22 @@ describe('native nodeset functions', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-      	<head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="testFunctionNodeset">
-      			<div id="testFunctionNodesetElement">aaa</div>
-      			<div id="testFunctionNodesetElementPrefix"><ev:div2></ev:div2></div>
-      			<div id="testFunctionNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
-      			<div id="testFunctionNodesetComment"><!-- hello world --></div>
-      			<div id="testFunctionNodesetText">here is some text</div>
-      			<div id="testFunctionNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
-      			<div id="testFunctionNodesetCData"><![CDATA[some cdata]]></div>
-      			<div id="testFunctionNodesetAttribute" ev:class="123" width="  1   00%  "></div>
-      			<div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
-      		</div>
+            <div id="testFunctionNodesetElement">aaa</div>
+            <div id="testFunctionNodesetElementPrefix"><ev:div2></ev:div2></div>
+            <div id="testFunctionNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
+            <div id="testFunctionNodesetComment"><!-- hello world --></div>
+            <div id="testFunctionNodesetText">here is some text</div>
+            <div id="testFunctionNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
+            <div id="testFunctionNodesetCData"><![CDATA[some cdata]]></div>
+            <div id="testFunctionNodesetAttribute" ev:class="123" width="  1   00%  "></div>
+            <div id="testFunctionNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
+          </div>
         </body>
       </html>`, nsResolver);
 

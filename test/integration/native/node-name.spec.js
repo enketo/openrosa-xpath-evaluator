@@ -16,28 +16,28 @@ describe('node name for', () => {
         </head>
         <body class="yui3-skin-sam" id="body">
           <div id="StepNodeTestCaseNameTest">
-      			<div id="StepNodeTestCaseNameTestAttribute" ev:attrib1="value" ev:attrib2="value2" xml:attrib2="something" xml:sss="something2" attrib3="asdf" xmlns:ns2="http://asdf/" ns2:attrib4="Hello world"></div>
-      			<div id="StepNodeTestCaseNameTestNamespace" xmlns:ns1="test-123" xmlns:ns2="http://asdf/" ev:attrib1="value" xml:attrib2="something" attrib3="asdf"></div>
-      			<div id="StepNodeTestCaseNameTestChild"><div xmlns="http://asdf/"></div><ev:div xmlns:ev="http://asdf/"></ev:div><ev:span xmlns:ev="http://asdf/"></ev:span>
-      				<div></div>
-      				asdf
-      				<!-- asdf -->
-      				asdf
-      				<div></div>
+            <div id="StepNodeTestCaseNameTestAttribute" ev:attrib1="value" ev:attrib2="value2" xml:attrib2="something" xml:sss="something2" attrib3="asdf" xmlns:ns2="http://asdf/" ns2:attrib4="Hello world"></div>
+            <div id="StepNodeTestCaseNameTestNamespace" xmlns:ns1="test-123" xmlns:ns2="http://asdf/" ev:attrib1="value" xml:attrib2="something" attrib3="asdf"></div>
+            <div id="StepNodeTestCaseNameTestChild"><div xmlns="http://asdf/"></div><ev:div xmlns:ev="http://asdf/"></ev:div><ev:span xmlns:ev="http://asdf/"></ev:span>
+              <div></div>
+              asdf
+              <!-- asdf -->
+              asdf
+              <div></div>
 
-      				<div></div>
-      				asas
-      				<div></div>
-      			</div>
+              <div></div>
+              asas
+              <div></div>
+            </div>
 
-      			<div id="StepNodeTestCaseNameTest1">
-      				<div id="StepNodeTestCaseNameTest2">
-      					<div id="StepNodeTestCaseNameTest3"></div>
-      				</div>
-      			</div>
+            <div id="StepNodeTestCaseNameTest1">
+              <div id="StepNodeTestCaseNameTest2">
+                <div id="StepNodeTestCaseNameTest3"></div>
+              </div>
+            </div>
 
-      			<div id="StepNodeTestCaseNameTestNoNamespace"><div xmlns=""><div><div></div></div></div></div>
-  		    </div>
+            <div id="StepNodeTestCaseNameTestNoNamespace"><div xmlns=""><div><div></div></div></div></div>
+          </div>
         </body>
       </html>`, nsResolver);
 

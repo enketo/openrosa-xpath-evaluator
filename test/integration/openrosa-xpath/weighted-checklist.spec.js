@@ -18,16 +18,16 @@ describe('#weighted-checklist()', () => {
     const doc = initDoc(`
       <root>
         <div id="FunctionChecklistCase">
-    			<div id="FunctionChecklistCaseNo">no</div>
-    			<div id="FunctionChecklistCaseEmpty"></div>
-    			<div id="FunctionChecklistCase0">0</div>
-    		</div>
+          <div id="FunctionChecklistCaseNo">no</div>
+          <div id="FunctionChecklistCaseEmpty"></div>
+          <div id="FunctionChecklistCase0">0</div>
+        </div>
 
-    		<div id="FunctionChecklistCaseValues">
-    			<div>1</div>
-    			<div>1</div>
-    			<div>5</div>
-    		</div>
+        <div id="FunctionChecklistCaseValues">
+          <div>1</div>
+          <div>1</div>
+          <div>5</div>
+        </div>
 
         <div id="FunctionWeightedChecklist">3</div>
       </root>`);

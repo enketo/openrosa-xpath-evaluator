@@ -35,18 +35,18 @@ describe('#selected()', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-      	<head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="FunctionSelectedCase">
-      			<div id="FunctionSelectedCaseEmpty"></div>
-      			<div id="FunctionSelectedCaseSingle">ab</div>
-      			<div id="FunctionSelectedCaseMultiple">ab cd ef gh</div>
-      			<div id="FunctionSelectedCaseMultiple">ij</div>
-      		</div>
-      	</body>
+            <div id="FunctionSelectedCaseEmpty"></div>
+            <div id="FunctionSelectedCaseSingle">ab</div>
+            <div id="FunctionSelectedCaseMultiple">ab cd ef gh</div>
+            <div id="FunctionSelectedCaseMultiple">ij</div>
+          </div>
+        </body>
       </html>`);
     let node = doc.getElementById('FunctionSelectedCaseEmpty');
     assertTrue(node, null, 'selected(self::node(), "")');

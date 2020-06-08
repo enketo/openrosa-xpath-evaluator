@@ -25,10 +25,10 @@ describe('native boolean functions', () => {
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
         <head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
         </body>
       </html>`, nsResolver);
     assertTrue("boolean(/xhtml:html)");

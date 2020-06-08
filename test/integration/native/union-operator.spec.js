@@ -6,27 +6,27 @@ describe('Union operator', () => {
   beforeEach(() => {
     doc = initDoc(`
       <div id="UnionOperatorTestCase">
-  			<div id="eee10">
-  				<div id="eee20">
-  					<div>
-  						<div id="eee25"></div>
-  					</div>
-  				</div>
-  				<div id="eee30">
-  					<div id="eee35"></div>
-  					<div id="eee40" class="sss"></div>
-  				</div>
-  			</div>
-  			<div id="eee50"></div>
+        <div id="eee10">
+          <div id="eee20">
+            <div>
+              <div id="eee25"></div>
+            </div>
+          </div>
+          <div id="eee30">
+            <div id="eee35"></div>
+            <div id="eee40" class="sss"></div>
+          </div>
+        </div>
+        <div id="eee50"></div>
 
-  			<div id="nss10">
-  				<div id="nss20">
-  					<div id="nss25" xmlns:asdf="http://asdf.com/" align="right"></div>
-  					<div xmlns:asdf="http://asdf.com/" id="nss30"></div>
-  				</div>
-  				<div id="nss40" xmlns:asdf="sss" xmlns:asdf2="sdfsdf"></div>
-  			</div>
-  		</div>`);
+        <div id="nss10">
+          <div id="nss20">
+            <div id="nss25" xmlns:asdf="http://asdf.com/" align="right"></div>
+            <div xmlns:asdf="http://asdf.com/" id="nss30"></div>
+          </div>
+          <div id="nss40" xmlns:asdf="sss" xmlns:asdf2="sdfsdf"></div>
+        </div>
+      </div>`);
   });
 
   it('combines elements', () => {

@@ -12,22 +12,22 @@ describe('namespace resolver', () => {
         </head>
         <body class="yui3-skin-sam" id="body">
           <div id="testXPathNSResolver">
-      			<div id="testXPathNSResolverNode" xmlns:xforms="http://www.w3.org/2002/xforms">
-      				<div xmlns="http://www.w3.org/TR/REC-html40">
-      					<div></div>
-      				</div>
-      				<xforms:model>
-      				  <xforms:instance>
-      				    <ecommerce xmlns="">
-      				      <method></method>
-      				      <number></number>
-      				      <expiry></expiry>
-      				    </ecommerce>
-      				  </xforms:instance>
-      				  <xforms:submission action="http://example.com/submit" method="post" id="submit" includenamespaceprefixes=""/>
-      				</xforms:model>
-      			</div>
-  		    </div>
+            <div id="testXPathNSResolverNode" xmlns:xforms="http://www.w3.org/2002/xforms">
+              <div xmlns="http://www.w3.org/TR/REC-html40">
+                <div></div>
+              </div>
+              <xforms:model>
+                <xforms:instance>
+                  <ecommerce xmlns="">
+                    <method></method>
+                    <number></number>
+                    <expiry></expiry>
+                  </ecommerce>
+                </xforms:instance>
+                <xforms:submission action="http://example.com/submit" method="post" id="submit" includenamespaceprefixes=""/>
+              </xforms:model>
+            </div>
+          </div>
         </body>
       </html>`);
   });

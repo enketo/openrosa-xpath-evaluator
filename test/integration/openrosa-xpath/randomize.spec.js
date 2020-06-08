@@ -11,19 +11,19 @@ describe('randomize()', () => {
       doc = initDoc(`
         <!DOCTYPE html>
         <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-        	<head>
-        		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        		<title>xpath-test</title>
-        	</head>
-        	<body class="yui3-skin-sam" id="body">
+          <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <title>xpath-test</title>
+          </head>
+          <body class="yui3-skin-sam" id="body">
             <div id="FunctionRandomize">
-        			<div>A</div>
-        			<div>B</div>
-        			<div>C</div>
-        			<div>D</div>
-        			<div>E</div>
-        			<div>F</div>
-        		</div>
+              <div>A</div>
+              <div>B</div>
+              <div>C</div>
+              <div>D</div>
+              <div>E</div>
+              <div>F</div>
+            </div>
             <div id="testFunctionNodeset2">
               <p>1</p>
               <p>2</p>

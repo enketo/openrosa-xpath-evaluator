@@ -5,11 +5,11 @@ describe('once()', () => {
   it('attempt to change value of empty node', () => {
     const doc = initDoc(`
       <div id="FunctionSelectedCase">
-  			<div id="FunctionSelectedCaseEmpty"></div>
-  			<div id="FunctionSelectedCaseSingle">ab</div>
-  			<div id="FunctionSelectedCaseMultiple">ab cd ef gh</div>
-  			<div id="FunctionSelectedCaseMultiple">ij</div>
-  		</div>`);
+        <div id="FunctionSelectedCaseEmpty"></div>
+        <div id="FunctionSelectedCaseSingle">ab</div>
+        <div id="FunctionSelectedCaseMultiple">ab cd ef gh</div>
+        <div id="FunctionSelectedCaseMultiple">ij</div>
+      </div>`);
 
     let node = doc.getElementById('FunctionSelectedCaseEmpty');
     assertStringValue(node, null, 'once("aa")', 'aa');

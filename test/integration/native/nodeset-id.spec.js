@@ -6,22 +6,22 @@ describe('nodeset id() function', () => {
   beforeEach(() => {
     doc = initDoc(`
       <div id="FunctionNodesetIdCase">
-  			<div id="FunctionNodesetIdCaseSimple"></div>
-  			<div id="FunctionNodesetIdCaseNoDefaultNamespaceContainer"><div id="FunctionNodesetIdCaseNoDefaultNamespace" xmlns=""></div></div>
-  			<div id="FunctionNodesetIdCaseXhtmlDefaultNamespaceContainer"><div id="FunctionNodesetIdCaseXhtmlDefaultNamespace" xmlns="http://www.w3.org/1999/xhtml"></div></div>
-  			<div id="FunctionNodesetIdCaseXhtmlNamespaceContainer"><div xhtml:id="FunctionNodesetIdCaseXhtmlNamespace" xmlns:xhtml="http://www.w3.org/1999/xhtml"></div></div>
-  			<div id="FunctionNodesetIdCaseXhtmlNamespaceParentContainer" xmlns:xhtml="http://www.w3.org/1999/xhtml"><div xhtml:id="FunctionNodesetIdCaseXhtmlNamespaceParent"></div></div>
-  			<div id="FunctionNodesetIdXmlNamespaceContainer"><div xml:id="FunctionNodesetIdXmlNamespace" xmlns=""></div></div>
+        <div id="FunctionNodesetIdCaseSimple"></div>
+        <div id="FunctionNodesetIdCaseNoDefaultNamespaceContainer"><div id="FunctionNodesetIdCaseNoDefaultNamespace" xmlns=""></div></div>
+        <div id="FunctionNodesetIdCaseXhtmlDefaultNamespaceContainer"><div id="FunctionNodesetIdCaseXhtmlDefaultNamespace" xmlns="http://www.w3.org/1999/xhtml"></div></div>
+        <div id="FunctionNodesetIdCaseXhtmlNamespaceContainer"><div xhtml:id="FunctionNodesetIdCaseXhtmlNamespace" xmlns:xhtml="http://www.w3.org/1999/xhtml"></div></div>
+        <div id="FunctionNodesetIdCaseXhtmlNamespaceParentContainer" xmlns:xhtml="http://www.w3.org/1999/xhtml"><div xhtml:id="FunctionNodesetIdCaseXhtmlNamespaceParent"></div></div>
+        <div id="FunctionNodesetIdXmlNamespaceContainer"><div xml:id="FunctionNodesetIdXmlNamespace" xmlns=""></div></div>
 
-  			<div>
-  				<div id="FunctionNodesetIdCaseMultiple1"></div>
-  				<div id="FunctionNodesetIdCaseMultiple2"></div>
-  				<div id="FunctionNodesetIdCaseMultiple3"></div>
-  				<div id="FunctionNodesetIdCaseMultiple4"></div>
-  			</div>
+        <div>
+          <div id="FunctionNodesetIdCaseMultiple1"></div>
+          <div id="FunctionNodesetIdCaseMultiple2"></div>
+          <div id="FunctionNodesetIdCaseMultiple3"></div>
+          <div id="FunctionNodesetIdCaseMultiple4"></div>
+        </div>
 
-  			<div id="FunctionNodesetIdCaseNodeset"><p>FunctionNodesetIdCaseMultiple2</p><p>FunctionNodesetIdCaseMultiple1</p><p>FunctionNodesetIdCaseMultiple2 FunctionNodesetIdCaseMultiple4</p><p>FunctionNodesetIdCaseMultiple3</p></div>
-  		</div>`);
+        <div id="FunctionNodesetIdCaseNodeset"><p>FunctionNodesetIdCaseMultiple2</p><p>FunctionNodesetIdCaseMultiple1</p><p>FunctionNodesetIdCaseMultiple2 FunctionNodesetIdCaseMultiple4</p><p>FunctionNodesetIdCaseMultiple3</p></div>
+      </div>`);
   });
 
   it('works for a simple case', () => {

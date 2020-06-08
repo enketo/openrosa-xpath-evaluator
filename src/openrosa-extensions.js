@@ -191,7 +191,7 @@ var openrosa_xpath_extensions = function(config) {
     area: function(r) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       return areaOrDistance(XPR.number, area, r);
-		},
+    },
     checklist: function(min, max) {
       var i, j, trues = 0;
       min = min.v;
@@ -251,7 +251,7 @@ var openrosa_xpath_extensions = function(config) {
       var time = r.v;
       // There is no Time type, and so far we don't need it so we do all validation
       // and conversion here, manually.
-      var	m = time.match(/^(\d\d):(\d\d):(\d\d)(\.\d\d?\d?)?(\+|-)(\d\d):(\d\d)$/);
+      var  m = time.match(/^(\d\d):(\d\d):(\d\d)(\.\d\d?\d?)?(\+|-)(\d\d):(\d\d)$/);
       var dec;
       if (m &&
         m[1] < 24 && m[1] >= 0 &&

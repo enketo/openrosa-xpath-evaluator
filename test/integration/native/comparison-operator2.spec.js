@@ -5,47 +5,47 @@ describe('Comparison operator', () => {
   beforeEach(() => {
     doc = initDoc(`
       <div id="ComparisonOperatorCase">
-  			<div id="ComparisonOperatorCaseNodesetNegative5to5">
-  				<div>-5</div>
-  				<div>-4</div>
-  				<div>-3</div>
-  				<div>-2</div>
-  				<div>-1</div>
-  				<div>0</div>
-  				<div>1</div>
-  				<div>2</div>
-  				<div>3</div>
-  				<div>4</div>
-  				<div>5</div>
-  			</div>
+        <div id="ComparisonOperatorCaseNodesetNegative5to5">
+          <div>-5</div>
+          <div>-4</div>
+          <div>-3</div>
+          <div>-2</div>
+          <div>-1</div>
+          <div>0</div>
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div>4</div>
+          <div>5</div>
+        </div>
 
-  			<div id="ComparisonOperatorCaseNodeset6to10">
-  				<div>6</div>
-  				<div>7</div>
-  				<div>8</div>
-  				<div>9</div>
-  				<div>10</div>
-  			</div>
+        <div id="ComparisonOperatorCaseNodeset6to10">
+          <div>6</div>
+          <div>7</div>
+          <div>8</div>
+          <div>9</div>
+          <div>10</div>
+        </div>
 
-  			<div id="ComparisonOperatorCaseNodeset4to8">
-  				<div>4</div>
-  				<div>5</div>
-  				<div>6</div>
-  				<div>7</div>
-  				<div>8</div>
-  			</div>
+        <div id="ComparisonOperatorCaseNodeset4to8">
+          <div>4</div>
+          <div>5</div>
+          <div>6</div>
+          <div>7</div>
+          <div>8</div>
+        </div>
 
-  			<div id="ComparisonOperatorCaseNodesetEmpty">
-  			</div>
+        <div id="ComparisonOperatorCaseNodesetEmpty">
+        </div>
 
-  			<div id="ComparisonOperatorCaseNodesetStrings">
-  				<div>aaa</div>
-  				<div>bbb</div>
-  				<div>cccccc</div>
-  				<div>ddd</div>
-  				<div>eee</div>
-  			</div>
-  		</div>
+        <div id="ComparisonOperatorCaseNodesetStrings">
+          <div>aaa</div>
+          <div>bbb</div>
+          <div>cccccc</div>
+          <div>ddd</div>
+          <div>eee</div>
+        </div>
+      </div>
       `);
   });
 
@@ -161,47 +161,47 @@ describe('Comparison operator', () => {
     beforeEach(() => {
       doc = initDoc(`
         <div id="ComparisonOperatorCase">
-    			<div id="ComparisonOperatorCaseNodesetNegative5to5">
-    				<div>-5</div>
-    				<div>-4</div>
-    				<div>-3</div>
-    				<div>-2</div>
-    				<div>-1</div>
-    				<div>0</div>
-    				<div>1</div>
-    				<div>2</div>
-    				<div>3</div>
-    				<div>4</div>
-    				<div>5</div>
-    			</div>
+          <div id="ComparisonOperatorCaseNodesetNegative5to5">
+            <div>-5</div>
+            <div>-4</div>
+            <div>-3</div>
+            <div>-2</div>
+            <div>-1</div>
+            <div>0</div>
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+          </div>
 
-    			<div id="ComparisonOperatorCaseNodeset6to10">
-    				<div>6</div>
-    				<div>7</div>
-    				<div>8</div>
-    				<div>9</div>
-    				<div>10</div>
-    			</div>
+          <div id="ComparisonOperatorCaseNodeset6to10">
+            <div>6</div>
+            <div>7</div>
+            <div>8</div>
+            <div>9</div>
+            <div>10</div>
+          </div>
 
-    			<div id="ComparisonOperatorCaseNodeset4to8">
-    				<div>4</div>
-    				<div>5</div>
-    				<div>6</div>
-    				<div>7</div>
-    				<div>8</div>
-    			</div>
+          <div id="ComparisonOperatorCaseNodeset4to8">
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+            <div>7</div>
+            <div>8</div>
+          </div>
 
-    			<div id="ComparisonOperatorCaseNodesetEmpty">
-    			</div>
+          <div id="ComparisonOperatorCaseNodesetEmpty">
+          </div>
 
-    			<div id="ComparisonOperatorCaseNodesetStrings">
-    				<div>aaa</div>
-    				<div>bbb</div>
-    				<div>cccccc</div>
-    				<div>ddd</div>
-    				<div>eee</div>
-    			</div>
-    		</div>
+          <div id="ComparisonOperatorCaseNodesetStrings">
+            <div>aaa</div>
+            <div>bbb</div>
+            <div>cccccc</div>
+            <div>ddd</div>
+            <div>eee</div>
+          </div>
+        </div>
       `);
     });
 

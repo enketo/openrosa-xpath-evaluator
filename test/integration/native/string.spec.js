@@ -33,23 +33,23 @@ describe('native string functions', () => {
   it('string() conversion of nodesets', () => {
     const doc = initDoc(`
       <div id="FunctionStringCase">
-  			<div id="FunctionStringCaseStringNodesetElement">aaa</div>
-  			<div id="FunctionStringCaseStringNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
-  			<div id="FunctionStringCaseStringNodesetComment"><!-- hello world --></div>
-  			<div id="FunctionStringCaseStringNodesetText">here is some text</div>
-  			<div id="FunctionStringCaseStringNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
-  			<div id="FunctionStringCaseStringNodesetCData"><![CDATA[some cdata]]></div>
-  			<div id="FunctionStringCaseStringNodesetAttribute" class="123" width="  1   00%  "></div>
-  			<div id="FunctionStringCaseStringNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
-  			<div id="FunctionStringCaseStringLength1"></div>
-  			<div id="FunctionStringCaseStringLength2">asdf</div>
-  			<div id="FunctionStringCaseStringNormalizeSpace1"></div>
-  			<div id="FunctionStringCaseStringNormalizeSpace2">   </div>
-  			<div id="FunctionStringCaseStringNormalizeSpace3">  a  b  </div>
-  			<div id="FunctionStringCaseStringNormalizeSpace4">  a
-  				 bc  c
-  			</div>
-  		</div>`);
+        <div id="FunctionStringCaseStringNodesetElement">aaa</div>
+        <div id="FunctionStringCaseStringNodesetElementNested"><span>bbb</span>sss<span></span><div>ccc<span>ddd</span></div></div>
+        <div id="FunctionStringCaseStringNodesetComment"><!-- hello world --></div>
+        <div id="FunctionStringCaseStringNodesetText">here is some text</div>
+        <div id="FunctionStringCaseStringNodesetProcessingInstruction"><?xml-stylesheet type="text/xml" href="test.xsl"?></div>
+        <div id="FunctionStringCaseStringNodesetCData"><![CDATA[some cdata]]></div>
+        <div id="FunctionStringCaseStringNodesetAttribute" class="123" width="  1   00%  "></div>
+        <div id="FunctionStringCaseStringNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
+        <div id="FunctionStringCaseStringLength1"></div>
+        <div id="FunctionStringCaseStringLength2">asdf</div>
+        <div id="FunctionStringCaseStringNormalizeSpace1"></div>
+        <div id="FunctionStringCaseStringNormalizeSpace2">   </div>
+        <div id="FunctionStringCaseStringNormalizeSpace3">  a  b  </div>
+        <div id="FunctionStringCaseStringNormalizeSpace4">  a
+           bc  c
+        </div>
+      </div>`);
     let input;
     let i;
     let node;
@@ -88,11 +88,11 @@ describe('native string functions', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-      	<head>
-      		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      		<title>xpath-test</title>
-      	</head>
-      	<body class="yui3-skin-sam" id="body">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>xpath-test</title>
+        </head>
+        <body class="yui3-skin-sam" id="body">
           <div id="FunctionStringCaseStringNodesetNamespace" xmlns:asdf="http://www.123.com/"></div>
         </body>
       </html>`);
@@ -218,7 +218,7 @@ describe('native string functions', () => {
     const doc = initDoc(`
       <div>
         <div id="FunctionStringCaseStringLength1"></div>
-  			<div id="FunctionStringCaseStringLength2">asdf</div>
+        <div id="FunctionStringCaseStringLength2">asdf</div>
       </div>`);
     [
       ["string-length('')", 0, doc],
@@ -240,11 +240,11 @@ describe('native string functions', () => {
     const doc = initDoc(`
       <div>
         <div id="FunctionStringCaseStringNormalizeSpace1"></div>
-  			<div id="FunctionStringCaseStringNormalizeSpace2">   </div>
-  			<div id="FunctionStringCaseStringNormalizeSpace3">  a  b  </div>
-  			<div id="FunctionStringCaseStringNormalizeSpace4">  a
-  				 bc  c
-  			</div>
+        <div id="FunctionStringCaseStringNormalizeSpace2">   </div>
+        <div id="FunctionStringCaseStringNormalizeSpace3">  a  b  </div>
+        <div id="FunctionStringCaseStringNormalizeSpace4">  a
+           bc  c
+        </div>
       </div>`);
     [
       ["normalize-space('')", '', doc],
