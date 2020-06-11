@@ -1,5 +1,4 @@
 module.exports = {
-  nodes: function(val) { return { t:'nodes', v:val }; },
   boolean: function(val) { return { t:'bool', v:val }; },
   number: function(val) { return { t:'num', v:val }; },
   string: function(val) { return { t:'str', v:val }; },
