@@ -349,7 +349,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         continue;
       }
       if(cur.t === 'num') {
-        if(DIGIT.test(c) || ['e', '"', "'"].includes(c) ||
+        if(DIGIT.test(c) || c === 'e' ||
             (c === '-' && input[i-1] === 'e')) {
           cur.string += c;
           continue;
