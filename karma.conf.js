@@ -6,8 +6,8 @@ module.exports = function(config) {
       'mocha'
     ],
     browsers: [
-      'ChromeHeadless'
-      // 'ChromeHeadless', 'FirefoxHeadless'
+      'ChromeHeadless',
+      'FirefoxHeadless',
     ],
     files: [
       'node_modules/chai/chai.js',
