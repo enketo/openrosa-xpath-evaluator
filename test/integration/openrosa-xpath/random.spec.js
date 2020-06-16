@@ -20,6 +20,6 @@ describe('#random()', () => {
   });
 
   it('random()', () => {
-    assert.match(doc.xEval('random()').numberValue, /0\.[0-9]{14,}/);
+    assert.match(doc.xEval('random()').numberValue, /0\.[0-9]{12,}/);
   });
 });
