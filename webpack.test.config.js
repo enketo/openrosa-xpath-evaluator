@@ -1,6 +1,6 @@
 var path = require('path');
 
-var entryPath = './src/XPathJS.js';
+var entryPath = './src/index.js';
 
 module.exports = {
   target: 'web',
