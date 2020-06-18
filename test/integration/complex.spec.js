@@ -148,12 +148,18 @@ describe('some complex examples', () => {
     '.': '',
 
     // Bracketed expressions inside vs outside function calls:
-    "(3)":           3,
-    "((1 + 1) + 1)": 3,
 
+    "1":              1,
     "(1)":            1,
+    "(1 + 1) - 1":    1,
     "((1 + 1) - 1)":  1,
+    "-1 + (1 + 1)":   1,
     "(-1 + (1 + 1))": 1,
+
+    "3":             3,
+    "(3)":           3,
+    "(1 + 1) + 1":   3,
+    "((1 + 1) + 1)": 3,
 
     "cos(3)":           Math.cos(3),
     "cos((1 + 1) + 1)": Math.cos(3),
