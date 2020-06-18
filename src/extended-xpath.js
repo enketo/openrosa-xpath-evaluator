@@ -207,14 +207,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       return res;
     }
 
-    if((rT > 3 && !input.startsWith('randomize')) ||
-      /^boolean\(/.test(input)) {
-
-      if(input.startsWith('boolean(')) { //firefox
-        if(input === 'boolean()') throw TOO_FEW_ARGS;
-        var bargs = input.substring(8, input.indexOf(')')).split(',');
-        if(bargs.length > 1) throw TOO_MANY_ARGS;
-      }
+    if(rT > 3 && !input.startsWith('randomize')) {
       if(input === '/') cN = cN.ownerDocument || cN;
 
       var selectedExprIdx = input.indexOf('[selected(');
