@@ -208,13 +208,8 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     }
 
     if((rT > 3 && !input.startsWith('randomize')) ||
-      /^count\(|boolean\(/.test(input)) {
+      /^boolean\(/.test(input)) {
 
-      if(input.startsWith('count(')) {
-        if(input.indexOf(',') > 0) throw TOO_MANY_ARGS;
-        if(input === 'count()') throw TOO_FEW_ARGS;
-        if(!isNaN(/\((.*)\)/.exec(input)[1])) throw INVALID_ARGS;//firefox
-      }
       if(input.startsWith('boolean(')) { //firefox
         if(input === 'boolean()') throw TOO_FEW_ARGS;
         var bargs = input.substring(8, input.indexOf(')')).split(',');
