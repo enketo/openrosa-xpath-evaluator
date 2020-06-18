@@ -446,7 +446,7 @@ var openrosa_xpath_extensions = function(config) {
       return XPR.boolean(_str(haystack).split(' ').indexOf(_str(needle).trim()) !== -1);
     },
     'selected-at': function(list, index) {
-      if(!index) throw new Error(JSON.stringify(list));
+      if(!index) throw new Error('No index provided for selected-at() [index=' + index + '; list=' + JSON.stringify(list));
       return XPR.string(_str(list).split(' ')[_int(index)] || '');
     },
     sin: function(r) { return XPR.number(Math.sin(r.v)); },
@@ -540,7 +540,7 @@ var openrosa_xpath_extensions = function(config) {
             }
           } else if(op.v === '+' || op.v === '-') {
             // for math operators, we need to do it ourselves
-            if(lhs.t === 'date' && rhs.t === 'date') err();
+            if(lhs.t === 'date' && rhs.t === 'date') err('No handling for simple arithmetic with two dates.');
             var d = lhs.t === 'date'? lhs.v: rhs.v,
                 n = lhs.t !== 'date'? _int(lhs): _int(rhs),
                 res = new Date(d.getTime());

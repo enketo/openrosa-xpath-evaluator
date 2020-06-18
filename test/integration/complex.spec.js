@@ -147,6 +147,27 @@ describe('some complex examples', () => {
     "today() + 1 > '1970-06-03'": true,
     '.': '',
 
+    // Bracketed expressions inside vs outside function calls:
+
+    "1":              1,
+    "(1)":            1,
+    "(1 + 1) - 1":    1,
+    "((1 + 1) - 1)":  1,
+    "-1 + (1 + 1)":   1,
+    "(-1 + (1 + 1))": 1,
+
+    "3":             3,
+    "(3)":           3,
+    "(1 + 1) + 1":   3,
+    "((1 + 1) + 1)": 3,
+
+    "cos(3)":           Math.cos(3),
+    "cos((1 + 1) + 1)": Math.cos(3),
+
+    "cos(1)":            Math.cos(1),
+    "cos((1 + 1) - 1)":  Math.cos(1),
+    "cos(-1 + (1 + 1))": Math.cos(1),
+
     // These tests exposed a weird bug which would return "Too many tokens" if dot was followed by a comparator
     ".>1": false,
     ".> 1": false,

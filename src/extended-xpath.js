@@ -82,7 +82,18 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
 
       return { resultType:XPathResult.STRING_TYPE, stringValue: r.v===null ? '' : r.v.toString() };
     },
-    callFn = function(name, args, rt) {
+    callFn = function(name, supplied, rt) {
+      // Every second arg should be a comma, but we allow for a trailing comma.
+      // From the spec, this looks valid, if you assume that ExprWhitespace is a
+      // valid Expr.
+      // see: https://www.w3.org/TR/1999/REC-xpath-19991116/#section-Function-Calls
+      var args = [], i;
+      for(i=0; i<supplied.length; ++i) {
+        if(i % 2) {
+          if(supplied[i] !== ',') throw new Error('Weird args (should be separated by commas):' + JSON.stringify(supplied));
+        } else args.push(supplied[i]);
+      }
+
       if(extendedFuncs.hasOwnProperty(name)) {
         // if(rt && (/^(date|true|false|now$|today$|randomize$)/.test(name))) args.push(rt);
         if(rt && (/^(date|now$|today$|randomize$)/.test(name))) args.push(rt);
@@ -376,9 +387,12 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           cur.tokens = [];
           stack.push(cur);
           if(cur.v === 'once') {
+            // TODO once() should be a custom function, and we should pass the
+            // context node to all custom functions, or offer a way to access it
             newCurrent();
             cur.v = '.';
             handleXpathExpr();
+            peek().tokens.push(',');
           }
           newCurrent();
 
@@ -398,7 +412,8 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           }
           backtrack();
           cur = stack.pop();
-          if(cur.t !== 'fn') err();
+
+          if(cur.t !== 'fn') err('")" outside function!');
           if(cur.v) {
             var expectedReturnType = rT;
             if(rT === XPathResult.BOOLEAN_TYPE) {
@@ -413,14 +428,15 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
               res.v = [res.v[0]]; // only interested in first element
             peek().tokens.push(res);
           } else {
-            if(cur.tokens.length !== 1) err();
+            if(cur.tokens.length !== 1) err('Expected one token, but found: ' + cur.tokens.length);
             peek().tokens.push(cur.tokens[0]);
           }
           newCurrent();
           break;
         case ',':
+          if(peek().t !== 'fn') err('Unexpected comma outside function arguments.');
           if(cur.v !== '') handleXpathExpr();
-          if(peek().t !== 'fn') err();
+          peek().tokens.push(',');
           break;
         case '*':
           if(c === '*' && (cur.v !== '' || peek().tokens.length === 0)) {
@@ -440,16 +456,16 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           if(cur.v !== '' && nextChar() !== ' ' && input.charAt(i-1) !== ' ') {
             // function name expr
             cur.v += c;
-          } else if((peek().tokens.length === 0 && cur.v === '') ||
-            (prev && prev.t === 'op') ||
-            // two argument function
-            (prev && prev.t === 'num' && stack.length > 1 && stack[1].t === 'fn') ||
-            // negative argument
-            (prev && prev.t !== 'num' && isNum(nextChar()))) {
+          } else if(cur.v === '' && (
+              !prev ||
+              // ...+-1
+              prev.t === 'op' ||
+              // previous XXX
+              prev === ',')) {
             // -ve number
             cur = { t:'num', string:'-' };
           } else {
-            if(cur.v !== '') {
+            if(cur.v !== '') { // TODO could just be if(!cur.v)
               if(!DIGIT.test(cur.v) && input[i-1] !== ' ') throw INVALID_ARGS;
               peek().tokens.push(cur);
             }
@@ -488,18 +504,35 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           pushOp(c);
           break;
         case ' ':
-          switch(cur.v) {
-            case '': break; // trim leading whitespace
-            case 'mod': pushOp('%'); break;
-            case 'div': pushOp('/'); break;
-            case 'and': pushOp('&'); break;
-            case 'or':  pushOp('|'); break;
-            default: {
-              var op = cur.v.toLowerCase();
-              if(/^(mod|div|and|or)$/.test(op)) throw INVALID_ARGS;
-              if(!FUNCTION_NAME.test(cur.v)) handleXpathExpr();
-            }
-          }
+          if(cur.v === '') break; // trim leading whitespace
+          // trim trailing space from function names:
+          if(!FUNCTION_NAME.test(cur.v)) handleXpathExpr();
+          break;
+        case 'v':
+          // Mad as it seems, according to https://www.w3.org/TR/1999/REC-xpath-19991116/#exprlex,
+          // there is no requirement for ExprWhitespace before or after any
+          // ExprToken, including OperatorName.
+          if(cur.v === 'di') { // OperatorName: 'div'
+            pushOp('/');
+          } else cur.v += c;
+          break;
+        case 'r':
+          // Mad as it seems, according to https://www.w3.org/TR/1999/REC-xpath-19991116/#exprlex,
+          // there is no requirement for ExprWhitespace before or after any
+          // ExprToken, including OperatorName.
+          if(cur.v === 'o') { // OperatorName: 'or'
+            pushOp('|');
+          } else cur.v += c;
+          break;
+        case 'd':
+          // Mad as it seems, according to https://www.w3.org/TR/1999/REC-xpath-19991116/#exprlex,
+          // there is no requirement for ExprWhitespace before or after any
+          // ExprToken, including OperatorName.
+          if(cur.v === 'an') { // OperatorName: 'and'
+            pushOp('&');
+          } else if(cur.v === 'mo') { // OperatorName: 'mod'
+            pushOp('%');
+          } else cur.v += c;
           break;
         case '[':
           cur.sq = (cur.sq || 0) + 1;
