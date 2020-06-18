@@ -149,7 +149,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
 
     if(isNativeFunction(input) &&
-      input.indexOf('[selected(') < 0 &&
       !(input.startsWith('/') && input.indexOf(' ')>0) &&
       input !== '/') {
       var args = inputArgs(input);
@@ -210,20 +209,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         if(bargs.length > 1) throw TOO_MANY_ARGS;
       }
       if(input === '/') cN = cN.ownerDocument || cN;
-
-      var selectedExprIdx = input.indexOf('[selected(');
-      if(selectedExprIdx > 0) {
-        var selectedExpr = input.substring(0, selectedExprIdx);
-        var selection = input.substring(selectedExprIdx+10, input.indexOf(')]'));
-        var selectionExpr = selection.split(',').map(s => s.trim());
-        var selectionResult = wrapped(`${selectionExpr[0]}/text()`);
-        if(selectionResult.snapshotLength) {
-          var values = selectionResult.snapshotItem(0)
-            .textContent.split(' ').map(v => `${selectionExpr[1]}="${v}"`);
-          return wrapped(`${selectedExpr}[${values.join(' or ')}]`);
-        }
-        return toSnapshotResult([], rT);
-      }
 
       var wrappedResult = wrapped(input, cN, nR, rT);
       // Native count always returns Number even when result type is asking
