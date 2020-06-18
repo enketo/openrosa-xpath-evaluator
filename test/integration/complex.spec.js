@@ -151,6 +151,10 @@ describe('some complex examples', () => {
     "cos(3)":           Math.cos(3),
     "cos((1 + 1) + 1)": Math.cos(3),
 
+    "cos(1)":            Math.cos(1),
+    "cos((1 + 1) - 1)":  Math.cos(1),
+    "cos(-1 + (1 + 1))": Math.cos(1),
+
     // These tests exposed a weird bug which would return "Too many tokens" if dot was followed by a comparator
     ".>1": false,
     ".> 1": false,
