@@ -76,45 +76,53 @@ describe('native nodeset functions', () => {
     assertThrow("position(1)");
   });
 
-  it('count()', () => {
-    const doc = initDoc(`
-      <!DOCTYPE html>
-      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-        <head>
-          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-          <title>xpath-test</title>
-        </head>
-        <body class="yui3-skin-sam" id="body">
-          <div id="testFunctionNodeset">
-            <div id="testFunctionNodeset2">
-              <p>1</p>
-              <p>2</p>
-              <p>3</p>
-              <p>4</p>
-            </div>
-          </div>
-        </body>
-      </html>`, nsResolver);
-    const node = doc.getElementById('testFunctionNodeset2');
+  describe('count()', () => {
     [
-      ["count(xhtml:p)", 4],
-      ["count(p)", 0],
-      ["count(//nonexisting)", 0]
+      ["count(xhtml:p)",     4],
+      ["1 + count(xhtml:p)", 5],
+      ["count(p)",     0],
+      ["1 + count(p)", 1],
+      ["count(//nonexisting)",     0],
+      ["1 + count(//nonexisting)", 1],
     ].forEach(([expr, expected]) => {
-      assertNumberValue(node, null, expr, expected);
+      it(`should evaluate '${expr}' to ${expected}`, () => {
+        // given
+        const doc = initDoc(`
+          <!DOCTYPE html>
+          <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+            <head>
+              <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+              <title>xpath-test</title>
+            </head>
+            <body class="yui3-skin-sam" id="body">
+              <div id="testFunctionNodeset">
+                <div id="testFunctionNodeset2">
+                  <p>1</p>
+                  <p>2</p>
+                  <p>3</p>
+                  <p>4</p>
+                </div>
+              </div>
+            </body>
+          </html>`, nsResolver);
+        const node = doc.getElementById('testFunctionNodeset2');
+
+        // expect
+        assertNumberValue(node, null, expr, expected);
+      });
     });
-  });
 
-  it('count() fails when too many arguments are provided', () => {
-    assertThrow("count(1, 2)");
-  });
+    it('count() fails when too many arguments are provided', () => {
+      assertThrow("count(1, 2)");
+    });
 
-  it('count() fails when too few arguments are provided', () => {
-    assertThrow("count()");
-  });
+    it('count() fails when too few arguments are provided', () => {
+      assertThrow("count()");
+    });
 
-  it('count() fails when incorrect argument type is provided', () => {
-    assertThrow("count(1)");
+    it('count() fails when incorrect argument type is provided', () => {
+      assertThrow("count(1)");
+    });
   });
 
   it('local-name()', () => {
