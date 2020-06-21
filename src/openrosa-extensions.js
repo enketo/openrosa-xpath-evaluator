@@ -221,6 +221,13 @@ var openrosa_xpath_extensions = function(config) {
       return XPR.string(out.join(''));
     },
     cos: function(r) { return XPR.number(Math.cos(r.v)); },
+    count: function(selecter) {
+      // count() is part of XPath 1.0, but Chrome and Firefox disagree on how it should work.
+      if(arguments.length === 0) throw new Error('too few args');
+      if(arguments.length > 1) throw new Error('too few args');
+      if(selecter.t !== 'arr') throw new Error("Unpexpected arg type: '" + selecter.t + "'");
+      return XPR.number(selecter.v.length);
+    },
     'count-non-empty': function(r) {
       if(arguments.length === 0 || r.t !== 'arr') throw TOO_FEW_ARGS;
       var counter = 0;
