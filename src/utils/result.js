@@ -1,19 +1,4 @@
-function toNodes(r) {
-  var n, v = [];
-  while((n = r.iterateNext())) v.push(n);
-  return v;
-}
-
-function getNamespaceAtts(result) {
-  var v = [], n;
-  while((n = result.iterateNext())) {
-    if(n.name.indexOf(':')>0) v.unshift(n);
-  }
-  return v;
-}
-
 function toSnapshotResult(nodes, rt, singleItem) {
-  dbg('toSnapshotResult()', { nodes, rt, singleItem });
   return function() {
     var idx = 0;
     return {
@@ -27,11 +12,5 @@ function toSnapshotResult(nodes, rt, singleItem) {
 }
 
 module.exports = {
-  getNamespaceAtts,
-  toNodes,
   toSnapshotResult
 };
-
-function dbg(...args) {
-  console.log(...args.map(JSON.stringify));
-}
