@@ -8,8 +8,8 @@ describe('#min()', () => {
     assertNumberValue('min(0, 2, 3)', 0);
     assertNumberValue('min(-1, 2, 3)', -1);
     assertNumberValue('min("")', NaN);
-    assertNumberValue('min(//nonexisting)', NaN);
-    assertNumberValue('min(//nonexisting)', NaN);
+    assertNumberValue('min(//nonexisting)', Infinity);
+    assertNumberValue('min(//nonexisting)', Infinity);
   });
 
   it('should return NaN if no numerical nodes are matched', () => {

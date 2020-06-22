@@ -1,7 +1,7 @@
 const {initDoc, nsResolver, assertMatch, assertFalse, assertString,
   assertBoolean, assertStringValue, assertNumberRounded } = require('../../helpers');
 
-describe('#date()', () => {
+describe.skip('#date()', () => {
 
   it('invalid dates', () => {
     [

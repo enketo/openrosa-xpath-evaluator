@@ -1,8 +1,7 @@
 const { initDoc, assert, assertNumber, assertNumberValue, assertBoolean } = require('../../helpers');
 
 describe('number operators', () => {
-
-  it('+ works', () => {
+  describe('+', () => {
     [
       ["1+1", 2],
       ["0+1", 1],
@@ -20,52 +19,49 @@ describe('number operators', () => {
       ["false()+1", 1],
       ["(1 div 0) + 1", Number.POSITIVE_INFINITY],
       ["(-1 div 0) + 1", Number.NEGATIVE_INFINITY],
-      ["1 + (-1 div 0)", Number.NEGATIVE_INFINITY]
-    ].forEach(t => {
-      assertNumber(t[0], t[1]);
-    });
-
-    [
-      ["number('a') + 0"],
-      ["0 + number('a')"]
-    ].forEach(t => {
-      assertNumber(t[0], NaN);
+      ["1 + (-1 div 0)", Number.NEGATIVE_INFINITY],
+      ["number('a') + 0", NaN],
+      ["0 + number('a')", NaN],
+    ].forEach(([ expr, expected ]) => {
+      it(`should evaluate ${expr} as ${expected}`, () => {
+        assertNumber(expr, expected);
+      });
     });
   });
 
-  it('- without spacing works', () => {
-    assertNumber("1-1", 0);
-  });
+  describe('-', () => {
+    it('without spacing works', () => {
+      assertNumber("1-1", 0);
+    });
 
-  it('- with spacing works', () => {
-    assertNumber("1 - 1", 0);
-  });
+    it('with spacing works', () => {
+      assertNumber("1 - 1", 0);
+    });
 
-  it('- with combo with/without spacing 1 works', () => {
-    assertNumber("1 -1", 0);
-  });
+    it('with combo with/without spacing 1 works', () => {
+      assertNumber("1 -1", 0);
+    });
 
-  it('- with combo with/without spacing 2 works', () => {
-    assertNumber("1- 1", 0);
-  });
+    it('with combo with/without spacing 2 works', () => {
+      assertNumber("1- 1", 0);
+    });
 
-  it('- with string without spacing BEFORE - fails', () => {
-    const doc = initDoc('');
-    const test = () => {
-      doc.xEval(doc, null, "asdf- asdf", XPathResult.NUMBER_TYPE);
-    };
-    assert.throw(test);
-  });
+    it('with string without spacing BEFORE - fails', () => {
+      const doc = initDoc('');
+      const test = () => {
+        doc.xEval(doc, null, "asdf- asdf", XPathResult.NUMBER_TYPE);
+      };
+      assert.throw(test);
+    });
 
-  it('- with string without spacing AFTER - fails ', () => {
-    assertNumberValue("asdf -asdf", NaN);
-  });
+    it('with string without spacing AFTER - fails ', () => {
+      assertNumberValue("asdf -asdf", NaN);
+    });
 
-  it('- with strings', () => {
-    assertNumberValue("asdf - asdf", NaN);
-  });
+    it('with strings', () => {
+      assertNumberValue("asdf - asdf", NaN);
+    });
 
-  it('- works as expected', () => {
     [
       ["1-1", 0],
       ["0 -1", -1],
@@ -82,16 +78,13 @@ describe('number operators', () => {
       ["true()  \n\r\t -true()", 0],
       ["false()-1", -1],
       ["(1 div 0) - 1", Number.POSITIVE_INFINITY],
-      ["(-1 div 0) - 1", Number.NEGATIVE_INFINITY]
+      ["(-1 div 0) - 1", Number.NEGATIVE_INFINITY],
+      ["number('a') - 0", NaN],
+      ["0 - number('a')", NaN],
     ].forEach(([expr, expected]) => {
-      assertNumberValue(expr, expected);
-    });
-
-    [
-      "number('a') - 0",
-      "0 - number('a')"
-    ].forEach(expr => {
-      assertNumber(expr, NaN);
+      it(`should evaluate ${expr} as ${expected}`, () => {
+        assertNumberValue(expr, expected);
+      });
     });
   });
 

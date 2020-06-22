@@ -13,6 +13,7 @@ function getNamespaceAtts(result) {
 }
 
 function toSnapshotResult(nodes, rt, singleItem) {
+  dbg('toSnapshotResult()', { nodes, rt, singleItem });
   return function() {
     var idx = 0;
     return {
@@ -30,3 +31,7 @@ module.exports = {
   toNodes,
   toSnapshotResult
 };
+
+function dbg(...args) {
+  console.log(...args.map(JSON.stringify));
+}

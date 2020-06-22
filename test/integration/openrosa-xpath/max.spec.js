@@ -104,6 +104,6 @@ describe('#max()', () => {
     node = doc.getElementById('FunctionNumberCaseNotNumberMultiple');
     assertNumberValue(node, null, 'max(node())', NaN);
 
-    assertNumberValue('max(//nonexisting)', NaN);
+    assertNumberValue('max(//nonexisting)', -Infinity);
   });
 });

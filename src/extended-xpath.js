@@ -1,11 +1,9 @@
-var config = require('./config');
-var shuffle = require('./utils/shuffle');
 var {isNamespaceExpr, handleNamespaceExpr} = require('./utils/ns');
 var {handleOperation} = require('./utils/operation');
 var {isNativeFunction, preprocessNativeArgs} = require('./utils/native');
-var {DATE_STRING, dateToDays} = require('./utils/date');
-var {toNodes, toSnapshotResult} = require('./utils/result');
+var {toSnapshotResult} = require('./utils/result');
 var {inputArgs, preprocessInput} = require('./utils/input');
+var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
 /*
  * From http://www.w3.org/TR/xpath/#section-Expressions XPath infix
  * operator precedence is left-associative, and as follows:
@@ -21,10 +19,6 @@ var OP_PRECEDENCE = [
 
 var DIGIT = /[0-9]/;
 var FUNCTION_NAME = /^[a-z]/;
-var NUMERIC_COMPARATOR = /(>|<)/;
-var BOOLEAN_COMPARATOR = /(=)/;
-var BOOLEAN_FN_COMPARATOR = /(true\(\)|false\(\))/;
-var COMPARATOR = /(=|<|>)/;
 
 var INVALID_ARGS = new Error('invalid args');
 var TOO_FEW_ARGS = new Error('too few args');
@@ -35,53 +29,51 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     extendedFuncs = extensions.func || {},
     extendedProcessors = extensions.process || {},
     toInternalResult = function(r) {
+      dbg('toInternalResult()', { r });
       var n, v;
       if(r.resultType === XPathResult.NUMBER_TYPE) return { t:'num', v:r.numberValue };
       if(r.resultType === XPathResult.BOOLEAN_TYPE) return {  t:'bool', v:r.booleanValue };
       if(r.resultType === XPathResult.UNORDERED_NODE_ITERATOR_TYPE) {
         v = [];
-        while((n = r.iterateNext())) v.push(n.textContent);
+        while((n = r.iterateNext())) v.push(n);
         return { t:'arr', v:v };
       }
       return { t:'str', v:r.stringValue };
     },
     toExternalResult = function(r, rt) {
+      var res;
+      dbg('toExternalResult()', { r, rt });
       if(extendedProcessors.toExternalResult) {
-        var res = extendedProcessors.toExternalResult(r);
+        res = extendedProcessors.toExternalResult(r);
         if(res) return res;
       }
 
-      if((r.t === 'arr' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v[0])) ||
-          (r.t === 'str' && rt === XPathResult.NUMBER_TYPE && DATE_STRING.test(r.v))) {
-        var val = r.t === 'arr' ? r.v[0] : r.v;
-        var days = dateToDays(val);
-        return {
-          resultType:XPathResult.NUMBER_TYPE,
-          numberValue:days,
-          stringValue:days
-        };
+      switch(rt) {
+        case null:
+        case undefined:
+        case XPathResult.ANY_TYPE:
+          // don't convert
+          switch(r.t) {
+            case 'num':  return { resultType:XPathResult.NUMBER_TYPE,  numberValue:r.v,  stringValue:r.v.toString() };
+            case 'str':  return { resultType:XPathResult.BOOLEAN_TYPE, stringValue:r.v };
+            case 'bool': return { resultType:XPathResult.BOOLEAN_TYPE, booleanValue:r.v, stringValue:r.v.toString() };
+            case 'arr':  return toSnapshotResult(r.v, rt);
+            default: throw new Error('unrecognised internal type: ' + r.t);
+          }
+        case XPathResult.NUMBER_TYPE:  return { resultType:rt, numberValue: asNumber(r),  stringValue:r.v.toString() };
+        case XPathResult.STRING_TYPE:  return { resultType:rt, stringValue: asString(r)  };
+        case XPathResult.BOOLEAN_TYPE: return { resultType:rt, booleanValue:asBoolean(r), stringValue:r.v.toString() };
+        case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
+        case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+        case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
+        case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
+        case XPathResult.ANY_UNORDERED_NODE_TYPE:
+        case XPathResult.FIRST_ORDERED_NODE_TYPE:
+          return toSnapshotResult(r.v, rt);
+        default: throw new Error('unrecognised return type:', rt);
       }
-
-      if(r.t === 'num') return { resultType:XPathResult.NUMBER_TYPE, numberValue:r.v, stringValue:r.v.toString() };
-      if(r.t === 'bool')return { resultType:XPathResult.BOOLEAN_TYPE, booleanValue:r.v, stringValue:r.v.toString() };
-
-      if(rt > 3) {
-        r = shuffle(r[0], r[1]);
-        return toSnapshotResult(r, rt);
-      }
-
-      if(!r.t && Array.isArray(r)) {
-        if(rt === XPathResult.NUMBER_TYPE) {
-          var v = parseInt(r[0].textContent);
-          return { resultType:XPathResult.NUMBER_TYPE, numberValue:v, stringValue:v.toString() };
-        } else if(rt === XPathResult.STRING_TYPE) {
-          return { resultType:XPathResult.STRING_TYPE, stringValue: r.length ? r[0] : '' };
-        }
-      }
-
-      return { resultType:XPathResult.STRING_TYPE, stringValue: r.v===null ? '' : r.v.toString() };
     },
-    callFn = function(name, supplied, rt) {
+    callFn = function(cN, name, supplied) {
       // Every second arg should be a comma, but we allow for a trailing comma.
       // From the spec, this looks valid, if you assume that ExprWhitespace is a
       // valid Expr.
@@ -94,39 +86,13 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       }
 
       if(extendedFuncs.hasOwnProperty(name)) {
-        // if(rt && (/^(date|true|false|now$|today$|randomize$)/.test(name))) args.push(rt);
-        if(rt && (/^(date|now$|today$|randomize$)/.test(name))) args.push(rt);
-        if(/^(true$|false$)/.test(name)) args.push(rt || XPathResult.BOOLEAN_TYPE);
-        return callExtended(name, args);
+        return extendedFuncs[name].apply(cN, args);
       }
 
-      if(name === 'normalize-space' && args.length) {
-        var res = args[0].v;
-        res = res.replace(/\f/g, '\\f');
-        res = res.replace(/\r\v/g, '\v');
-        res = res.replace(/\v/g, '\\v');
-        res = res.replace(/\s+/g, ' ');
-        res = res.replace(/^\s+|\s+$/g, '');
-        res = res.replace(/\\v/g, '\v');
-        res = res.replace(/\\f/g, '\f');
-        return {t: 'str', v: res};
-      }
-
-      if(name === 'string' && args.length > 0 && (
-        args[0].v === Number.POSITIVE_INFINITY ||
-        args[0].v === Number.NEGATIVE_INFINITY ||
-        args[0].v !== args[0].v )) {//NaN
-        return { t:'str', v: args[0].v };
-      }
       return callNative(name, preprocessNativeArgs(name, args));
     },
-    callExtended = function(name, args) {
-      var argVals = [], res, i;
-      for(i=0; i<args.length; ++i) argVals.push(args[i]);
-      res = extendedFuncs[name].apply(null, argVals);
-      return res;
-    },
     callNative = function(name, args) {
+      dbg('callNative()', { name, args });
       var argString = '', arg, quote, i;
       for(i=0; i<args.length; ++i) {
         arg = args[i];
@@ -155,11 +121,11 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   this.evaluate = function(input, cN, nR, rT) {
-    input = preprocessInput(input, rT);
+    input = preprocessInput(input);
     if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
 
+    // FIXME remove special handling
     if(isNativeFunction(input) &&
-      input.indexOf('[selected(') < 0 &&
       !(input.startsWith('/') && input.indexOf(' ')>0) &&
       input !== '/') {
       var args = inputArgs(input);
@@ -178,22 +144,11 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         };
       }
 
-      if(rT === XPathResult.STRING_TYPE &&
-        res.resultType === XPathResult.STRING_TYPE &&
-        res.stringValue.startsWith('<xpath:')) {
-        return {
-          resultType: XPathResult.STRING_TYPE,
-          stringValue: res.stringValue.substring(7, res.stringValue.length-1)
-        };
-      }
       if(rT === XPathResult.STRING_TYPE && res.resultType >= 6) {
         if(res.snapshotLength) {
           return { resultType: rT, stringValue: res.snapshotItem(0).textContent };
         }
         return { resultType: rT, stringValue: '' };
-      }
-      if(rT === XPathResult.STRING_TYPE && res.resultType === XPathResult.NUMBER_TYPE) {
-        return { resultType: rT, numberValue: res.numberValue, stringValue: res.numberValue.toString() };
       }
       if(rT === XPathResult.STRING_TYPE && res.resultType >= 4) {
         var firstNode = res.iterateNext();
@@ -206,47 +161,11 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       return res;
     }
 
+    // FIXME remove special handling
     if(rT > 3 && !input.startsWith('randomize')) {
       if(input === '/') cN = cN.ownerDocument || cN;
 
-      var selectedExprIdx = input.indexOf('[selected(');
-      if(selectedExprIdx > 0) {
-        var selectedExpr = input.substring(0, selectedExprIdx);
-        var selection = input.substring(selectedExprIdx+10, input.indexOf(')]'));
-        var selectionExpr = selection.split(',').map(s => s.trim());
-        var selectionResult = wrapped(`${selectionExpr[0]}/text()`);
-        if(selectionResult.snapshotLength) {
-          var values = selectionResult.snapshotItem(0)
-            .textContent.split(' ').map(v => `${selectionExpr[1]}="${v}"`);
-          return wrapped(`${selectedExpr}[${values.join(' or ')}]`);
-        }
-        return toSnapshotResult([], rT);
-      }
-
-      var wrappedResult = wrapped(input, cN, nR, rT);
-      // Native count always returns Number even when result type is asking
-      // for a string.
-      if(rT === XPathResult.STRING_TYPE &&
-        wrappedResult.resultType === XPathResult.NUMBER_TYPE) {
-        return {
-          type: XPathResult.STRING_TYPE,
-          stringValue: wrappedResult.numberValue.toString()
-        };
-      }
-      return wrappedResult;
-    }
-
-    if(rT === XPathResult.BOOLEAN_TYPE && input.indexOf('(') < 0 &&
-        input.indexOf('/') < 0 && input.indexOf('=') < 0 &&
-        input.indexOf('!=') < 0) {
-      input = input.replace(/(\n|\r|\t)/g, '');
-      input = input.replace(/"(\d)"/g, '$1');
-      input = input.replace(/'(\d)'/g, '$1');
-      input = `boolean-from-string(${input})`;
-    }
-
-    if(rT === XPathResult.NUMBER_TYPE && input.indexOf('string-length') < 0) {
-      input = input.replace(/(\n|\r|\t)/g, '');
+      return wrapped(input, cN, nR, rT);
     }
 
     var i, cur, stack = [{ t:'root', tokens:[] }],
@@ -264,15 +183,19 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             lhs = res.lhs; op = res.op; rhs = res.rhs; res = null;
           }
 
+          dbg('evalOp()', { res });
+
           if(typeof res !== 'undefined' && res !== null) return res;
         }
-        return handleOperation(lhs, op, rhs, config);
+        return handleOperation(lhs, op, rhs);
       },
       evalOpAt = function(tokens, opIndex) {
         var res = evalOp(
             tokens[opIndex - 1],
             tokens[opIndex],
             tokens[opIndex + 1]);
+
+        dbg('evalOpAt()', { tokens, opIndex, res });
 
         if(typeof res !== 'undefined' && res !== null) {
           tokens.splice(opIndex, 2);
@@ -295,21 +218,10 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       },
       handleXpathExpr = function(returnType) {
         var expr = cur.v;
-        var evaluated;
-        if(['position'].includes(peek().v)) {
-          evaluated = wrapped(expr);
-        } else {
-          if(rT > 3 || (cur.v.indexOf('position()=') >= 0 &&
-            stack.length === 1 && !/^[a-z]*[(|[]{1}/.test(cur.v))) {
-            evaluated = toNodes(wrapped(expr, cN, nR, returnType));
-          } else {
-            if(expr.startsWith('$')) {
-              evaluated = expr;
-            } else {
-              evaluated = toInternalResult(wrapped(expr, cN, nR, returnType));
-            }
-          }
-        }
+        var evaluated = toInternalResult(wrapped(expr, cN, nR, returnType));
+
+        dbg('handleXpathExpr()', { returnType, expr, evaluated });
+
         peek().tokens.push(evaluated);
         newCurrent();
       },
@@ -373,16 +285,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           cur.t = 'fn';
           cur.tokens = [];
           stack.push(cur);
-          if(cur.v === 'once') {
-            // TODO once() should be a custom function, and we should pass the
-            // context node to all custom functions, or offer a way to access it
-            newCurrent();
-            cur.v = '.';
-            handleXpathExpr();
-            peek().tokens.push(',');
-          }
           newCurrent();
-
           break;
         case ')':
           if(nextChar() === '[') {
@@ -402,18 +305,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
 
           if(cur.t !== 'fn') err('")" outside function!');
           if(cur.v) {
-            var expectedReturnType = rT;
-            if(rT === XPathResult.BOOLEAN_TYPE) {
-              if(NUMERIC_COMPARATOR.test(input) && !BOOLEAN_FN_COMPARATOR.test(input)) expectedReturnType = XPathResult.NUMBER_TYPE;
-              if(BOOLEAN_COMPARATOR.test(input)) expectedReturnType = XPathResult.BOOLEAN_TYPE;
-              if(COMPARATOR.test(input) && cur.t === 'fn' && /^(date|date-time)$/.test(cur.v)) {
-                expectedReturnType = XPathResult.STRING_TYPE;
-              }
-            }
-            const res = callFn(cur.v, cur.tokens, expectedReturnType);
-            if(cur.v === 'node' && res.t === 'arr' && res.v.length > 0)
-              res.v = [res.v[0]]; // only interested in first element
-            peek().tokens.push(res);
+            peek().tokens.push(callFn(cN, cur.v, cur.tokens));
           } else {
             if(cur.tokens.length !== 1) err('Expected one token, but found: ' + cur.tokens.length);
             peek().tokens.push(cur.tokens[0]);
@@ -445,14 +337,14 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             cur.v += c;
           } else if(cur.v === '' && (
               !prev ||
-              // ...+-1
+              // match case: ...+-1
               prev.t === 'op' ||
-              // previous XXX
+              // previous was a separate function arg
               prev === ',')) {
             // -ve number
             cur = { t:'num', string:'-' };
           } else {
-            if(cur.v !== '') { // TODO could just be if(!cur.v)
+            if(cur.v !== '') {
               if(!DIGIT.test(cur.v) && input[i-1] !== ' ') throw INVALID_ARGS;
               peek().tokens.push(cur);
             }
@@ -490,7 +382,11 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         case '+':
           pushOp(c);
           break;
+        case '\n':
+        case '\r':
+        case '\t':
         case ' ':
+          // whitespace, as defined at https://www.w3.org/TR/REC-xml/#NT-S
           if(cur.v === '') break; // trim leading whitespace
           // trim trailing space from function names:
           if(!FUNCTION_NAME.test(cur.v)) handleXpathExpr();
@@ -552,3 +448,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
 };
 
 module.exports = ExtendedXPathEvaluator;
+
+function dbg(...args) {
+  console.log(...args.map(JSON.stringify));
+}
