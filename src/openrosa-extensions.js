@@ -181,6 +181,14 @@ var openrosa_xpath_extensions = function(config) {
       }
       return XPR.number(Math.atan2(r.v));
     },
+    boolean: function(...args) {
+      if(arguments.length === 0) throw new Error('too few args');
+      if(arguments.length > 1) throw new Error('too few args');
+      if(args[0].t === 'arr') {
+        return XPR.boolean(!!args[0].v[0]);
+      }
+      return XPR.boolean(!!args[0].v);
+    },
     'boolean-from-string': function(r) {
       if(r.t === 'num' && r.v > 0 && !r.decimal) {
         return XPR.boolean(true);
