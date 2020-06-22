@@ -299,11 +299,19 @@ var openrosa_xpath_extensions = function(config) {
     },
     log: function(r) { return XPR.number(Math.log(r.v)); },
     log10: function(r) { return XPR.number(Math.log10(r.v)); },
-    max: function() {
-      return XPR.number(Math.max.apply(null, asNumbers.apply(null, arguments)));
+    max: function(r) {
+      if(arguments.length !== 1) throw new Error('Wrong number of args for max(): expected 1, but got ' + arguments.length);
+      if(r.t !== 'arr') throw new Error('Wrong arg type for max() - expected a nodeset, but got ' + r.t);
+      const nums = r.v.map(asNumber);
+      if(!r.v.length || nums.some(v => isNaN(v))) return XPR.number(NaN);
+      return XPR.number(Math.max.apply(null, nums));
     },
-    min: function() {
-      return XPR.number(Math.min.apply(null, asNumbers.apply(null, arguments)));
+    min: function(r) {
+      if(arguments.length !== 1) throw new Error('Wrong number of args for min(): expected 1, but got ' + arguments.length);
+      if(r.t !== 'arr') throw new Error('Wrong arg type for min() - expected a nodeset, but got ' + r.t);
+      const nums = r.v.map(asNumber);
+      if(!r.v.length || nums.some(v => isNaN(v))) return XPR.number(NaN);
+      return XPR.number(Math.min.apply(null, nums));
     },
     'normalize-space': function(r) {
       if(arguments.length > 1) throw new Error('too many args');
@@ -552,20 +560,6 @@ function mapFn(fn) {
     } else res.push(fn(arguments[i]));
   }
   return res;
-}
-
-/** convert a list of primitives and nodesets into a list of numbers */
-function asNumbers() {
-  // TODO replace with mapFn(asNumbers, ...);
-  var nums = [], i, j;
-  for(i=arguments.length-1; i>=0; --i) {
-    if(arguments[i].t === 'arr') {
-      for(j=arguments[i].v.length-1; j>=0; --j) {
-        nums.push(asNumber(arguments[i].v[j]));
-      }
-    } else nums.push(asNumber(arguments[i]));
-  }
-  return nums;
 }
 
 function asInteger(r) {

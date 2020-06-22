@@ -2,7 +2,7 @@ const { assert, assertNumberValue, initDoc } = require('../../helpers');
 
 describe('#min()', () => {
 
-  it('simple value', () => {
+  it.skip('simple value', () => { // REVIEW min() only accepts a single nodeset as arguments at https://www.w3.org/TR/2003/REC-xforms-20031014/slice7.html#fn-min
     assertNumberValue('min(1, 2, 3)', 1);
     assertNumberValue('min(1, 2, 0)', 0);
     assertNumberValue('min(0, 2, 3)', 0);
@@ -128,6 +128,7 @@ describe('#min()', () => {
     node = doc.getElementById('FunctionNumberCaseNotNumberMultiple');
     assertNumberValue(node, null, 'min(node())', NaN);
 
-    assertNumberValue('min(//*[@id="FunctionMinCase"]/*[position()=1], //*[@id="FunctionMinCase"]/*[position()=2], //*[@id="FunctionMinCase"]/*[position()=3])', 0);
+    //assertNumberValue('min(//*[@id="FunctionMinCase"]/*[position()=1], //*[@id="FunctionMinCase"]/*[position()=2], //*[@id="FunctionMinCase"]/*[position()=3])', 0);
+    // REVIEW min() only accepts a single nodeset as arguments at https://www.w3.org/TR/2003/REC-xforms-20031014/slice7.html#fn-min
   });
 });
