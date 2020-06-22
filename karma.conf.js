@@ -13,11 +13,12 @@ module.exports = function(config) {
       'node_modules/chai/chai.js',
       'node_modules/lodash/lodash.js',
       'src/**/*.js',
-      'test/**/*.spec.js'
+      'test/integration/**/*.spec.js',
     ],
     preprocessors: {
       'src/**/*.js': ['webpack'],
-      'test/**/*.spec.js': ['webpack']
+      'test/helpers.js': ['webpack'],
+      'test/integration/**/*.spec.js': ['webpack'],
     },
     reporters: [
       'mocha',

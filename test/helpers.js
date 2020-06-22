@@ -1,3 +1,4 @@
+// TODO this should be moved to test/integration
 const assert = chai.assert;
 const engine = require('../src/engine');
 

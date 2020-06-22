@@ -1,5 +1,8 @@
+// TODO this can be moved to test/unit
 const ExtendedXPathEvaluator = require('../src/extended-xpath');
-const assert = chai.assert;
+const assert = require('chai').assert;
+const _ = require('lodash');
+const { registerDomGlobals, teardownDomGlobals } = require('./unit/utils');
 
 var docs = '',
     DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d\\d 20\\d\\d \\d\\d:\\d\\d:\\d\\d GMT([+-]\\d\\d\\d\\d \(.+\))?',
@@ -212,6 +215,8 @@ var docs = '',
     );
 
 describe('ExtendedXpathEvaluator', function() {
+  before(registerDomGlobals);
+  after(teardownDomGlobals);
 
   _.map(examples, function(expected, expr) {
     it(expr + ' should be evaluated', function() {

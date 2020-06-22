@@ -9,7 +9,7 @@
     "prebuild": "rimraf dist",
     "build": "webpack",
     "test": "npm run lint && npm run test:mocha && npm run test:karma",
-    "test:mocha": "mocha test/unit/*.spec.js",
+    "test:mocha": "mocha test/extended-xpath.js test/unit/*.spec.js",
     "test:karma": "karma start --single-run",
     "travis": "npm run test"
   },
