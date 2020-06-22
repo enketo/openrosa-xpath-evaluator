@@ -1,7 +1,7 @@
 const { assertNumberValue, initDoc } = require('../../helpers');
 
 describe('#max()', () => {
-  it('should max simple values', () => {
+  it.skip('should max simple values', () => { // REVIEW max() only accepts a single nodeset as arguments at https://www.w3.org/TR/2003/REC-xforms-20031014/slice7.html#fn-max
     assertNumberValue('max(1, 2, 3)', 3);
     assertNumberValue('max(-1, -3, 0)', 0);
     assertNumberValue('max(-1, 0, -3)', 0);
@@ -72,7 +72,8 @@ describe('#max()', () => {
     assertNumberValue(node, null, 'max(*)', 0);
 
     node = doc.getElementById('FunctionMaxCase');
-    assertNumberValue(node, null, 'max(//*[@id="FunctionMaxCase"]/*[position()=1], //*[@id="FunctionMaxCase"]/*[position()=2], //*[@id="FunctionMaxCase"]/*[position()=3])', 0);
+    //assertNumberValue(node, null, 'max(//*[@id="FunctionMaxCase"]/*[position()=1], //*[@id="FunctionMaxCase"]/*[position()=2], //*[@id="FunctionMaxCase"]/*[position()=3])', 0);
+    // REVIEW max() only accepts a single nodeset as arguments at https://www.w3.org/TR/2003/REC-xforms-20031014/slice7.html#fn-max
 
     node = doc.getElementById('FunctionMaxMinWithEmpty');
     assertNumberValue(node, null, 'max(*)', NaN);
@@ -104,6 +105,6 @@ describe('#max()', () => {
     node = doc.getElementById('FunctionNumberCaseNotNumberMultiple');
     assertNumberValue(node, null, 'max(node())', NaN);
 
-    assertNumberValue('max(//nonexisting)', -Infinity);
+    assertNumberValue('max(//nonexisting)', NaN);
   });
 });

@@ -1,9 +1,20 @@
+const { assert } = require('chai');
+
 module.exports = {
+  assertVal,
   registerDomGlobals,
   teardownDomGlobals,
   wrapOp,
   wrapVal,
 };
+
+function assertVal({ v:actual }, expected) {
+  if(isNaN(expected)) {
+    assert.isNaN(actual);
+  } else {
+    assert.equal(actual, expected);
+  }
+}
 
 function registerDomGlobals() {
   global.Node = function(textContent) {
