@@ -202,13 +202,11 @@ var openrosa_xpath_extensions = function(config) {
       var trues;
       min = asNumber(min);
       max = asNumber(max);
-      dbg('checklist()', { min, max, args:[...arguments].slice(2) });
       trues = mapFn(asBoolean, ...[...arguments].slice(2)).reduce((acc, v) => v ? acc + 1 : acc, 0);
       return XPR.boolean((min < 0 || trues >= min) && (max < 0 || trues <= max));
     },
     coalesce: function(a, b) { return XPR.string(asString(a) || asString(b)); },
     concat: function() {
-      dbg('concat()', { args:[...arguments] });
       return XPR.string(mapFn(asString, ...arguments).join(''));
     },
     cos: function(r) { return XPR.number(Math.cos(asNumber(r))); },
@@ -285,8 +283,6 @@ var openrosa_xpath_extensions = function(config) {
     'format-date': function(date, format) {
       return XPR.string(format_date(date, format)); },
     if: function(con, a, b) {
-      dbg('if()', { con, a, b });
-      dbg('if()', { con:asBoolean(con), a:asString(a), b:asString(b) });
       return XPR.string(asBoolean(con) ? asString(a) : asString(b));
     },
     'ends-with': function(a, b) {
@@ -311,7 +307,6 @@ var openrosa_xpath_extensions = function(config) {
     },
     'normalize-space': function(r) {
       if(arguments.length > 1) throw new Error('too many args');
-      dbg('normalize-space()', { r });
 
       let res = asString(r || this);
 
@@ -360,12 +355,10 @@ var openrosa_xpath_extensions = function(config) {
      */
     once: function(r) {
       const current = asString(this);
-      dbg('once()', { r, current });
       return XPR.string(current || asString(r));
     },
     pi: function() { return XPR.number(Math.PI); },
     position: function(r) {
-      dbg('position()', { r });
       if(arguments.length > 1) throw new Error('too many args');
       if(r && r.t !== 'arr') throw new Error('wrong arg type for position() - expected nodeset, but got: ' + r.t);
       if(r && !r.v.length) throw new Error('cannot call position() on an empty nodeset');
@@ -387,8 +380,6 @@ var openrosa_xpath_extensions = function(config) {
       if(arguments.length > 2) throw TOO_MANY_ARGS;
 
       seed = seed && asNumber(seed);
-
-      dbg('randomize()', { r, seed });
 
       return { t:'arr', v:shuffle(r.v, seed) };
     },
@@ -443,7 +434,6 @@ var openrosa_xpath_extensions = function(config) {
     'weighted-checklist': function(min, max) {
       min = asNumber(arguments[0]);
       max = asNumber(arguments[1]);
-      dbg('weighted-checklist()', { min, max, args:[...arguments].slice(2) });
       var i, values = [], weights = [], weightedTrues = 0;
       for(i=2 ; i<arguments.length ; i+=2) {
         var v = arguments[i];
@@ -454,7 +444,6 @@ var openrosa_xpath_extensions = function(config) {
           weights = weights.concat(mapFn(asNumber, w));
         }
       }
-      dbg('weighted-checklist()', { values, weights });
       for(i=0; i < values.length; i++) {
         if(values[i]) {
           weightedTrues += weights[i] || 0;
@@ -487,7 +476,6 @@ var openrosa_xpath_extensions = function(config) {
         if(val instanceof Date) return 'date';
       },
       handleInfix: function(err, lhs, op, rhs) {
-        dbg('handleInfix()', { lhs, op, rhs });
         if(lhs.t === 'date' || rhs.t === 'date') {
           // For comparisons, we must make sure that both values are numbers
           // Dates would be fine, except for equality!
@@ -554,17 +542,10 @@ var openrosa_xpath_extensions = function(config) {
 
 module.exports = openrosa_xpath_extensions;
 
-function dbg(...args) {
-  console.log(...args.map(JSON.stringify));
-}
-
 function mapFn(fn) {
-  dbg('mapFn()', { args:[...arguments] });
   var res = [], i, j;
   for(i=1; i<arguments.length; ++i) {
-    dbg('mapFn()', 'handling', arguments[i]);
     if(arguments[i].t === 'arr') {
-      dbg('mapFn()', 'handling arr');
       for(j=0; j<arguments[i].v.length; ++j) {
         res.push(fn(arguments[i].v[j]));
       }

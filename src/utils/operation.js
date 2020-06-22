@@ -5,11 +5,7 @@ module.exports = {
 };
 
 function handleOperation(lhs, op, rhs) {
-  dbg('handleOperation()', { lhs, op, rhs });
-  dbg('handleOperation() bools', { lhs:asBoolean(lhs), op, rhs:asBoolean(rhs) });
-  dbg('handleOperation()  nums', { lhs:asNumber(lhs),  op, rhs:asNumber(rhs) });
-  dbg('handleOperation()  strs', { lhs:asString(lhs),  op, rhs:asString(rhs) });
-  // TODO implement comparison operators as per: https://www.w3.org/TR/1999/REC-xpath-19991116/#booleans
+  // comparison operators as per: https://www.w3.org/TR/1999/REC-xpath-19991116/#booleans
   switch(op.v) {
     case '+' : return asNumber(lhs) + asNumber(rhs);
     case '-' : return asNumber(lhs) - asNumber(rhs);
@@ -27,17 +23,12 @@ function handleOperation(lhs, op, rhs) {
   }
 }
 
-function dbg(...args) {
-  console.log(...args.map(JSON.stringify));
-}
-
 function bothOf(lhs, rhs, t) {
   return lhs.t === t && rhs.t === t;
 }
 
 function oneOf(lhs, rhs, t) {
   const isOneOf = lhs.t === t || rhs.t === t;
-  dbg('oneOf()', { lhs, rhs, t, isOneOf });
   return isOneOf;
 }
 
@@ -51,7 +42,6 @@ function castFor(r) {
 
 
 function relationalCompare(lhs, rhs, compareFn) {
-  dbg('relationalCompare()', { lhs, rhs, compareFn:compareFn.toString() });
   var i, j;
   if(bothOf(lhs, rhs, 'arr' )) {
     for(i=lhs.v.length-1; i>=0; --i) {
@@ -63,14 +53,12 @@ function relationalCompare(lhs, rhs, compareFn) {
   }
   if(lhs.t === 'arr') {
     rhs = asNumber(rhs);
-    dbg('relationalCompare()', { lhs:lhs.v.map(asNumber), rhs, compareFn:compareFn.toString() });
-    return lhs.v.map(asNumber).some(v => dbg('relationalCompare()', { v, rhs }) || compareFn(v, rhs));
+    return lhs.v.map(asNumber).some(v => compareFn(v, rhs));
   }
   if(rhs.t === 'arr') {
     lhs = asNumber(lhs);
     return rhs.v.map(asNumber).some(v => compareFn(lhs, v));
   }
-  dbg('relationalCompare()', { lhs:asNumber(lhs), rhs:asNumber(rhs), compareFn:compareFn.toString() });
   return compareFn(asNumber(lhs), asNumber(rhs));
 }
 
