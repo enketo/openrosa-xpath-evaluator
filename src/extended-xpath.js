@@ -27,7 +27,6 @@ var BOOLEAN_FN_COMPARATOR = /(true\(\)|false\(\))/;
 var COMPARATOR = /(=|<|>)/;
 
 var INVALID_ARGS = new Error('invalid args');
-var TOO_MANY_ARGS = new Error('too many args');
 var TOO_FEW_ARGS = new Error('too few args');
 
 // TODO remove all the checks for cur.t==='?' - what else woudl it be?
