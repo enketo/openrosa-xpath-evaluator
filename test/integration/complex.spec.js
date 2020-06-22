@@ -145,7 +145,7 @@ describe('some complex examples', () => {
     "today() > '1970-06-03'": true,
     "today() + 1 < '1970-06-03'": false,
     "today() + 1 > '1970-06-03'": true,
-    '.': '',
+    '.': [ node => assert.equal(node.nodeName, '#document') ],
 
     // Bracketed expressions inside vs outside function calls:
 
@@ -169,6 +169,9 @@ describe('some complex examples', () => {
     "cos(-1 + (1 + 1))": Math.cos(1),
 
     // These tests exposed a weird bug which would return "Too many tokens" if dot was followed by a comparator
+    // In all these tests, the root node is being passed to `number()` to allow its comparison with the number
+    // 1.  The text is null, so its numeric value is NaN.  This make all comparisons return false.
+
     ".>1": false,
     ".> 1": false,
     ". >1": false,
@@ -177,14 +180,14 @@ describe('some complex examples', () => {
     ".>= 1": false,
     ". >=1": false,
     ". >= 1": false,
-    ".<1": true,
-    ".< 1": true,
-    ". <1": true,
-    ". < 1": true,
-    ".<=1": true,
-    ".<= 1": true,
-    ". <=1": true,
-    ". <= 1": true,
+    ".<1": false,
+    ".< 1": false,
+    ". <1": false,
+    ". < 1": false,
+    ".<=1": false,
+    ".<= 1": false,
+    ". <=1": false,
+    ". <= 1": false,
 
     '1=1': true,
     '1=0': false,
@@ -218,11 +221,18 @@ describe('some complex examples', () => {
     it('should convert "' + expression + '" to match "' + matcher + '"', () => {
       var evaluated = doc.xEval(expression);
 
-      switch(typeof matcher) {
-        case 'boolean': return assert.equal(evaluated.booleanValue, matcher);
-        case 'number': return assert.equal(evaluated.numberValue, matcher);
-        case 'string': return assert.equal(evaluated.stringValue, matcher);
-        default: assert.match(evaluated.stringValue, matcher);
+      if(Array.isArray(matcher)) {
+        matcher.forEach(nodeMatcher => {
+          nodeMatcher(evaluated.iterateNext());
+        });
+        assert.isNull(evaluated.iterateNext());
+      } else {
+        switch(typeof matcher) {
+          case 'boolean': return assert.equal(evaluated.booleanValue, matcher);
+          case 'number': return assert.equal(evaluated.numberValue, matcher);
+          case 'string': return assert.equal(evaluated.stringValue, matcher);
+          default: assert.match(evaluated.stringValue, matcher);
+        }
       }
     });
   });

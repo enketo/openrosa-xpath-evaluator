@@ -1,9 +1,11 @@
 require('./date-extensions');
-var {area, distance, areaOrDistance} = require('./geo');
+var {asGeopoints, area, distance} = require('./geo');
 var {digest} = require('./digest');
 var {randomToken} = require('./random-token');
 var xpr = require('./xpr');
 var {isValidDate} = require('./utils/date');
+var shuffle = require('./utils/shuffle');
+var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
 
 var openrosa_xpath_extensions = function(config) {
   var
@@ -46,7 +48,7 @@ var openrosa_xpath_extensions = function(config) {
         if(it.v instanceof Date) {
           return new Date(it.v);
         }
-        it = _str(it);
+        it = asString(it);
         if(RAW_NUMBER.test(it)) {
           // Create a date at 00:00:00 1st Jan 1970 _in the current timezone_
           temp = new Date(1970, 0, 1);
@@ -98,7 +100,7 @@ var openrosa_xpath_extensions = function(config) {
       format_date = function(date, format) {
         date = _date(date, true);
         if(!format) return '';
-        format = _str(format);
+        format = asString(format);
         if(!date) return 'Invalid Date';
         var c, i, sb = '', f = {
           year: 1900 + date.getYear(),
@@ -169,17 +171,21 @@ var openrosa_xpath_extensions = function(config) {
       };
 
   func = {
-    abs: function(r) { return XPR.number(Math.abs(r.v)); },
-    acos: function(r) { return XPR.number(Math.acos(r.v)); },
-    asin: function(r) { return XPR.number(Math.asin(r.v)); },
-    atan: function(r) { return XPR.number(Math.atan(r.v)); },
+    abs: function(r) { return XPR.number(Math.abs(asNumber(r))); },
+    acos: function(r) { return XPR.number(Math.acos(asNumber(r))); },
+    asin: function(r) { return XPR.number(Math.asin(asNumber(r))); },
+    atan: function(r) { return XPR.number(Math.atan(asNumber(r))); },
     atan2: function(r) {
-      if(arguments.length>1) {
-        var y = arguments[0].v;
-        var x = arguments[1].v;
+      if(arguments.length > 1) {
+        var y = asNumber(arguments[0]);
+        var x = asNumber(arguments[1]);
         return XPR.number(Math.atan2(y, x));
       }
       return XPR.number(Math.atan2(r.v));
+    },
+    boolean: function(r) {
+      if(arguments.length > 1) throw new Error('too many args');
+      return XPR.boolean(asBoolean(r));
     },
     'boolean-from-string': function(r) {
       if(r.t === 'num' && r.v > 0 && !r.decimal) {
@@ -190,37 +196,22 @@ var openrosa_xpath_extensions = function(config) {
     },
     area: function(r) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
-      return areaOrDistance(XPR.number, area, r);
+      return XPR.number(area(asGeopoints(r)));
     },
     checklist: function(min, max) {
-      var i, j, trues = 0;
-      min = min.v;
-      max = max.v;
-      for (i=2;i < arguments.length;i++) {
-        var arg = arguments[i];
-        if (arg.t === 'bool' && Boolean(arg.v)) {
-          trues++;
-        } else if (arg.t === 'arr') {
-          for(j=0;j<arg.v.length;j++) {
-            if(arg.v[j]) trues++;
-          }
-        }
-      }
+      var trues;
+      min = asNumber(min);
+      max = asNumber(max);
+      dbg('checklist()', { min, max, args:[...arguments].slice(2) });
+      trues = mapFn(asBoolean, ...[...arguments].slice(2)).reduce((acc, v) => v ? acc + 1 : acc, 0);
       return XPR.boolean((min < 0 || trues >= min) && (max < 0 || trues <= max));
     },
-    coalesce: function(a, b) { return XPR.string(_str(a) || _str(b)); },
+    coalesce: function(a, b) { return XPR.string(asString(a) || asString(b)); },
     concat: function() {
-      var out = [];
-      for (var j = 0; j < arguments.length; j++){
-        if(arguments[j].t === 'arr') {
-          out.push(arguments[j].v.join(''));
-        } else {
-          out.push(arguments[j].v);
-        }
-      }
-      return XPR.string(out.join(''));
+      dbg('concat()', { args:[...arguments] });
+      return XPR.string(mapFn(asString, ...arguments).join(''));
     },
-    cos: function(r) { return XPR.number(Math.cos(r.v)); },
+    cos: function(r) { return XPR.number(Math.cos(asNumber(r))); },
     count: function(selecter) {
       // count() is part of XPath 1.0, but Chrome and Firefox disagree on how it should work.
       if(arguments.length === 0) throw new Error('too few args');
@@ -229,15 +220,13 @@ var openrosa_xpath_extensions = function(config) {
       return XPR.number(selecter.v.length);
     },
     'count-non-empty': function(r) {
-      if(arguments.length === 0 || r.t !== 'arr') throw TOO_FEW_ARGS;
-      var counter = 0;
-      for (var j = 0; j < r.v.length; j++){
-        counter += r.v[j] === '' ? 0 : 1;
-      }
-      return XPR.number(counter);
+      if(!arguments.length === 0) throw new Error('too few args');
+      if(arguments.length > 1) throw new Error('too many args');
+      if(r.t !== 'arr') throw new Error('wrong arg type:' + JSON.stringify(r));
+      return XPR.number(mapFn(asString, r).reduce((acc, v) => v ? acc + 1 : acc, 0));
     },
     'count-selected': function(s) {
-      var parts = _str(s).split(' '),
+      var parts = asString(s).split(' '),
           i = parts.length,
           count = 0;
       while(--i >= 0) if(parts[i].length) ++count;
@@ -285,24 +274,20 @@ var openrosa_xpath_extensions = function(config) {
     },
     distance: function(r) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
-      return areaOrDistance(XPR.number, distance, r);
+      return XPR.number(distance(asGeopoints(r)));
     },
     exp: function(r) { return XPR.number(Math.exp(r.v)); },
     exp10: function(r) { return XPR.number(Math.pow(10, r.v)); },
-    'false': function(rt) {
-      if(rt === XPathResult.NUMBER_TYPE) return XPR.number(0);
-      if(arguments.length>1) throw TOO_MANY_ARGS;
+    'false': function() {
+      if(arguments.length) throw TOO_MANY_ARGS;
       return XPR.boolean(false);
     },
     'format-date': function(date, format) {
       return XPR.string(format_date(date, format)); },
-    'if': function(con, a, b) {
-      if(con.t === 'bool') return XPR.string(con.v ? a.v : b.v);
-      if(con.t === 'arr') {
-        var exists = con.v.length && con.v[0] !== null;
-        return XPR.string(exists ? a.v : b.v);
-      }
-      return XPR.string(b.v);
+    if: function(con, a, b) {
+      dbg('if()', { con, a, b });
+      dbg('if()', { con:asBoolean(con), a:asString(a), b:asString(b) });
+      return XPR.string(asBoolean(con) ? asString(a) : asString(b));
     },
     'ends-with': function(a, b) {
       if(arguments.length > 2) throw TOO_MANY_ARGS;
@@ -310,54 +295,35 @@ var openrosa_xpath_extensions = function(config) {
       return XPR.boolean(a.v.endsWith(b.v));
     },
     int: function(v) {
-      if(v.t === 'str' && v.v.indexOf('e-')>0) return XPR.number(NaN);
-      v = _str(v);
-      if(v.indexOf('e-')>0) return XPR.number(0);
-      return XPR.number(parseInt(v, 10));
+      return XPR.number(asInteger(v));
     },
-    join: function() {
-      var delim = arguments[0];
-      if(arguments.length<2) return XPR.string('');
-      if(arguments.length>2) {
-        var out = [];
-        for (var i = 1; i < arguments.length; i++){
-          out.push(arguments[i].v);
-        }
-        return XPR.string(out.join(_str(delim)));
-      }
-      return XPR.string(arguments[1].v.join(_str(delim)));
+    join: function(delim) {
+      const args = Array.prototype.slice.call(arguments, 1);
+      return XPR.string(mapFn(asString, ...args).join(asString(delim)));
     },
     log: function(r) { return XPR.number(Math.log(r.v)); },
     log10: function(r) { return XPR.number(Math.log10(r.v)); },
     max: function() {
-      if(arguments.length > 1) {
-        var out = [];
-        for (var j = 0; j < arguments.length; j++){
-          out.push(arguments[j].v);
-        }
-        return XPR.number(Math.max.apply(null, out));
-      }
-      var max, i;
-      var r = arguments[0].v;
-      if(!(i=r.length)) return XPR.number(NaN);
-      max = parseFloat(r[0]);
-      while(--i) max = Math.max(max, parseFloat(r[i]));
-      return XPR.number(max);
+      return XPR.number(Math.max.apply(null, asNumbers.apply(null, arguments)));
     },
     min: function() {
-      if(arguments.length > 1) {
-        var out = [];
-        for (var j = 0; j < arguments.length; j++){
-          out.push(arguments[j].v);
-        }
-        return XPR.number(Math.min.apply(null, out));
-      }
-      var min, i;
-      var r = arguments[0].v;
-      if(!(i=r.length)) return XPR.number(NaN);
-      min = parseFloat(r[0]);
-      while(--i) min = Math.min(min, parseFloat(r[i]));
-      return XPR.number(min);
+      return XPR.number(Math.min.apply(null, asNumbers.apply(null, arguments)));
+    },
+    'normalize-space': function(r) {
+      if(arguments.length > 1) throw new Error('too many args');
+      dbg('normalize-space()', { r });
+
+      let res = asString(r || this);
+
+      res = res.replace(/\f/g, '\\f');
+      res = res.replace(/\r\v/g, '\v');
+      res = res.replace(/\v/g, '\\v');
+      res = res.replace(/\s+/g, ' ');
+      res = res.replace(/^\s+|\s+$/g, '');
+      res = res.replace(/\\v/g, '\v');
+      res = res.replace(/\\f/g, '\f');
+
+      return XPR.string(res);
     },
     /*
      * As per https://github.com/alxndrsn/openrosa-xpath-evaluator/issues/15,
@@ -375,6 +341,10 @@ var openrosa_xpath_extensions = function(config) {
     now: function(rt) {
       return now_and_today(rt);
     },
+    number: function(r) {
+      if(arguments.length > 1) throw new Error(`number() passed wrong arg count (expected 0 or 1, but got ${arguments.length})`);
+      return XPR.number(asNumber(arguments.length ? r : this));
+    },
     today: function(rt) {
       var r = now_and_today(rt, !config.returnCurrentTimeForToday);
       if(rt === XPathResult.STRING_TYPE && !config.includeTimeForTodayString) {
@@ -388,52 +358,42 @@ var openrosa_xpath_extensions = function(config) {
      * Also note that the parameter expr is always evaluated.
      * This function simply decides whether to return the new result or the old value.
      */
-    once: function(node, r) {
-      if(node.v.length && node.v[0].length) {
-        return XPR.string(node.v[0]);
-      }
-      if(r.v == Infinity) return XPR.string('');
-      if(r.t === 'num' && r.v === 0) return XPR.string('');
-      return XPR.string(r.v);
+    once: function(r) {
+      const current = asString(this);
+      dbg('once()', { r, current });
+      return XPR.string(current || asString(r));
     },
     pi: function() { return XPR.number(Math.PI); },
     position: function(r) {
+      dbg('position()', { r });
+      if(arguments.length > 1) throw new Error('too many args');
+      if(r && r.t !== 'arr') throw new Error('wrong arg type for position() - expected nodeset, but got: ' + r.t);
+      if(r && !r.v.length) throw new Error('cannot call position() on an empty nodeset');
+
       var position = 1;
-      if(r) {
-        var node = r.iterateNext();
-        var nodeName = node.tagName;
-        while (node.previousElementSibling && node.previousElementSibling.tagName === nodeName) {
-          node = node.previousElementSibling;
-          position++;
-        }
+      var node = r ? r.v[0] : this;
+      var nodeName = node.tagName;
+      while (node.previousElementSibling && node.previousElementSibling.tagName === nodeName) {
+        node = node.previousElementSibling;
+        position++;
       }
+
       return XPR.number(position);
     },
-    pow: function(x, y) { return XPR.number(Math.pow(_float(x), _float(y))); },
+    pow: function(x, y) { return XPR.number(Math.pow(asNumber(x), asNumber(y))); },
     random: function() { return XPR.number(parseFloat(Math.random().toFixed(15))); },
-    randomize: function(r) {
-      if(arguments.length === 1) throw TOO_FEW_ARGS;//only rT passed
-      if(arguments.length > 3) throw TOO_MANY_ARGS;
+    randomize: function(r, seed) {
+      if(!arguments.length) throw TOO_FEW_ARGS;//only rT passed
+      if(arguments.length > 2) throw TOO_MANY_ARGS;
 
-      var seed = arguments.length > 2 ? arguments[1] : arguments[2];
-      var rt = arguments[arguments.length - 1];
+      seed = seed && asNumber(seed);
 
-      if(rt === XPathResult.BOOLEAN_TYPE) {
-        return XPR.boolean(r.v.length > 0 ? true : false);
-      }
-      if(rt === XPathResult.STRING_TYPE) {
-        if (r.v.length < 1) return '';
-        return XPR.string(r.v[0]);
-      }
+      dbg('randomize()', { r, seed });
 
-      // nodes as seed
-      if(Array.isArray(seed) && seed.length && seed[0].nodeType === 1) {
-        return [r, parseInt(seed[0].textContent)];
-      }
-      return [r, seed && seed.v];
+      return { t:'arr', v:shuffle(r.v, seed) };
     },
     regex: function(haystack, pattern) {
-        return XPR.boolean(new RegExp(_str(pattern)).test(_str(haystack))); },
+        return XPR.boolean(new RegExp(asString(pattern)).test(asString(haystack))); },
     round: function(number, num_digits) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       if(arguments.length > 2) throw TOO_MANY_ARGS;
@@ -450,32 +410,30 @@ var openrosa_xpath_extensions = function(config) {
       }
     },
     selected: function(haystack, needle) {
-      return XPR.boolean(_str(haystack).split(' ').indexOf(_str(needle).trim()) !== -1);
+      return XPR.boolean(asString(haystack).split(' ').indexOf(asString(needle).trim()) !== -1);
     },
     'selected-at': function(list, index) {
       if(!index) throw new Error('No index provided for selected-at() [index=' + index + '; list=' + JSON.stringify(list));
-      return XPR.string(_str(list).split(' ')[_int(index)] || '');
+      return XPR.string(asString(list).split(' ')[asInteger(index)] || '');
     },
-    sin: function(r) { return XPR.number(Math.sin(r.v)); },
+    sin: function(r) { return XPR.number(Math.sin(asNumber(r))); },
     sqrt: function(r) { return XPR.number(Math.sqrt(r.v)); },
-    substr: function(string, startIndex, endIndex) {
-      return XPR.string(_str(string).slice(
-          _int(startIndex),
-          endIndex && _int(endIndex)));
+    string: function(r) {
+      if(arguments.length > 1) throw new Error(`string() passed wrong arg count (expected 0 or 1, but got ${arguments.length})`);
+      return XPR.string(asString(r || this));
+    }, // TODO this is not an extension - should be a "native" function
+    substr: function(s, startIndex, endIndex) {
+      return XPR.string(asString(s).slice(asNumber(startIndex), endIndex && asNumber(endIndex)));
     },
     sum: function(r) {
-      if(arguments.length > 1) throw TOO_MANY_ARGS;
-      var out = 0;
-      for (var i = 0; i < r.v.length; i++) {
-        if(!RAW_NUMBER.test(r.v[i])) XPR.number(NaN);
-        out += parseInt(r.v[i], 10);
-      }
-      return XPR.number(out);
+      if(!r || r.t !== 'arr') throw new Error('sum() must be called on a nodeset');
+      var sum = 0, i = r.v.length;
+      while(i--) sum += asNumber(r.v[i]);
+      return XPR.number(sum);
     },
-    tan: function(r) { return XPR.number(Math.tan(r.v)); },
-    'true': function(rt) {
-      if(rt === XPathResult.NUMBER_TYPE) return XPR.number(1);
-      if(arguments.length>1) throw TOO_MANY_ARGS;
+    tan: function(r) { return XPR.number(Math.tan(asNumber(r))); },
+    'true': function() {
+      if(arguments.length) throw TOO_MANY_ARGS;
       return XPR.boolean(true);
     },
     uuid: function(r) {
@@ -483,22 +441,23 @@ var openrosa_xpath_extensions = function(config) {
       return XPR.string(uuid());
     },
     'weighted-checklist': function(min, max) {
+      min = asNumber(arguments[0]);
+      max = asNumber(arguments[1]);
+      dbg('weighted-checklist()', { min, max, args:[...arguments].slice(2) });
       var i, values = [], weights = [], weightedTrues = 0;
-      min = min.v;
-      max = max.v;
-      for (i=2 ; i < arguments.length ; i=i+2) {
+      for(i=2 ; i<arguments.length ; i+=2) {
         var v = arguments[i];
         var w = arguments[i+1];
         if (v && w) {
           // value or weight might be a nodeset
-          values = values.concat(v.t === 'arr' ?  v.v : [v.v]);
-          weights = weights.concat( w.t === 'arr' ? w.v : [w.v]);
+          values = values.concat(mapFn(asBoolean, v));
+          weights = weights.concat(mapFn(asNumber, w));
         }
       }
+      dbg('weighted-checklist()', { values, weights });
       for(i=0; i < values.length; i++) {
         if(values[i]) {
-          var weight = weights[i];
-          weightedTrues += isNaN(weight) ? 0 : parseFloat(weight);
+          weightedTrues += weights[i] || 0;
         }
       }
       return XPR.boolean((min < 0 || weightedTrues >= min) && (max < 0 || weightedTrues <= max));
@@ -528,6 +487,7 @@ var openrosa_xpath_extensions = function(config) {
         if(val instanceof Date) return 'date';
       },
       handleInfix: function(err, lhs, op, rhs) {
+        dbg('handleInfix()', { lhs, op, rhs });
         if(lhs.t === 'date' || rhs.t === 'date') {
           // For comparisons, we must make sure that both values are numbers
           // Dates would be fine, except for equality!
@@ -593,3 +553,41 @@ var openrosa_xpath_extensions = function(config) {
 };
 
 module.exports = openrosa_xpath_extensions;
+
+function dbg(...args) {
+  console.log(...args.map(JSON.stringify));
+}
+
+function mapFn(fn) {
+  dbg('mapFn()', { args:[...arguments] });
+  var res = [], i, j;
+  for(i=1; i<arguments.length; ++i) {
+    dbg('mapFn()', 'handling', arguments[i]);
+    if(arguments[i].t === 'arr') {
+      dbg('mapFn()', 'handling arr');
+      for(j=0; j<arguments[i].v.length; ++j) {
+        res.push(fn(arguments[i].v[j]));
+      }
+    } else res.push(fn(arguments[i]));
+  }
+  return res;
+}
+
+/** convert a list of primitives and nodesets into a list of numbers */
+function asNumbers() {
+  // TODO replace with mapFn(asNumbers, ...);
+  var nums = [], i, j;
+  for(i=arguments.length-1; i>=0; --i) {
+    if(arguments[i].t === 'arr') {
+      for(j=arguments[i].v.length-1; j>=0; --j) {
+        nums.push(asNumber(arguments[i].v[j]));
+      }
+    } else nums.push(asNumber(arguments[i]));
+  }
+  return nums;
+}
+
+function asInteger(r) {
+  var num = asNumber(r);
+  return num > 0 ? Math.floor(num) : Math.ceil(num);
+}

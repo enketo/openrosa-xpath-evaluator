@@ -8,8 +8,10 @@
     "lint:watch": "esw --ignore-path .gitignore . -w",
     "prebuild": "rimraf dist",
     "build": "webpack",
-    "test": "karma start --single-run",
-    "travis": "npm run lint && npm run test"
+    "test": "npm run lint && npm run test:mocha && npm run test:karma",
+    "test:mocha": "mocha test/unit/*.spec.js",
+    "test:karma": "karma start --single-run",
+    "travis": "npm run test"
   },
   "author": "Alex",
   "license": "Apache-2.0",

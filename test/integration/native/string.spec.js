@@ -30,7 +30,7 @@ describe('native string functions', () => {
     assertString("string(false())", "false");
   });
 
-  it('string() conversion of nodesets', () => {
+  describe('string() conversion of nodesets', () => {
     const doc = initDoc(`
       <div id="FunctionStringCase">
         <div id="FunctionStringCaseStringNodesetElement">aaa</div>
@@ -79,9 +79,11 @@ describe('native string functions', () => {
       input.push(["string()", node, 'some cdata'] );
     }
 
-    for(i = 0; i < input.length; i++) {
-      assertString(input[i][1], null, input[i][0], input[i][2]);
-    }
+    input.forEach(([expr, node, expected]) => {
+      it(`should convert ${expr} to ${expected}`, () => {
+        assertString(node, null, expr, expected);
+      });
+    });
   });
 
   it('string conversion of nodeset with namepace', () => {
@@ -236,7 +238,7 @@ describe('native string functions', () => {
     assertThrow("string-length(1, 2)");
   });
 
-  it('normalize-space', () => {
+  describe('normalize-space()', () => {
     const doc = initDoc(`
       <div>
         <div id="FunctionStringCaseStringNormalizeSpace1"></div>
@@ -260,8 +262,10 @@ describe('native string functions', () => {
       ["normalize-space()", '', doc.getElementById('FunctionStringCaseStringNormalizeSpace2')],
       ["normalize-space()", 'a b', doc.getElementById('FunctionStringCaseStringNormalizeSpace3')],
       ["normalize-space()", 'a bc c', doc.getElementById('FunctionStringCaseStringNormalizeSpace4')]
-   ].forEach(([expr, expected, node]) => {
-      assertString(node, null, expr, expected);
+    ].forEach(([expr, expected, node]) => {
+      it(`should evaluate ${expr} to ${expected}`, () => {
+        assertString(node, null, expr, expected);
+      });
     });
   });
 
