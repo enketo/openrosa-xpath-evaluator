@@ -29,7 +29,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     extendedFuncs = extensions.func || {},
     extendedProcessors = extensions.process || {},
     toInternalResult = function(r) {
-      dbg('toInternalResult()', { r });
       var n, v;
       if(r.resultType === XPathResult.NUMBER_TYPE) return { t:'num', v:r.numberValue };
       if(r.resultType === XPathResult.BOOLEAN_TYPE) return {  t:'bool', v:r.booleanValue };
@@ -41,10 +40,8 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       return { t:'str', v:r.stringValue };
     },
     toExternalResult = function(r, rt) {
-      var res;
-      dbg('toExternalResult()', { r, rt });
       if(extendedProcessors.toExternalResult) {
-        res = extendedProcessors.toExternalResult(r);
+        var res = extendedProcessors.toExternalResult(r);
         if(res) return res;
       }
 
@@ -92,7 +89,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       return callNative(name, preprocessNativeArgs(name, args));
     },
     callNative = function(name, args) {
-      dbg('callNative()', { name, args });
       var argString = '', arg, quote, i;
       for(i=0; i<args.length; ++i) {
         arg = args[i];
@@ -183,8 +179,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             lhs = res.lhs; op = res.op; rhs = res.rhs; res = null;
           }
 
-          dbg('evalOp()', { res });
-
           if(typeof res !== 'undefined' && res !== null) return res;
         }
         return handleOperation(lhs, op, rhs);
@@ -194,8 +188,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             tokens[opIndex - 1],
             tokens[opIndex],
             tokens[opIndex + 1]);
-
-        dbg('evalOpAt()', { tokens, opIndex, res });
 
         if(typeof res !== 'undefined' && res !== null) {
           tokens.splice(opIndex, 2);
@@ -219,8 +211,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       handleXpathExpr = function(returnType) {
         var expr = cur.v;
         var evaluated = toInternalResult(wrapped(expr, cN, nR, returnType));
-
-        dbg('handleXpathExpr()', { returnType, expr, evaluated });
 
         peek().tokens.push(evaluated);
         newCurrent();
@@ -448,7 +438,3 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
 };
 
 module.exports = ExtendedXPathEvaluator;
-
-function dbg(...args) {
-  console.log(...args.map(JSON.stringify));
-}
