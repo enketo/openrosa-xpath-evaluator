@@ -198,16 +198,16 @@ var openrosa_xpath_extensions = function(config) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       return XPR.number(area(asGeopoints(r)));
     },
-    checklist: function(min, max) {
+    checklist: function(min, max, ...list) {
       var trues;
       min = asNumber(min);
       max = asNumber(max);
-      trues = mapFn(asBoolean, ...[...arguments].slice(2)).reduce((acc, v) => v ? acc + 1 : acc, 0);
+      trues = mapFn(asBoolean, ...list).reduce((acc, v) => v ? acc + 1 : acc, 0);
       return XPR.boolean((min < 0 || trues >= min) && (max < 0 || trues <= max));
     },
     coalesce: function(a, b) { return XPR.string(asString(a) || asString(b)); },
-    concat: function() {
-      return XPR.string(mapFn(asString, ...arguments).join(''));
+    concat: function(...args) {
+      return XPR.string(mapFn(asString, ...args).join(''));
     },
     cos: function(r) { return XPR.number(Math.cos(asNumber(r))); },
     count: function(selecter) {
@@ -293,8 +293,7 @@ var openrosa_xpath_extensions = function(config) {
     int: function(v) {
       return XPR.number(asInteger(v));
     },
-    join: function(delim) {
-      const args = Array.prototype.slice.call(arguments, 1);
+    join: function(delim, ...args) {
       return XPR.string(mapFn(asString, ...args).join(asString(delim)));
     },
     log: function(r) { return XPR.number(Math.log(r.v)); },
