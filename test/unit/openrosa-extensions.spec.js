@@ -18,13 +18,15 @@ describe('openrosa-extensions', () => {
 
     describe('min()', () => {
       [
-        [ [ 1, 2, 3 ], 1 ],
-        [ [ 1, 2, NaN ], NaN ],
-        [ [], NaN ],
-      ].forEach(([ arg, expected ]) => {
-        it(`should convert ${JSON.stringify(arg)} to ${expected}`, () => {
+        [   1, [ 1, 2, 3 ] ],
+        [ NaN, [ 1, 2, NaN ] ],
+        [ NaN, [] ],
+        [   1, [], 1, 4 ],
+        [   1, [], [ 1, 4 ] ],
+      ].forEach(([ expected, ...args ]) => {
+        it(`should convert ${JSON.stringify(args)} to ${expected}`, () => {
           // when
-          const actual = min(wrapVal(arg));
+          const actual = min(...args.map(wrapVal));
 
           // then
           assertVal(actual, expected);
@@ -34,13 +36,15 @@ describe('openrosa-extensions', () => {
 
     describe('max()', () => {
       [
-        [ [ 1, 2, 3 ], 3 ],
-        [ [ 1, 2, 3, NaN ], NaN ],
-        [ [], NaN ],
-      ].forEach(([ arg, expected ]) => {
-        it(`should convert ${JSON.stringify(arg)} to ${expected}`, () => {
+        [   3, [ 1, 2, 3 ] ],
+        [ NaN, [ 1, 2, 3, NaN ] ],
+        [ NaN, [], NaN ],
+        [   4, [], 1, 4 ],
+        [   4, [], [ 1, 4 ] ],
+      ].forEach(([ expected, ...args ]) => {
+        it(`should convert ${JSON.stringify(args)} to ${expected}`, () => {
           // when
-          const actual = max(wrapVal(arg));
+          const actual = max(...args.map(wrapVal));
 
           // then
           assertVal(actual, expected);

@@ -300,19 +300,15 @@ var openrosa_xpath_extensions = function(config) {
     },
     log: function(r) { return XPR.number(Math.log(r.v)); },
     log10: function(r) { return XPR.number(Math.log10(r.v)); },
-    max: function(r) {
-      if(arguments.length !== 1) throw new Error('Wrong number of args for max(): expected 1, but got ' + arguments.length);
-      if(r.t !== 'arr') throw new Error('Wrong arg type for max() - expected a nodeset, but got ' + r.t);
-      const nums = r.v.map(asNumber);
-      if(!r.v.length || nums.some(v => isNaN(v))) return XPR.number(NaN);
-      return XPR.number(Math.max.apply(null, nums));
+    max: function(...args) {
+      const nums = mapFn(asNumber, ...args);
+      if(!nums.length || nums.some(v => isNaN(v))) return XPR.number(NaN);
+      return XPR.number(Math.max(...nums));
     },
-    min: function(r) {
-      if(arguments.length !== 1) throw new Error('Wrong number of args for min(): expected 1, but got ' + arguments.length);
-      if(r.t !== 'arr') throw new Error('Wrong arg type for min() - expected a nodeset, but got ' + r.t);
-      const nums = r.v.map(asNumber);
-      if(!r.v.length || nums.some(v => isNaN(v))) return XPR.number(NaN);
-      return XPR.number(Math.min.apply(null, nums));
+    min: function(...args) {
+      const nums = mapFn(asNumber, ...args);
+      if(!nums.length || nums.some(v => isNaN(v))) return XPR.number(NaN);
+      return XPR.number(Math.min(...nums));
     },
     'normalize-space': function(r) {
       // TODO this seems to do a lot more than the spec at https://www.w3.org/TR/1999/REC-xpath-19991116/#function-normalize-space
