@@ -1,5 +1,4 @@
-const { initDoc, assert, assertThrow, assertTrue, nsResolver,
-  assertStringValue} = require('../../helpers');
+const { initDoc, assert, assertThrow, assertTrue, nsResolver } = require('../helpers');
 
 
 describe('randomize()', () => {

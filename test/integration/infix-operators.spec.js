@@ -1,4 +1,4 @@
-const {assertBoolean, assertString, assertNumberValue, initDoc} = require('../helpers');
+const {assertBoolean, assertString, assertNumberValue, initDoc} = require('./helpers');
 
 describe('infix operators', () => {
   describe('math operators', () => {
@@ -198,7 +198,7 @@ describe('infix operators', () => {
     });
 
     it('calculation with node operand returned as string', () => {
-      var doc = initDoc(`
+      initDoc(`
       <data>
         <number>4</number>
       </data>`);
@@ -211,7 +211,7 @@ describe('infix operators', () => {
     });
 
     it('calculation with multiple nodes operand returned as string', () => {
-      var doc = initDoc(`
+      initDoc(`
       <data>
         <number>4</number>
         <number>10</number>

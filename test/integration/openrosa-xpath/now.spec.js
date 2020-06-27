@@ -1,4 +1,4 @@
-const { assert,initDoc } = require('../../helpers');
+const { assert,initDoc } = require('../helpers');
 
   describe('#now()', () => {
     const doc = initDoc('');

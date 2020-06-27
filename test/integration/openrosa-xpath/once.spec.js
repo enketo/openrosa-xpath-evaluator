@@ -1,4 +1,4 @@
-const { assertStringValue, initDoc } = require('../../helpers');
+const { assertStringValue, initDoc } = require('../helpers');
 
 describe('once()', () => {
   const doc = initDoc(`

@@ -1,4 +1,4 @@
-const { initDoc, assertStringValue } = require('../../helpers');
+const { initDoc, assertStringValue } = require('../helpers');
 
 describe('#if()', () => {
   it('should return first option if true', () => {

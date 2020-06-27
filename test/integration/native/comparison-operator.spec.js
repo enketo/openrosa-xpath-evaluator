@@ -1,4 +1,4 @@
-const { initDoc, assertBoolean } = require('../../helpers');
+const { initDoc, assertBoolean } = require('../helpers');
 
 const assertOps1 = (...args) => {
   const expected = args[args.length-1];

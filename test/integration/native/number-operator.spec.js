@@ -1,4 +1,4 @@
-const { initDoc, assert, assertNumber, assertNumberValue, assertBoolean } = require('../../helpers');
+const { initDoc, assert, assertNumber, assertNumberValue, assertBoolean } = require('../helpers');
 
 describe('number operators', () => {
   describe('+', () => {

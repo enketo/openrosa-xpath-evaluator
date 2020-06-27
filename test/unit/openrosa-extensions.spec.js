@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const { assertVal, registerDomGlobals, teardownDomGlobals, wrapOp, wrapVal } = require('./utils');
+const { assertVal, registerDomGlobals, teardownDomGlobals, wrapVal } = require('./utils');
 
 const extensions = require('../../src/openrosa-extensions')({});
 

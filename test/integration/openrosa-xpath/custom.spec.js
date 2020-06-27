@@ -1,4 +1,4 @@
-const {initDoc, assert} = require('../../helpers');
+const {initDoc, assert} = require('../helpers');
 
 // TODO need to test this differently - with the actual orxe.min.js loaded.
 describe.skip('custom XPath functions', () => {

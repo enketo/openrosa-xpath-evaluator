@@ -1,4 +1,4 @@
-const {initDoc, assert} = require('../helpers');
+const {initDoc, assert} = require('./helpers');
 
 const FULL_DATE_MATCH = /(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d\d \d{4} \d\d:\d\d:\d\d GMT([+-]\d\d\d\d \(.+\))?/;
 
@@ -138,7 +138,7 @@ describe('some complex examples', () => {
     "(2+3)": 5,
     "2 + 3": 5,
     "(2 + 3)": 5,
-    "2 + 3": "5", // For some reason, it is evaluated correctly here.
+    "2 + 4": "6",
     "today() < (today() + 1)": true,
     "today() > (today() + 1)": false,
     "today() < '1970-06-03'": false,

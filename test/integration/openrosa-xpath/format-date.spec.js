@@ -1,4 +1,4 @@
-const { initDoc, assertStringValue } = require('../../helpers');
+const { initDoc, assertStringValue } = require('../helpers');
 
 describe('#format-date()', () => {
 
@@ -41,7 +41,7 @@ describe('#format-date()', () => {
       ['format-date("2017-05-26T01:00:00-07:00", "%a %b")', 'Fri May', 'en'],
       // ['format-date('2017-05-26T01:00:00-07:00', '%a %b')", 'ven. mai', 'fr'],
       // ['format-date('2017-05-26T01:00:00-07:00', '%a %b')", 'vr mei', 'nl'],
-    ].forEach(([expr, expected, language]) => {
+    ].forEach(([expr, expected/*, language*/]) => {
       assertStringValue(expr, expected);
       // TODO vimago test the language
       // do the same tests for the alias format-date-time()

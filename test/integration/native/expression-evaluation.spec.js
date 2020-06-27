@@ -1,4 +1,4 @@
-const { initDoc, nsResolver, filterAttributes, assert } = require('../../helpers');
+const { initDoc, nsResolver, filterAttributes, assert } = require('../helpers');
 
 describe('XPath expression evaluation', () => {
   let doc;

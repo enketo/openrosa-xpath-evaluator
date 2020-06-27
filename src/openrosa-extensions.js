@@ -21,13 +21,6 @@ var openrosa_xpath_extensions = function(config) {
         while(n.length < len) n = '0' + n;
         return n;
       },
-      _int = function(r) { return Math.round(_float(r)); },
-      _float = function(r) { return r.t === 'num'? r.v: parseFloat(_str(r)); },
-      _str = function(r) {
-        return r.t === 'arr' ?
-               r.v.length ? r.v[0].toString() : '' :
-            r.v.toString();
-      },
       _dateToString = function(d) {
             return d.getFullYear() + '-' + _zeroPad(d.getMonth()+1) + '-' +
                 _zeroPad(d.getDate());
@@ -72,6 +65,8 @@ var openrosa_xpath_extensions = function(config) {
         return d == 'Invalid Date' ? null : d;
       },
       _dateForReturnType = function(it, rt) {
+        // TODO this function shouldn't be necessary - type conversions should
+        // occur in functions or when extended-xpath is sharing a value externally.
         if(rt === XPathResult.BOOLEAN_TYPE) {
           if(!it) return XPR.boolean(false);
           return XPR.boolean(!isNaN(new Date(it).getTime()));
@@ -181,7 +176,7 @@ var openrosa_xpath_extensions = function(config) {
         var x = asNumber(arguments[1]);
         return XPR.number(Math.atan2(y, x));
       }
-      return XPR.number(Math.atan2(r.v));
+      return XPR.number(Math.atan2(asNumber(r)));
     },
     boolean: function(r) {
       if(arguments.length === 0) throw new Error('too few args');
@@ -192,7 +187,7 @@ var openrosa_xpath_extensions = function(config) {
       if(r.t === 'num' && r.v > 0 && !r.decimal) {
         return XPR.boolean(true);
       }
-      r = _str(r);
+      r = asString(r);
       return XPR.boolean(r === '1' || r === 'true');
     },
     area: function(r) {
@@ -237,7 +232,7 @@ var openrosa_xpath_extensions = function(config) {
     },
     'decimal-date': function(date) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
-      var res = Date.parse(_str(date)) / MILLIS_PER_DAY;
+      var res = Date.parse(asString(date)) / MILLIS_PER_DAY;
       return XPR.number(res);
     },
     'decimal-time': function(r) {
@@ -297,6 +292,19 @@ var openrosa_xpath_extensions = function(config) {
     join: function(delim, ...args) {
       return XPR.string(mapFn(asString, ...args).join(asString(delim)));
     },
+    'local-name': function(r) {
+      // This is actually supported natively, but currently it's simpler to implement
+      // ourselves than convert the supplied nodeset into a single node and pass this
+      // somehow to the native implementation.
+      //
+      // This may not currently behave correctly if the supplied nodeset is not supplied
+      // in document order.
+      //
+      // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-local-name
+      if(arguments.length > 1) throw new Error('too many args');
+      if(r.t && r.t !== 'arr') throw new Error('wrong arg type');
+      return XPR.string(r ? r.v.length ? r.v[0].nodeName : '' : this.nodeName);
+    },
     log: function(r) { return XPR.number(Math.log(r.v)); },
     log10: function(r) { return XPR.number(Math.log10(r.v)); },
     max: function(...args) {
@@ -308,6 +316,19 @@ var openrosa_xpath_extensions = function(config) {
       const nums = mapFn(asNumber, ...args);
       if(!nums.length || nums.some(v => isNaN(v))) return XPR.number(NaN);
       return XPR.number(Math.min(...nums));
+    },
+    'namespace-uri': function(r) {
+      // This is actually supported natively, but currently it's simpler to implement
+      // ourselves than convert the supplied nodeset into a single node and pass this
+      // somehow to the native implementation.
+      //
+      // This may not currently behave correctly if the supplied nodeset is not supplied
+      // in document order.
+      //
+      // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-namespace-uri
+      if(arguments.length > 1) throw new Error('too many args');
+      if(r.t && r.t !== 'arr') throw new Error('wrong arg type');
+      return XPR.string(r ? r.v.length ? r.v[0].namespaceURI : '' : this.namespaceURI);
     },
     'normalize-space': function(r) {
       // TODO this seems to do a lot more than the spec at https://www.w3.org/TR/1999/REC-xpath-19991116/#function-normalize-space
@@ -394,11 +415,11 @@ var openrosa_xpath_extensions = function(config) {
     round: function(number, num_digits) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       if(arguments.length > 2) throw TOO_MANY_ARGS;
-      number = _float(number);
+      number = asNumber(number);
       if(!num_digits) {
         return XPR.number(_round(number));
       }
-      num_digits = _int(num_digits);
+      num_digits = asInteger(num_digits);
       var pow = Math.pow(10, Math.abs(num_digits));
       if(num_digits > 0) {
         return XPR.number(_round(number * pow) / pow);
@@ -437,17 +458,17 @@ var openrosa_xpath_extensions = function(config) {
       if(r && r.v) return XPR.string(randomToken(r.v));
       return XPR.string(uuid());
     },
-    'weighted-checklist': function(min, max) {
-      min = asNumber(arguments[0]);
-      max = asNumber(arguments[1]);
+    'weighted-checklist': function(min, max, ...list) {
+      min = asNumber(min);
+      max = asNumber(max);
       var i, values = [], weights = [], weightedTrues = 0;
-      for(i=2 ; i<arguments.length ; i+=2) {
-        var v = arguments[i];
-        var w = arguments[i+1];
-        if (v && w) {
+      for(i=0; i<list.length; i+=2) {
+        var v = list[i];
+        var w = list[i+1];
+        if(v && w) {
           // value or weight might be a nodeset
-          values = values.concat(mapFn(asBoolean, v));
-          weights = weights.concat(mapFn(asNumber, w));
+          values  = values. concat(mapFn(asBoolean, v));
+          weights = weights.concat(mapFn(asNumber,  w));
         }
       }
       for(i=0; i < values.length; i++) {
@@ -503,7 +524,7 @@ var openrosa_xpath_extensions = function(config) {
             // for math operators, we need to do it ourselves
             if(lhs.t === 'date' && rhs.t === 'date') err('No handling for simple arithmetic with two dates.');
             var d = lhs.t === 'date'? lhs.v: rhs.v,
-                n = lhs.t !== 'date'? _int(lhs): _int(rhs),
+                n = lhs.t !== 'date'? asInteger(lhs): asInteger(rhs),
                 res = new Date(d.getTime());
             if(op.v === '-') n = -n;
             res.setDate(d.getDate() + n);

@@ -1,3 +1,4 @@
+/* eslint-env node */
 module.exports = function(config) {
   process.env.CHROME_BIN = require('puppeteer').executablePath();
   process.env.TZ = 'America/Phoenix';

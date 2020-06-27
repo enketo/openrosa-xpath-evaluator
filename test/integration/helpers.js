@@ -1,14 +1,12 @@
 // TODO this should be moved to test/integration
 const assert = chai.assert;
-const engine = require('../src/engine');
+const dbg = require('../../src/dbg');
+const engine = require('../../src/engine');
 
-let doc, xEval, evaluator, nsr, rt, node, docs = [];
-
-const _document = (line) => {
-  docs += line + '\n';
-};
+let doc, xEval, evaluator, nsr, rt, node;
 
 const nsResolver = (prefix) => {
+  dbg('nsResolver()', { prefix });
   var ns = {
     'xhtml' : 'http://www.w3.org/1999/xhtml',
     'mathml': 'http://www.w3.org/1998/Math/MathML',
@@ -17,15 +15,18 @@ const nsResolver = (prefix) => {
   return ns[prefix] || null;
 };
 
+nsResolver.lookupNamespaceURI = nsResolver;
+
 const initDoc = (xml, xnsr) => {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
   node = null;
   nsr = xnsr;
   evaluator = new engine.XPathEvaluator();
   xEval = function(e, xnode, xrt, xnsr) {
+    dbg('xEval xnsr:', xnsr);
+    dbg('xEval nsr:', nsr);
     node = xnode || doc;
     rt = xrt;
-    _document(e);
     return evaluator.evaluate(e, node, xnsr || nsr, rt, null);
   };
   doc.evaluator = evaluator;
@@ -79,12 +80,14 @@ const assertString = (...args) => {
 };
 
 const assertStringValue = (...args) => {
+  dbg('assertStringValue() :', nsResolver.toString());
   const expected = args[args.length -1];
   const regex = args[args.length - 2];
   if(args.length > 2 && args[args.length - 3]) {
     simpleValueIs(args[args.length - 3]);
   }
   const node = args.length > 3 ? args[args.length - 4] : null;
+  dbg('assertStringValue() calling with nsResolver');
   assert.equal(xEval(regex, node, XPathResult.STRING_TYPE).stringValue, expected);
 };
 
@@ -141,17 +144,6 @@ beforeEach(() => {
   initBasicXmlDoc();
 });
 
-before(() => {
-  docs = [];
-  _document('## Supported XPath expressions:');
-  _document('');
-});
-
-// Capture all tested functions/docs
-// after(() => {
-//   console.log(docs);
-// });
-
 const getNextChildElementNode = (parentNode) => {
   let childNode = parentNode.firstChild;
   while (childNode.nodeName == '#text') {
@@ -183,11 +175,7 @@ const filterAttributes = (attributes) => {
   var i, name, specifiedAttributes = [];
 
   for(i = 0; i < attributes.length; i++) {
-    if(!attributes[i].specified) {
-      // ignore non-specified attributes
-      continue;
-    }
-
+    // REVIEW: Attr.specified is _always_ true - see https://developer.mozilla.org/en-US/docs/Web/API/Attr
     name = attributes[i].nodeName.split(':');
     if (name[0] === 'xmlns') {
       // ignore namespaces
@@ -196,6 +184,7 @@ const filterAttributes = (attributes) => {
 
     specifiedAttributes.push(attributes[i]);
   }
+  dbg('filterAttributes()', { attributes, specifiedAttributes });
   return specifiedAttributes;
 };
 

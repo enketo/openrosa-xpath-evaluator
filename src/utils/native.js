@@ -1,15 +1,12 @@
 var {DATE_STRING, dateToDays} = require('./date');
+const { asString } = require('./xpath-cast');
+
+module.exports = { preprocessNativeArgs };
 
 var TOO_MANY_ARGS = new Error('too many args');
 var TOO_FEW_ARGS = new Error('too few args');
 var INVALID_ARGS = new Error('invalid args');
-
-var NATIVE_FUNS = /^id\(|lang\(|local-name|namespace-uri|last\(|name\(|child::|parent::|descendant::|descendant-or-self::|ancestor::|ancestor-or-self::sibling|following::|following-sibling::|preceding-sibling::|preceding::|attribute::|^\/.*$/;
   
-function isNativeFunction(input) {
-  return NATIVE_FUNS.test(input);
-}
-
 function checkMinMaxArgs(args, min, max) {
   if(min != null && args.length < min) throw TOO_FEW_ARGS;
   if(max != null && args.length > max) throw TOO_MANY_ARGS;
@@ -32,6 +29,12 @@ function checkNativeFn(name, args) {
 }
 
 function preprocessNativeArgs(name, args) {
+  switch(name) {
+    case 'id': // https://www.w3.org/TR/1999/REC-xpath-19991116/#function-id
+      if(args[0].t === 'arr') args = [ { t:'str', v:args[0].v.map(asString).join(' ') } ];
+      break;
+  }
+
   if(name === 'number' && args.length) {
     if(args[0].t === 'arr') {
       args = [{t: 'num', v: args[0].v[0]}];
@@ -65,8 +68,3 @@ function preprocessNativeArgs(name, args) {
   checkNativeFn(name, args);
   return args;
 }
-
-module.exports = {
-  isNativeFunction,
-  preprocessNativeArgs
-};

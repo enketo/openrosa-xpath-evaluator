@@ -1,6 +1,6 @@
-const { initDoc, assertBoolean } = require('../../helpers');
+const { initDoc, assertBoolean } = require('../helpers');
 
-describe('Comparison operator', () => {
+describe('Comparison operator (2)', () => {
   const doc = initDoc(`
       <div id="ComparisonOperatorCase">
         <div id="ComparisonOperatorCaseNodesetNegative5to5">
