@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const { registerDomGlobals, teardownDomGlobals, wrapOp, wrapVal } = require('./utils');
+const { registerDomGlobals, teardownDomGlobals, wrapVal } = require('./utils');
 
 const { asGeopoints } = require('../../src/geo');
 

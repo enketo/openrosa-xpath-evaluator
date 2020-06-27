@@ -1,4 +1,4 @@
-const { initDoc, assert, assertBoolean, assertTrue, assertFalse} = require('../../helpers');
+const { initDoc, assert, assertBoolean, assertTrue, assertFalse} = require('../helpers');
 
 describe('and/or operators', () => {
 

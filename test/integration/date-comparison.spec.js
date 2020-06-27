@@ -1,4 +1,4 @@
-const {initDoc, assert, simpleValueIs} = require('../helpers');
+const {initDoc, assert, simpleValueIs} = require('./helpers');
 
 describe('date comparison', () => {
   const doc = initDoc('');

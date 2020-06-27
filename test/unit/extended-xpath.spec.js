@@ -1,11 +1,11 @@
 // TODO this can be moved to test/unit
-const ExtendedXPathEvaluator = require('../src/extended-xpath');
+const ExtendedXPathEvaluator = require('../../src/extended-xpath');
 const assert = require('chai').assert;
 const _ = require('lodash');
-const { registerDomGlobals, teardownDomGlobals } = require('./unit/utils');
+const { registerDomGlobals, teardownDomGlobals } = require('./utils');
 
 var docs = '',
-    DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d\\d 20\\d\\d \\d\\d:\\d\\d:\\d\\d GMT([+-]\\d\\d\\d\\d \(.+\))?',
+    DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d\\d 20\\d\\d \\d\\d:\\d\\d:\\d\\d GMT([+-]\\d\\d\\d\\d (.+))?',
     examples = {
       'false':
         /false/,

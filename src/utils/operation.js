@@ -1,10 +1,12 @@
 var { asBoolean, asNumber, asString } = require('./xpath-cast');
+const dbg = require('../dbg');
 
 module.exports = {
   handleOperation:handleOperation,
 };
 
 function handleOperation(lhs, op, rhs) {
+  dbg('handleOperation()', { lhs, op, rhs });
   // comparison operators as per: https://www.w3.org/TR/1999/REC-xpath-19991116/#booleans
   switch(op.v) {
     case '+' : return asNumber(lhs) + asNumber(rhs);
@@ -20,6 +22,7 @@ function handleOperation(lhs, op, rhs) {
     case '!=': return equalityCompare(lhs, rhs, (a, b) => a !== b);
     case '&':  return asBoolean(lhs) && asBoolean(rhs);
     case '|':  return asBoolean(lhs) || asBoolean(rhs);
+    case 'union': return [...lhs.v, ...rhs.v];
   }
 }
 
@@ -28,8 +31,7 @@ function bothOf(lhs, rhs, t) {
 }
 
 function oneOf(lhs, rhs, t) {
-  const isOneOf = lhs.t === t || rhs.t === t;
-  return isOneOf;
+  return lhs.t === t || rhs.t === t;
 }
 
 function castFor(r) {
@@ -46,7 +48,7 @@ function relationalCompare(lhs, rhs, compareFn) {
   if(bothOf(lhs, rhs, 'arr' )) {
     for(i=lhs.v.length-1; i>=0; --i) {
       for(j=rhs.v.length-1; j>=0; --j) {
-        if(compareFn(asNumber(lhs), asNumber(rhs))) return true;
+        if(compareFn(asNumber(lhs.v[i]), asNumber(rhs.v[j]))) return true;
       }
     }
     return false;

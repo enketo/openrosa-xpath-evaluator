@@ -1,12 +1,13 @@
-const { assertNumberValue, initDoc } = require('../../helpers');
+const { assertNumberValue, initDoc } = require('../helpers');
 
 describe('#max()', () => {
-  it.skip('should max simple values', () => { // REVIEW max() only accepts a single nodeset as arguments at https://www.w3.org/TR/2003/REC-xforms-20031014/slice7.html#fn-max
+  it('should max simple values', () => {
     assertNumberValue('max(1, 2, 3)', 3);
     assertNumberValue('max(-1, -3, 0)', 0);
     assertNumberValue('max(-1, 0, -3)', 0);
     assertNumberValue('max(-4, -1, -3)', -1);
     assertNumberValue('max("")', NaN);
+    assertNumberValue('max(//nonexisting)', NaN);
   });
 
   it('should return NaN if no numerical nodes are matched', () => {

@@ -1,15 +1,14 @@
-const { assert, assertNumberValue, initDoc } = require('../../helpers');
+const { assert, assertNumberValue, initDoc } = require('../helpers');
 
 describe('#min()', () => {
 
-  it.skip('simple value', () => { // REVIEW min() only accepts a single nodeset as arguments at https://www.w3.org/TR/2003/REC-xforms-20031014/slice7.html#fn-min
+  it('simple value', () => {
     assertNumberValue('min(1, 2, 3)', 1);
     assertNumberValue('min(1, 2, 0)', 0);
     assertNumberValue('min(0, 2, 3)', 0);
     assertNumberValue('min(-1, 2, 3)', -1);
     assertNumberValue('min("")', NaN);
-    assertNumberValue('min(//nonexisting)', Infinity);
-    assertNumberValue('min(//nonexisting)', Infinity);
+    assertNumberValue('min(//nonexisting)', NaN);
   });
 
   it('should return NaN if no numerical nodes are matched', () => {

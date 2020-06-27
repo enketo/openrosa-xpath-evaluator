@@ -1,4 +1,4 @@
-const { assertNumberValue } = require('../../helpers');
+const { assertNumberValue } = require('../helpers');
 
 const PATH = '/simple/xpath/to/node';
 

@@ -1,3 +1,4 @@
+// TODO probably shouldn't be changing Date.prototype
 /**
  * Converts a native Date UTC String to a RFC 3339-compliant date string with local offsets
  * used in ODK, so it replaces the Z in the ISOstring with a local offset

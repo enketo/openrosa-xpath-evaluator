@@ -1,5 +1,5 @@
 const { initDoc, nsResolver, filterAttributes,
-  assert, assertThrow, assertNumberValue, assertStringValue } = require('../../helpers');
+  assert, assertThrow, assertNumberValue, assertStringValue } = require('../helpers');
 
 describe('native nodeset functions', () => {
 

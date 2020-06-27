@@ -1,8 +1,9 @@
 var {isNamespaceExpr, handleNamespaceExpr} = require('./utils/ns');
+const dbg = require('./dbg');
 var {handleOperation} = require('./utils/operation');
-var {isNativeFunction, preprocessNativeArgs} = require('./utils/native');
+var {preprocessNativeArgs} = require('./utils/native');
 var {toSnapshotResult} = require('./utils/result');
-var {inputArgs, preprocessInput} = require('./utils/input');
+var {preprocessInput} = require('./utils/input');
 var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
 /*
  * From http://www.w3.org/TR/xpath/#section-Expressions XPath infix
@@ -14,14 +15,14 @@ var OP_PRECEDENCE = [
   ['=', '!='],
   ['<', '<=', '>=', '>'],
   ['+', '-'],
-  ['*', '/', '%']
+  ['*', '/', '%'],
+  ['union'],
 ];
 
 var DIGIT = /[0-9]/;
 var FUNCTION_NAME = /^[a-z]/;
 
 var INVALID_ARGS = new Error('invalid args');
-var TOO_FEW_ARGS = new Error('too few args');
 
 // TODO remove all the checks for cur.t==='?' - what else woudl it be?
 var ExtendedXPathEvaluator = function(wrapped, extensions) {
@@ -29,17 +30,33 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     extendedFuncs = extensions.func || {},
     extendedProcessors = extensions.process || {},
     toInternalResult = function(r) {
+      dbg('toInternalResult()', { resultType:r.resultType });
       var n, v;
-      if(r.resultType === XPathResult.NUMBER_TYPE) return { t:'num', v:r.numberValue };
-      if(r.resultType === XPathResult.BOOLEAN_TYPE) return {  t:'bool', v:r.booleanValue };
-      if(r.resultType === XPathResult.UNORDERED_NODE_ITERATOR_TYPE) {
+      if(r.resultType === XPathResult.NUMBER_TYPE)  return { t:'num',  v:r.numberValue  };
+      if(r.resultType === XPathResult.BOOLEAN_TYPE) return { t:'bool', v:r.booleanValue };
+      if(r.resultType === XPathResult.STRING_TYPE)  return { t:'str',  v:r.stringValue  };
+      if( r.resultType === XPathResult.UNORDERED_NODE_ITERATOR_TYPE ||
+          r.resultType === XPathResult.ORDERED_NODE_ITERATOR_TYPE) {
         v = [];
         while((n = r.iterateNext())) v.push(n);
         return { t:'arr', v:v };
       }
-      return { t:'str', v:r.stringValue };
+      if( r.resultType === XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE ||
+          r.resultType === XPathResult.ORDERED_NODE_SNAPSHOT_TYPE) {
+        v = [];
+        for(let i=0; i<r.snapshotLength; ++i) {
+          v.push(r.snapshotItem(i));
+        }
+        return { t:'arr', v:v };
+      }
+      if( r.resultType === XPathResult.ANY_UNORDERED_NODE_TYPE ||
+          r.resultType === XPathResult.FIRST_ORDERED_NODE_TYPE) {
+        return { t:'arr', v:[r.singleNodeValue] };
+      }
+      throw new Error(`no handling for result type: ${r.resultType}`);
     },
     toExternalResult = function(r, rt) {
+      dbg('toExternalResult()', { r, rt });
       if(extendedProcessors.toExternalResult) {
         var res = extendedProcessors.toExternalResult(r);
         if(res) return res;
@@ -71,6 +88,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       }
     },
     callFn = function(cN, name, supplied) {
+      dbg('callFn()', { cN, name, supplied });
       // Every second arg should be a comma, but we allow for a trailing comma.
       // From the spec, this looks valid, if you assume that ExprWhitespace is a
       // valid Expr.
@@ -89,6 +107,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       return callNative(name, preprocessNativeArgs(name, args));
     },
     callNative = function(name, args) {
+      dbg('callNative', { name, args });
       var argString = '', arg, quote, i;
       for(i=0; i<args.length; ++i) {
         arg = args[i];
@@ -97,11 +116,14 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           argString += quote;
         }
         argString += arg.v;
+        if(arg.t === 'arr') throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
         if(arg.t === 'bool') argString += '()';
         if(arg.t !== 'num' && arg.t !== 'bool') argString += quote;
         if(i < args.length - 1) argString += ', ';
       }
-      return toInternalResult(wrapped(name + '(' + argString + ')'));
+      const expr = name + '(' + argString + ')';
+      dbg('callNative()', { expr });
+      return toInternalResult(wrapped(expr));
     },
     typefor = function(val) {
       if(extendedProcessors.typefor) {
@@ -119,50 +141,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
   this.evaluate = function(input, cN, nR, rT) {
     input = preprocessInput(input);
     if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
-
-    // FIXME remove special handling
-    if(isNativeFunction(input) &&
-      !(input.startsWith('/') && input.indexOf(' ')>0) &&
-      input !== '/') {
-      var args = inputArgs(input);
-      if(args.length && args[0].length && !isNaN(args[0])) { throw INVALID_ARGS; }
-      if(input === 'lang()') throw TOO_FEW_ARGS;
-      if(/^lang\(/.test(input) && cN.nodeType === 2) cN = cN.ownerElement;
-      var res = wrapped(input, cN);
-      if(rT === XPathResult.NUMBER_TYPE &&
-        (res.resultType === XPathResult.UNORDERED_NODE_ITERATOR_TYPE ||
-         res.resultType === XPathResult.UNORDERED_NODE_ITERATOR_TYPE)) {
-        var val = parseInt(res.iterateNext().textContent);
-        return {
-          resultType: XPathResult.NUMBER_TYPE,
-          numberValue: val,
-          stringValue: val
-        };
-      }
-
-      if(rT === XPathResult.STRING_TYPE && res.resultType >= 6) {
-        if(res.snapshotLength) {
-          return { resultType: rT, stringValue: res.snapshotItem(0).textContent };
-        }
-        return { resultType: rT, stringValue: '' };
-      }
-      if(rT === XPathResult.STRING_TYPE && res.resultType >= 4) {
-        var firstNode = res.iterateNext();
-        var firstNodeValue =  firstNode ? firstNode.textContent : '';
-        return { resultType: rT, stringValue: firstNodeValue };
-      }
-      if(rT === XPathResult.BOOLEAN_TYPE && res.resultType >= 4) {
-        return { resultType: rT, booleanValue: !!res.iterateNext() };
-      }
-      return res;
-    }
-
-    // FIXME remove special handling
-    if(rT > 3 && !input.startsWith('randomize')) {
-      if(input === '/') cN = cN.ownerDocument || cN;
-
-      return wrapped(input, cN, nR, rT);
-    }
+    dbg('evaluate() nR:', nR);
 
     var i, cur, stack = [{ t:'root', tokens:[] }],
       peek = function() { return stack[stack.length-1]; },
@@ -210,9 +189,27 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       },
       handleXpathExpr = function(returnType) {
         var expr = cur.v;
-        var evaluated = toInternalResult(wrapped(expr, cN, nR, returnType));
+        var tokens = peek().tokens;
+        dbg('handleXpathExpr()', { returnType, expr, stack, tokens, cur });
+        if(tokens.length && tokens[tokens.length-1].t === 'arr') {
+          dbg('handleXpathExpr()', 'new handling...');
+          // chop the leading slash from expr
+          if(expr.charAt(0) !== '/') throw new Error(`not sure how to handle expression called on nodeset that doesn't start with a '/': ${expr}`);
+          expr = new XPathEvaluator().createExpression(expr.substring(1)); // TODO can we cache this evaluator?  Can we use it instead of `wrapped`?
+          const newNodeset = [];
+          tokens[tokens.length-1].v.map(node => {
+            const res = toInternalResult(expr.evaluate(node));
+            dbg('handleXpathExpr()', { res });
+            newNodeset.push(...res.v);
+          });
+          tokens[tokens.length-1].v = newNodeset;
+          //throw new Error('handleXpathExpr() should evaluate within the context of the nodeset: ' + expr);
+        } else {
+          dbg('handleXpathExpr()', 'classic handling...');
+          var evaluated = toInternalResult(wrapped(expr, cN, nR, returnType));
 
-        peek().tokens.push(evaluated);
+          peek().tokens.push(evaluated);
+        }
         newCurrent();
       },
       nextChar = function() {
@@ -288,7 +285,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           }
 
           if(cur.v !== '') {
-            handleXpathExpr(input.startsWith('randomize') ? 4 : null);
+            handleXpathExpr();
           }
           backtrack();
           cur = stack.pop();
@@ -372,6 +369,9 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         case '+':
           pushOp(c);
           break;
+        case '|':
+          pushOp('union');
+          break;
         case '\n':
         case '\r':
         case '\t':
@@ -411,11 +411,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           cur.sq = (cur.sq || 0) + 1;
           /* falls through */
         case '.':
-          if(cur.v === '' && nextChar() === ')') {
-            cur.v = c;
-            handleXpathExpr();
-            break;
-          }
           if(cur.v === '' && isNum(nextChar())) {
             cur = { t:'num', string:c };
             break;
@@ -425,6 +420,9 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           cur.v += c;
       }
     }
+
+    dbg('evaluate() finishing', { stack, cur });
+
     if(cur.t === 'num') finaliseNum();
     if(cur.t === '?' && cur.v !== '') handleXpathExpr();
     if(cur.t !== '?' || cur.v !== '' || (cur.tokens && cur.tokens.length)) err('Current item not evaluated!');
@@ -433,6 +431,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     if(stack[0].tokens.length === 0) err('No tokens.');
     if(stack[0].tokens.length >= 3) backtrack();
     if(stack[0].tokens.length > 1) err('Too many tokens.');
+
     return toExternalResult(stack[0].tokens[0], rT);
   };
 };

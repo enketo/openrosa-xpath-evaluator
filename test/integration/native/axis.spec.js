@@ -1,9 +1,9 @@
 const { initDoc, nsResolver, filterAttributes,
   parseNamespacesFromAttributes, getAllNodes,
   assert, assertNodes, assertNodesNamespace
-} = require('../../helpers');
+} = require('../helpers');
 
-describe('axes', () => {
+describe('axis', () => {
   let doc, h;
 
   beforeEach(() => {
@@ -861,7 +861,7 @@ describe('axes', () => {
     });
   });
 
-  const assertAttributes = (node) => {
+  const assertAttributes = (/*node*/) => {
     // TODO confirm this. chrome includes namespaces attrs and firefox does not.
     // We could exclude them from chrome to be consistent but would have to
     // manually build the response with an incomplete interface (snapshotItem(idx), etc).

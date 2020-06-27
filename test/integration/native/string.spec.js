@@ -1,5 +1,5 @@
 const { initDoc, filterAttributes, assertThrow, assertTrue,
-  assertFalse, assertString, assertStringValue, assertNumber } = require('../../helpers');
+  assertFalse, assertString, assertStringValue, assertNumber } = require('../helpers');
 
 describe('native string functions', () => {
 
@@ -51,7 +51,6 @@ describe('native string functions', () => {
         </div>
       </div>`);
     let input;
-    let i;
     let node;
     const nodeWithAttributes = doc.getElementById('FunctionStringCaseStringNodesetAttribute');
 

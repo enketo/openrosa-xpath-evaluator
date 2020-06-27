@@ -1,16 +1,17 @@
-function toSnapshotResult(nodes, rt, singleItem) {
-  return function() {
-    var idx = 0;
-    return {
-      resultType: rt,
-      singleNodeValue: nodes.length ? singleItem || nodes[0] : null,
-      snapshotLength: nodes.length,
-      snapshotItem: function(i){return nodes[i];},
-      iterateNext: function(){return nodes.length > idx ? nodes[idx++] : null;}
-    };
-  }();
-}
+const dbg = require('../dbg');
 
-module.exports = {
-  toSnapshotResult
-};
+module.exports = { toSnapshotResult };
+
+function toSnapshotResult(nodes, resultType, singleItem) {
+  dbg('toSnapshotResult()', { nodes, resultType });
+  return (() => {
+    let idx = 0;
+    return {
+      resultType,
+      singleNodeValue: singleItem || nodes[0] || null,
+      snapshotLength: nodes.length,
+      snapshotItem: i => nodes[i] || null,
+      iterateNext: () => nodes[idx++] || null,
+    };
+  })();
+}

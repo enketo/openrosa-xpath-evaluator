@@ -1,19 +1,18 @@
 {
+  "extends": "eslint:recommended",
   "env": {
-    "es6": true,
-    "mocha": true,
     "browser": true,
     "commonjs": true
   },
   "globals": {
-    "Promise": false,
+    "Promise": true,
+    "_": false,
     "__dirname": false,
     "chai": false
   },
-  "extends": "eslint:recommended",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 8
+    "ecmaVersion": 6
   },
   "rules": {
     "semi": [ "error", "always" ],

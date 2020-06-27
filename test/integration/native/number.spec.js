@@ -1,4 +1,4 @@
-const { initDoc, assertThrow, assertNumber } = require('../../helpers');
+const { initDoc, assertThrow, assertNumber } = require('../helpers');
 
 describe('native number functions', () => {
   it('number() conversion of convertible numbers, strings, booleans', () => {

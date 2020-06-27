@@ -1,4 +1,4 @@
-const { assertStringValue } = require('../../helpers');
+const { assertStringValue } = require('../helpers');
 const config = require('../../../src/config');
 
 describe('#date-time()', () => {

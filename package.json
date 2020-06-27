@@ -4,7 +4,7 @@
   "description": "Wrapper for browsers' XPath evaluator with added support for OpenRosa extensions.",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint --ignore-path .gitignore src",
+    "lint": "eslint --ignore-path .gitignore .",
     "lint:watch": "esw --ignore-path .gitignore . -w",
     "prebuild": "rimraf dist",
     "build": "webpack",

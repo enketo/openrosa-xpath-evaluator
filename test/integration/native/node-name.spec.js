@@ -1,6 +1,6 @@
 const { initDoc, nsResolver, filterAttributes,
   parseNamespacesFromAttributes, sortedNamespaces,
-  assert, assertNodes, assertNodesNamespace } = require('../../helpers');
+  assert, assertNodes, assertNodesNamespace } = require('../helpers');
 
 describe('node name for', () => {
   let doc;
