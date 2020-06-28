@@ -11,13 +11,11 @@ function checkMinMaxArgs(args, min, max) {
 }
 
 function checkNativeFn(name, args) {
-  if(name === 'last') {
-    checkMinMaxArgs(args, null, 0);
-  } else if(/^(boolean|lang|ceiling|name|floor)$/.test(name)) {
+  if(/^(lang|ceiling|name|floor)$/.test(name)) {
     checkMinMaxArgs(args, 1, 1);
   } else if(name === 'substring') {
     checkMinMaxArgs(args, 2, 3);
-  } else if(/^(starts-with|contains|substring-before|substring-after)$/.test(name)) {
+  } else if(/^(starts-with|contains)$/.test(name)) {
     checkMinMaxArgs(args, 2, 2);
   } else if(name === 'translate') {
     checkMinMaxArgs(args, 3, 3);
