@@ -1,9 +1,6 @@
-const { dbg } = require('../dbg');
-
 module.exports = { toSnapshotResult };
 
 function toSnapshotResult(nodes, resultType, singleItem) {
-  dbg('toSnapshotResult()', { nodes, resultType });
   return (() => {
     let idx = 0;
     return {

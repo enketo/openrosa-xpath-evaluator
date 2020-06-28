@@ -1,12 +1,10 @@
 var { asBoolean, asNumber, asString } = require('./xpath-cast');
-const { dbg } = require('../dbg');
 
 module.exports = {
   handleOperation:handleOperation,
 };
 
 function handleOperation(lhs, op, rhs) {
-  dbg('handleOperation()', { lhs, op, rhs });
   // comparison operators as per: https://www.w3.org/TR/1999/REC-xpath-19991116/#booleans
   switch(op.v) {
     case '+' : return asNumber(lhs) + asNumber(rhs);

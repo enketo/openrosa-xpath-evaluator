@@ -1,12 +1,10 @@
 // TODO this should be moved to test/integration
 const assert = chai.assert;
-const { dbg } = require('../../src/dbg');
 const engine = require('../../src/engine');
 
 let doc, xEval, evaluator, nsr, rt, node;
 
 const nsResolver = (prefix) => {
-  dbg('nsResolver()', { prefix });
   var ns = {
     'xhtml' : 'http://www.w3.org/1999/xhtml',
     'mathml': 'http://www.w3.org/1998/Math/MathML',
@@ -23,8 +21,6 @@ const initDoc = (xml, xnsr) => {
   nsr = xnsr;
   evaluator = new engine.XPathEvaluator();
   xEval = function(e, xnode, xrt, xnsr) {
-    dbg('xEval xnsr:', xnsr);
-    dbg('xEval nsr:', nsr);
     node = xnode || doc;
     rt = xrt;
     return evaluator.evaluate(e, node, xnsr || nsr, rt, null);
@@ -80,14 +76,12 @@ const assertString = (...args) => {
 };
 
 const assertStringValue = (...args) => {
-  dbg('assertStringValue() :', nsResolver.toString());
   const expected = args[args.length -1];
   const regex = args[args.length - 2];
   if(args.length > 2 && args[args.length - 3]) {
     simpleValueIs(args[args.length - 3]);
   }
   const node = args.length > 3 ? args[args.length - 4] : null;
-  dbg('assertStringValue() calling with nsResolver');
   assert.equal(xEval(regex, node, XPathResult.STRING_TYPE).stringValue, expected);
 };
 
@@ -184,7 +178,6 @@ const filterAttributes = (attributes) => {
 
     specifiedAttributes.push(attributes[i]);
   }
-  dbg('filterAttributes()', { attributes, specifiedAttributes });
   return specifiedAttributes;
 };
 

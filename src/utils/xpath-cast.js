@@ -1,5 +1,3 @@
-const { dbg } = require('../dbg');
-
 module.exports = {
   asBoolean:asBoolean,
   asNumber:asNumber,
@@ -27,7 +25,6 @@ function asNumber(r) {
 
 // cast to string, as per https://www.w3.org/TR/1999/REC-xpath-19991116/#section-String-Functions
 function asString(r) {
-  dbg('asString()', { r });
   if(isDomNode(r)) return r.textContent || ''; // TODO currently unclear if `null` or `''` should be returned if textContent is null
   switch(r.t) {
     case 'str': return r.v;

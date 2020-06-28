@@ -1,4 +1,3 @@
-const { dbg } = require('./dbg');
 require('./date-extensions');
 var ExtendedXPathEvaluator = require('./extended-xpath');
 var openrosaExtensions = require('./openrosa-extensions');
@@ -13,8 +12,6 @@ function OpenrosaXPathEvaluator() {
     evaluate: function (expr, node, nsr, rt) {
       const xevaluator = new ExtendedXPathEvaluator(
         (v, xnode, xnsr, xrt) => {
-          dbg('anonymous eval function()', { xnsr, nsr });
-
           if(!rt || rt<7 || v.startsWith('//')) rt = null; // FIXME remove custom handling?
           xrt = xrt || rt || XPathResult.ANY_TYPE; // FIXME remove custom handling?
           const result = evaluator.evaluate(v, xnode || node, xnsr || nsr, xrt, null);

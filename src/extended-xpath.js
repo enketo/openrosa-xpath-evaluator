@@ -1,5 +1,4 @@
 var {isNamespaceExpr, handleNamespaceExpr} = require('./utils/ns');
-const { dbg } = require('./dbg');
 var {handleOperation} = require('./utils/operation');
 var {preprocessNativeArgs} = require('./utils/native');
 var {toSnapshotResult} = require('./utils/result');
@@ -21,14 +20,11 @@ var OP_PRECEDENCE = [
 
 var FUNCTION_NAME = /^[a-z]/;
 
-var INVALID_ARGS = new Error('invalid args');
-
 var ExtendedXPathEvaluator = function(wrapped, extensions) {
   var
     extendedFuncs = extensions.func || {},
     extendedProcessors = extensions.process || {},
     toInternalResult = function(r) {
-      dbg('toInternalResult()', { resultType:r.resultType });
       var n, v;
       if(r.resultType === XPathResult.NUMBER_TYPE)  return { t:'num',  v:r.numberValue  };
       if(r.resultType === XPathResult.BOOLEAN_TYPE) return { t:'bool', v:r.booleanValue };
@@ -54,7 +50,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       throw new Error(`no handling for result type: ${r.resultType}`);
     },
     toExternalResult = function(r, rt) {
-      dbg('toExternalResult()', { r, rt });
       if(extendedProcessors.toExternalResult) {
         var res = extendedProcessors.toExternalResult(r);
         if(res) return res;
@@ -86,7 +81,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       }
     },
     callNative = function(name, args) {
-      dbg('callNative', { name, args });
       var argString = '', arg, quote, i;
       for(i=0; i<args.length; ++i) {
         arg = args[i];
@@ -101,7 +95,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         if(i < args.length - 1) argString += ', ';
       }
       const expr = name + '(' + argString + ')';
-      dbg('callNative()', { expr });
       return toInternalResult(wrapped(expr));
     },
     typefor = function(val) {
@@ -121,8 +114,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     input = preprocessInput(input);
     if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
 
-    dbg('evaluate()', cN, { input, contextSize, contextPosition }, nR);
-
     var i, cur, stack = [{ t:'root', tokens:[] }],
       peek = function() { return stack[stack.length-1]; },
       err = function(message) { throw new Error((message||'') + ' [stack=' + JSON.stringify(stack) + '] [cur=' + JSON.stringify(cur) + ']'); },
@@ -132,7 +123,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         newCurrent();
       },
       callFn = function(name, supplied) {
-        dbg('callFn()', { cN, name, supplied });
         // Every second arg should be a comma, but we allow for a trailing comma.
         // From the spec, this looks valid, if you assume that ExprWhitespace is a
         // valid Expr.
@@ -189,9 +179,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       handleXpathExpr = function() {
         var expr = cur.v;
         var tokens = peek().tokens;
-        dbg('handleXpathExpr()', { expr, stack, tokens, cur });
         if(tokens.length && tokens[tokens.length-1].t === 'arr') {
-          dbg('handleXpathExpr()', 'new handling...');
           // chop the leading slash from expr
           if(expr.charAt(0) !== '/') throw new Error(`not sure how to handle expression called on nodeset that doesn't start with a '/': ${expr}`);
           // prefix a '.' to make the expression relative to the context node:
@@ -199,16 +187,13 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           const newNodeset = [];
           tokens[tokens.length-1].v.map(node => {
             const res = toInternalResult(expr.evaluate(node));
-            dbg('handleXpathExpr()', { res });
             newNodeset.push(...res.v);
           });
           tokens[tokens.length-1].v = newNodeset;
           //throw new Error('handleXpathExpr() should evaluate within the context of the nodeset: ' + expr);
         } else {
-          dbg('handleXpathExpr()', 'classic handling...');
           const res = wrapped(expr, cN, nR);
           var evaluated = toInternalResult(res);
-          dbg('handleXpathExpr()', evaluated);
 
           peek().tokens.push(evaluated);
         }
@@ -234,7 +219,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
 
     for(i=0; i<input.length; ++i) {
       var c = input.charAt(i);
-      //dbg('evaluate()', { c, cur });
       if(cur.t === 'sq') {
         // Build the entire expression found within the square brackets:
         //
@@ -261,7 +245,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             let contextNodes;
             const head = peek();
             const { tokens } = head;
-            dbg('predicate-end', { cur, head });
             if(tokens.length && tokens[tokens.length-1].t === 'arr') {
               contextNodes = tokens[tokens.length-1].v;
             } else if(head.t === 'root') {
@@ -278,7 +261,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             // > para[position()=3].
             //   - https://www.w3.org/TR/1999/REC-xpath-19991116/#predicates
             const expr = cur.v;
-            dbg('predicate-end', { expr, contextNodes });
             const exprRes = contextNodes
               .map((cN, idx) => {
                 const contextPosition = 1 + idx;
@@ -292,7 +274,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
                   return asBoolean(res);
                 }
               });
-            dbg('predicate-end', { expr, filteredRes });
 
             tokens[tokens.length-1].v = contextNodes.filter((_, i) => filteredRes[i]);
             newCurrent();
@@ -462,7 +443,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           } else cur.v += c;
           break;
         case '[':
-          dbg('predicate-start', { cur, stack });
           // evaluate previous part if there is any
           if(cur.v.length) {
             handleXpathExpr();
@@ -481,8 +461,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           cur.v += c;
       }
     }
-
-    dbg('evaluate() finishing', { stack, cur });
 
     if(cur.t === 'num') finaliseNum();
     if(cur.t === '?' && cur.v !== '') handleXpathExpr();

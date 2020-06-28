@@ -1,5 +1,4 @@
 require('./date-extensions');
-const { dbg } = require('./dbg');
 var {asGeopoints, area, distance} = require('./geo');
 var {digest} = require('./digest');
 var {randomToken} = require('./random-token');
@@ -459,7 +458,6 @@ var openrosa_xpath_extensions = function(config) {
     'string-length': function(r) {
       if(arguments.length > 1) throw new Error('too many args');
       const str = asString(r || this.cN);
-      dbg('string-length()', (r || this.cN), { str, len:str.length });
       // implemented as per https://www.w3.org/TR/1999/REC-xpath-19991116/#function-string-length, rather than the restricted ODK implementation
       return XPR.number(str.length);
     },
