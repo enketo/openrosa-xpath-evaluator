@@ -4,8 +4,7 @@ const assert = require('chai').assert;
 const _ = require('lodash');
 const { registerDomGlobals, teardownDomGlobals } = require('./utils');
 
-var docs = '',
-    DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d\\d 20\\d\\d \\d\\d:\\d\\d:\\d\\d GMT([+-]\\d\\d\\d\\d (.+))?',
+var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d\\d 20\\d\\d \\d\\d:\\d\\d:\\d\\d GMT([+-]\\d\\d\\d\\d (.+))?',
     examples = {
       'false':
         /false/,
@@ -120,8 +119,7 @@ var docs = '',
         /^false$/,
     },
     trickyStandardXpath_supported = [
-      '/model/instance[1]//*',
-      '/model/instance[1]/*/meta/*',
+      // REVIEW: removed expressions from here that contain predicates, as these can't be supported in unit tests as they rely on the browser's implementation to some extent
       './author',
       'author',
       'first.name',
@@ -132,67 +130,23 @@ var docs = '',
       'bookstore/*/title',
       'bookstore//book/excerpt//emph',
       './/title',
-      'author/*',
       'book/*/last-name',
       '@style',
       'price/@exchange',
       'price/@exchange/total',
-      'book[@style]',
       'book/@style',
       './first-name',
       'first-name',
-      'author[1]',
-      'author[first-name][3]',
       'my:book',
-      'x/y[1]',
-      'x[1]/y[2]',
-      'book[excerpt]',
-      'book[excerpt]/title',
-      'book[excerpt]/author[degree]',
-      'book[author/degree]',
-      'author[degree][award]',
-      'ancestor::book[1]',
-      'ancestor::book[author][1]',
-      'ancestor::author[parent::book][1]',
       '../../some-path',
       '*/*',
-      '*[@specialty]',
       '@*',
       '@my:*',
       'my:*',
-      'author[degree and award]',
-      'author[(degree or award) and publication]',
-      'author[degree and not(publication)]',
-      'author[not(degree or award) and publication]',
-      'author[. = "Matthew Bob"]',
-      'author[last-name = "Bob" and ../price &gt; 50]',
-      'author[not(last-name = "Bob")]',
-      'author[first-name = "Bob"]',
-      'author[last-name = "Bob" and first-name = "Joe"]',
-      'author[* = "Bob"]',
-      'author[last-name = "Bob"]',
-      'author[last-name[1] = "Bob"]',
-      'author[last-name [position()=1]= "Bob"]',
-      'book[last()]',
-      'book/author[last()]',
-      'book[position() &lt;= 3]',
-      'book[/bookstore/@specialty=@style]',
-      'degree[position() &lt; 3]',
-      'degree[@from != "Harvard"]',
-      'p/text()[2]',
-      'price[@intl = "Canada"]',
-      'x/y[position() = 1]',
-      '(book/author)[last()]',
-      '(x/y)[1]',
-    ],
-    trickyStandardXpath_unsupported = [
     ],
     xp = {
       str: function(v) { return { t:'str', v:v }; },
       num: function(v) { return { t:'num', v:v }; },
-    },
-    _document = function(line) {
-      docs += line + '\n';
     },
     extendedXPathEvaluator = new ExtendedXPathEvaluator(
       function wrappedXpathEvaluator(xpath) {
@@ -233,56 +187,12 @@ describe('ExtendedXpathEvaluator', function() {
   });
 
   describe('Supported XPath expressions', function() {
-    it('has a documentation header', function() {
-      _document('## Supported XPath expressions:');
-      _document('');
-    });
-
     _.each(trickyStandardXpath_supported, function(expr) {
       it(expr + ' should be delegated to the regular XPath evaluator', function() {
-        _document('* `' + expr + '`');
-
         assert.equal(
           extendedXPathEvaluator.evaluate(expr).stringValue,
           '<xpath:' + expr + '>');
       });
-    });
-
-    it('has a documentation footer', function() {
-      _document('');
-      _document('');
-    });
-  });
-
-  // Documents standard XPath expressions which are not currently supported
-  describe('Unsupported XPath expressions', function() {
-    it('has a documentation header', function() {
-      _document('## Unsupported XPath expressions:');
-      _document('');
-    });
-
-    _.each(trickyStandardXpath_unsupported, function(expr) {
-      it(expr + ' should not be parsed correctly', function() {
-        _document('* `' + expr + '`');
-
-        // expect
-        try {
-          extendedXPathEvaluator.evaluate(expr);
-          assert.notEqual(
-            extendedXPathEvaluator.evaluate(expr).stringValue,
-            '<xpath:' + expr + '>');
-        } catch(e) {
-          if(e.message.indexOf('Too many tokens.') === 0) {
-            // expected
-          } else throw e;
-        }
-      });
-    });
-  });
-
-  describe('DOCUMENTATION', function() {
-    it('supports the following:', function() {
-      console.log('\n' + docs);
     });
   });
 });
