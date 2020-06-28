@@ -190,12 +190,8 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             newNodeset.push(...res.v);
           });
           tokens[tokens.length-1].v = newNodeset;
-          //throw new Error('handleXpathExpr() should evaluate within the context of the nodeset: ' + expr);
         } else {
-          const res = wrapped(expr, cN, nR);
-          var evaluated = toInternalResult(res);
-
-          peek().tokens.push(evaluated);
+          peek().tokens.push(toInternalResult(wrapped(expr, cN, nR)));
         }
         newCurrent();
       },
