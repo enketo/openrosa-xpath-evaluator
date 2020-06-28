@@ -24,7 +24,6 @@ var FUNCTION_NAME = /^[a-z]/;
 
 var INVALID_ARGS = new Error('invalid args');
 
-// TODO remove all the checks for cur.t==='?' - what else woudl it be?
 var ExtendedXPathEvaluator = function(wrapped, extensions) {
   var
     extendedFuncs = extensions.func || {},
