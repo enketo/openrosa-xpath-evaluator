@@ -150,7 +150,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         }
         const expr = name + '(' + argString + ')';
         dbg('callNative()', { expr });
-        return toInternalResult(wrapped(expr, nR));
+        return toInternalResult(wrapped(expr, cN, nR));
       },
       evalOp = function(lhs, op, rhs) {
         if(extendedProcessors.handleInfix) {
@@ -188,10 +188,10 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           }
         }
       },
-      handleXpathExpr = function(returnType) {
+      handleXpathExpr = function() {
         var expr = cur.v;
         var tokens = peek().tokens;
-        dbg('handleXpathExpr()', { returnType, expr, stack, tokens, cur });
+        dbg('handleXpathExpr()', { expr, stack, tokens, cur });
         if(tokens.length && tokens[tokens.length-1].t === 'arr') {
           dbg('handleXpathExpr()', 'new handling...');
           // chop the leading slash from expr
@@ -207,8 +207,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           //throw new Error('handleXpathExpr() should evaluate within the context of the nodeset: ' + expr);
         } else {
           dbg('handleXpathExpr()', 'classic handling...');
-          const res = wrapped(expr, cN, nR, returnType);
-          dbg('handleXpathExpr()', { requested:returnType, got:res.resultType });
+          const res = wrapped(expr, cN, nR);
           var evaluated = toInternalResult(res);
           dbg('handleXpathExpr()', evaluated);
 
