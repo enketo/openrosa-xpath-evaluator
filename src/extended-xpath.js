@@ -87,6 +87,25 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         default: throw new Error('unrecognised return type:', rt);
       }
     },
+    callNative = function(name, args) {
+      dbg('callNative', { name, args });
+      var argString = '', arg, quote, i;
+      for(i=0; i<args.length; ++i) {
+        arg = args[i];
+        if(arg.t !== 'num' && arg.t !== 'bool') {
+          quote = arg.v.indexOf('"') === -1 ? '"' : "'";
+          argString += quote;
+        }
+        argString += arg.v;
+        if(arg.t === 'arr') throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
+        if(arg.t === 'bool') argString += '()';
+        if(arg.t !== 'num' && arg.t !== 'bool') argString += quote;
+        if(i < args.length - 1) argString += ', ';
+      }
+      const expr = name + '(' + argString + ')';
+      dbg('callNative()', { expr });
+      return toInternalResult(wrapped(expr));
+    },
     typefor = function(val) {
       if(extendedProcessors.typefor) {
         var res = extendedProcessors.typefor(val);
@@ -132,25 +151,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         }
 
         return callNative(name, preprocessNativeArgs(name, args));
-      },
-      callNative = function(name, args) {
-        dbg('callNative', { name, args });
-        var argString = '', arg, quote, i;
-        for(i=0; i<args.length; ++i) {
-          arg = args[i];
-          if(arg.t !== 'num' && arg.t !== 'bool') {
-            quote = arg.v.indexOf('"') === -1 ? '"' : "'";
-            argString += quote;
-          }
-          argString += arg.v;
-          if(arg.t === 'arr') throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
-          if(arg.t === 'bool') argString += '()';
-          if(arg.t !== 'num' && arg.t !== 'bool') argString += quote;
-          if(i < args.length - 1) argString += ', ';
-        }
-        const expr = name + '(' + argString + ')';
-        dbg('callNative()', { expr });
-        return toInternalResult(wrapped(expr, cN, nR));
       },
       evalOp = function(lhs, op, rhs) {
         if(extendedProcessors.handleInfix) {
