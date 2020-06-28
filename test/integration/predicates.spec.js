@@ -11,6 +11,8 @@ describe('predicates with function calls', ()=> {
       [ 1, '/data/item[true()]/number + 1',   assertNumberValue, 5 ],
       [ 1, '/data/item[true()]/number + 1',   assertStringValue, '5' ],
       [ 1, '/data/item[string-length("a") = 1]/number + 2',      assertNumberValue, 6 ],
+      [ 1, '/data/item[string-length("]") = 1]/number + 2',      assertNumberValue, 6 ],
+      [ 1, `/data/item[string-length(']') = 1]/number + 2`,      assertNumberValue, 6 ],
       [ 1, '/data/item[2]/number + 3',                           assertNumberValue, 9 ],
       [ 1, '/data/item[string-length(./number)=1]/number + 3',   assertNumberValue, 7 ],
       [ 1, '/data/item[string-length(./number) = 1]/number + 3', assertNumberValue, 7 ],

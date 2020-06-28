@@ -250,13 +250,15 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         // > otherwise, it is not included.
         //   - https://www.w3.org/TR/1999/REC-xpath-19991116/#predicates
         //
-        // TODO currently this will fail if a closing square bracket is included
-        // in a Literal (string) within the predicate expression.  This is
-        // unfortunate.  It could be solved with a two-step parse.  Currently
-        // it would be a big change to implement that; perhaps we could instead
-        // keep a simple track of whether we are in a Literal while stepping
-        // through these characters.
-        if(c === ']') {
+        // Note because the ']' character is allowed within a Listeral (string),
+        // there is special handling for tracking when we're within a string.
+        if(cur.inString) {
+          if(cur.inString === c) delete cur.inString;
+        } else if(c === '[') {
+          ++cur.depth;
+        } else if(c === '\'' || c === '"') {
+          cur.inString = c;
+        } else if(c === ']') {
           if(!--cur.depth) {
             let contextNodes;
             const head = peek();
@@ -297,8 +299,9 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             tokens[tokens.length-1].v = contextNodes.filter((_, i) => filteredRes[i]);
             newCurrent();
           }
-        } else if(c === '[') ++cur.depth;
-        else cur.v += c;
+          continue;
+        }
+        cur.v += c;
         continue;
       }
       if(cur.t === 'str') {
