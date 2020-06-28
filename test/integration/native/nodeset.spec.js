@@ -3,7 +3,7 @@ const { initDoc, nsResolver, filterAttributes,
 
 describe('native nodeset functions', () => {
 
-  it('last()', () => {
+  describe.only('last()', () => {
     const doc = initDoc(`
       <!DOCTYPE html>
       <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
@@ -28,7 +28,9 @@ describe('native nodeset functions', () => {
       ["xhtml:p[last()]", 4],
       [ "xhtml:p[last()-last()+1]", 1 ]
     ].forEach(([expr, value]) => {
-      assertNumberValue(node, null, expr, value);
+      it(`should evaluate ${expr} as ${value}`, () => {
+        assertNumberValue(node, null, expr, value);
+      });
     });
   });
 

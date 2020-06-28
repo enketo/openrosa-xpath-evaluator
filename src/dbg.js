@@ -15,8 +15,8 @@ function dbgString(arg) {
   if(typeof arg !== 'object') return arg.toString();
   if(Array.isArray(arg)) return arg.map(dbgString).toString();
   if(arg.t === 'arr') {
-    const { v, ...others } = arg;
-    return JSON.stringify({ ...others, v:v.map(nodePath) });
+    const { t, v } = arg;
+    return JSON.stringify({ t, v:v.map(nodePath) });
   }
   else return JSON.stringify(arg);
 }

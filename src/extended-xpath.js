@@ -1,5 +1,5 @@
 var {isNamespaceExpr, handleNamespaceExpr} = require('./utils/ns');
-const { dbg, dbgString } = require('./dbg');
+const { dbg } = require('./dbg');
 var {handleOperation} = require('./utils/operation');
 var {preprocessNativeArgs} = require('./utils/native');
 var {toSnapshotResult} = require('./utils/result');
@@ -87,44 +87,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         default: throw new Error('unrecognised return type:', rt);
       }
     },
-    callFn = function(cN, name, supplied) {
-      dbg('callFn()', { cN, name, supplied });
-      // Every second arg should be a comma, but we allow for a trailing comma.
-      // From the spec, this looks valid, if you assume that ExprWhitespace is a
-      // valid Expr.
-      // see: https://www.w3.org/TR/1999/REC-xpath-19991116/#section-Function-Calls
-      var args = [], i;
-      for(i=0; i<supplied.length; ++i) {
-        if(i % 2) {
-          if(supplied[i] !== ',') throw new Error('Weird args (should be separated by commas):' + JSON.stringify(supplied));
-        } else args.push(supplied[i]);
-      }
-
-      if(extendedFuncs.hasOwnProperty(name)) {
-        return extendedFuncs[name].apply(cN, args);
-      }
-
-      return callNative(name, preprocessNativeArgs(name, args));
-    },
-    callNative = function(name, args) {
-      dbg('callNative', { name, args });
-      var argString = '', arg, quote, i;
-      for(i=0; i<args.length; ++i) {
-        arg = args[i];
-        if(arg.t !== 'num' && arg.t !== 'bool') {
-          quote = arg.v.indexOf('"') === -1 ? '"' : "'";
-          argString += quote;
-        }
-        argString += arg.v;
-        if(arg.t === 'arr') throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
-        if(arg.t === 'bool') argString += '()';
-        if(arg.t !== 'num' && arg.t !== 'bool') argString += quote;
-        if(i < args.length - 1) argString += ', ';
-      }
-      const expr = name + '(' + argString + ')';
-      dbg('callNative()', { expr });
-      return toInternalResult(wrapped(expr));
-    },
     typefor = function(val) {
       if(extendedProcessors.typefor) {
         var res = extendedProcessors.typefor(val);
@@ -138,11 +100,11 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
   /**
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
-  const evaluate = this.evaluate = function(input, cN, nR, rT) {
+  const evaluate = this.evaluate = function(input, cN, nR, rT, _, contextSize=1, contextPosition=1) {
     input = preprocessInput(input);
     if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
 
-    dbg('evaluate()', { input }, cN);
+    dbg('evaluate()', cN, { input, contextSize, contextPosition }, nR);
 
     var i, cur, stack = [{ t:'root', tokens:[] }],
       peek = function() { return stack[stack.length-1]; },
@@ -151,6 +113,44 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       pushOp = function(t) {
         peek().tokens.push({ t:'op', v:t });
         newCurrent();
+      },
+      callFn = function(name, supplied) {
+        dbg('callFn()', { cN, name, supplied });
+        // Every second arg should be a comma, but we allow for a trailing comma.
+        // From the spec, this looks valid, if you assume that ExprWhitespace is a
+        // valid Expr.
+        // see: https://www.w3.org/TR/1999/REC-xpath-19991116/#section-Function-Calls
+        var args = [], i;
+        for(i=0; i<supplied.length; ++i) {
+          if(i % 2) {
+            if(supplied[i] !== ',') throw new Error('Weird args (should be separated by commas):' + JSON.stringify(supplied));
+          } else args.push(supplied[i]);
+        }
+
+        if(extendedFuncs.hasOwnProperty(name)) {
+          return extendedFuncs[name].apply({ cN, contextSize, contextPosition }, args);
+        }
+
+        return callNative(name, preprocessNativeArgs(name, args));
+      },
+      callNative = function(name, args) {
+        dbg('callNative', { name, args });
+        var argString = '', arg, quote, i;
+        for(i=0; i<args.length; ++i) {
+          arg = args[i];
+          if(arg.t !== 'num' && arg.t !== 'bool') {
+            quote = arg.v.indexOf('"') === -1 ? '"' : "'";
+            argString += quote;
+          }
+          argString += arg.v;
+          if(arg.t === 'arr') throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
+          if(arg.t === 'bool') argString += '()';
+          if(arg.t !== 'num' && arg.t !== 'bool') argString += quote;
+          if(i < args.length - 1) argString += ', ';
+        }
+        const expr = name + '(' + argString + ')';
+        dbg('callNative()', { expr });
+        return toInternalResult(wrapped(expr, nR));
       },
       evalOp = function(lhs, op, rhs) {
         if(extendedProcessors.handleInfix) {
@@ -280,8 +280,9 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             const expr = cur.v;
             dbg('predicate-end', { expr, contextNodes });
             const exprRes = contextNodes
-              .map(cN => {
-                return toInternalResult(evaluate(expr, cN, nR, XPathResult.ANY_TYPE));
+              .map((cN, idx) => {
+                const contextPosition = 1 + idx;
+                return toInternalResult(evaluate(expr, cN, nR, XPathResult.ANY_TYPE, null, contextNodes.length, contextPosition));
               });
             const filteredRes = exprRes
               .map((res, i) => {
@@ -354,7 +355,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
 
           if(cur.t !== 'fn') err('")" outside function!');
           if(cur.v) {
-            peek().tokens.push(callFn(cN, cur.v, cur.tokens));
+            peek().tokens.push(callFn(cur.v, cur.tokens));
           } else {
             if(cur.tokens.length !== 1) err('Expected one token, but found: ' + cur.tokens.length);
             peek().tokens.push(cur.tokens[0]);

@@ -293,6 +293,11 @@ var openrosa_xpath_extensions = function(config) {
     join: function(delim, ...args) {
       return XPR.string(mapFn(asString, ...args).join(asString(delim)));
     },
+    last: function() {
+      dbg('last()', { ...this });
+      if(arguments.length) throw new Error(`last() does not take arguments`);
+      return XPR.number(this.contextSize);
+    },
     'local-name': function(r) {
       // This is actually supported natively, but currently it's simpler to implement
       // ourselves than convert the supplied nodeset into a single node and pass this
@@ -306,7 +311,7 @@ var openrosa_xpath_extensions = function(config) {
       // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-local-name
       if(arguments.length > 1) throw new Error('too many args');
       if(r.t && r.t !== 'arr') throw new Error('wrong arg type');
-      return XPR.string(r ? r.v.length ? r.v[0].nodeName : '' : this.nodeName);
+      return XPR.string(r ? r.v.length ? r.v[0].nodeName : '' : this.cN.nodeName);
     },
     log: function(r) { return XPR.number(Math.log(r.v)); },
     log10: function(r) { return XPR.number(Math.log10(r.v)); },
@@ -333,14 +338,14 @@ var openrosa_xpath_extensions = function(config) {
       // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-namespace-uri
       if(arguments.length > 1) throw new Error('too many args');
       if(r.t && r.t !== 'arr') throw new Error('wrong arg type');
-      return XPR.string(r ? r.v.length ? r.v[0].namespaceURI : '' : this.namespaceURI);
+      return XPR.string(r ? r.v.length ? r.v[0].namespaceURI : '' : this.cN.namespaceURI);
     },
     'normalize-space': function(r) {
       // TODO this seems to do a lot more than the spec at https://www.w3.org/TR/1999/REC-xpath-19991116/#function-normalize-space
-      // I think we should just be able to return: XPR.string(asString(r || this).replace(/[\t\r\n ]+/g, ' ').trim());
+      // I think we should just be able to return: XPR.string(asString(r || this.cN).replace(/[\t\r\n ]+/g, ' ').trim());
       if(arguments.length > 1) throw new Error('too many args');
 
-      let res = asString(r || this);
+      let res = asString(r || this.cN);
 
       res = res.replace(/\f/g, '\\f');
       res = res.replace(/\r\v/g, '\v');
@@ -370,7 +375,7 @@ var openrosa_xpath_extensions = function(config) {
     },
     number: function(r) {
       if(arguments.length > 1) throw new Error(`number() passed wrong arg count (expected 0 or 1, but got ${arguments.length})`);
-      return XPR.number(asNumber(arguments.length ? r : this));
+      return XPR.number(asNumber(arguments.length ? r : this.cN));
     },
     today: function(rt) {
       var r = now_and_today(rt, !config.returnCurrentTimeForToday);
@@ -386,17 +391,24 @@ var openrosa_xpath_extensions = function(config) {
      * This function simply decides whether to return the new result or the old value.
      */
     once: function(r) {
-      const current = asString(this);
+      const current = asString(this.cN);
       return XPR.string(current || asString(r));
     },
     pi: function() { return XPR.number(Math.PI); },
     position: function(r) {
+      // N.B.: I suspect there is a bug here - this will return position within the parent node, rather than the evaluation context.
+      // I suspect this is contrary to the spec, which reads:
+      // > The position function returns a number equal to the context position from the expression evaluation context.
+      //   - https://www.w3.org/TR/1999/REC-xpath-19991116/#function-position
+      // I'd have thought e.g. a union of all first-children in a doc would not all have position()=1 within that nodeset
       if(arguments.length > 1) throw new Error('too many args');
       if(r && r.t !== 'arr') throw new Error('wrong arg type for position() - expected nodeset, but got: ' + r.t);
       if(r && !r.v.length) throw new Error('cannot call position() on an empty nodeset');
 
+      if(!r) return XPR.number(this.contextPosition);
+
       var position = 1;
-      var node = r ? r.v[0] : this;
+      var node = r.v[0];
       var nodeName = node.tagName;
       while (node.previousElementSibling && node.previousElementSibling.tagName === nodeName) {
         node = node.previousElementSibling;
@@ -443,12 +455,12 @@ var openrosa_xpath_extensions = function(config) {
     sqrt: function(r) { return XPR.number(Math.sqrt(r.v)); },
     string: function(r) {
       if(arguments.length > 1) throw new Error(`string() passed wrong arg count (expected 0 or 1, but got ${arguments.length})`);
-      return XPR.string(asString(r || this));
+      return XPR.string(asString(r || this.cN));
     }, // TODO this is not an extension - should be a "native" function
     'string-length': function(r) {
       if(arguments.length > 1) throw new Error('too many args');
-      const str = asString(r || this);
-      dbg('string-length()', (r || this), { str, len:str.length });
+      const str = asString(r || this.cN);
+      dbg('string-length()', (r || this.cN), { str, len:str.length });
       // implemented as per https://www.w3.org/TR/1999/REC-xpath-19991116/#function-string-length, rather than the restricted ODK implementation
       return XPR.number(str.length);
     },
