@@ -15,7 +15,7 @@ function checkNativeFn(name, args) {
     checkMinMaxArgs(args, 1, 1);
   } else if(name === 'substring') {
     checkMinMaxArgs(args, 2, 3);
-  } else if(/^(starts-with|contains)$/.test(name)) {
+  } else if(/^(starts-with|contains|substring-before|substring-after)$/.test(name)) {
     checkMinMaxArgs(args, 2, 2);
   } else if(name === 'translate') {
     checkMinMaxArgs(args, 3, 3);
