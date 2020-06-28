@@ -1,6 +1,6 @@
 // TODO this should be moved to test/integration
 const assert = chai.assert;
-const dbg = require('../../src/dbg');
+const { dbg } = require('../../src/dbg');
 const engine = require('../../src/engine');
 
 let doc, xEval, evaluator, nsr, rt, node;

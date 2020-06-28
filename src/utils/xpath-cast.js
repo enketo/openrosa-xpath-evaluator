@@ -1,4 +1,4 @@
-const dbg = require('../dbg');
+const { dbg } = require('../dbg');
 
 module.exports = {
   asBoolean:asBoolean,

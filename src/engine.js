@@ -1,4 +1,4 @@
-const dbg = require('./dbg');
+const { dbg } = require('./dbg');
 require('./date-extensions');
 var ExtendedXPathEvaluator = require('./extended-xpath');
 var openrosaExtensions = require('./openrosa-extensions');

@@ -1,5 +1,5 @@
 var { asBoolean, asNumber, asString } = require('./xpath-cast');
-const dbg = require('../dbg');
+const { dbg } = require('../dbg');
 
 module.exports = {
   handleOperation:handleOperation,

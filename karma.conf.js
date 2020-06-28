@@ -25,7 +25,6 @@ module.exports = function(config) {
       'mocha',
       'coverage'
     ],
-    singleRun: true,
     webpack: require('./webpack.test.config.js'),
     webpackMiddleware: {
       watchOptions: { poll: 100 }

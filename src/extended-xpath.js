@@ -1,5 +1,5 @@
 var {isNamespaceExpr, handleNamespaceExpr} = require('./utils/ns');
-const dbg = require('./dbg');
+const { dbg, dbgString } = require('./dbg');
 var {handleOperation} = require('./utils/operation');
 var {preprocessNativeArgs} = require('./utils/native');
 var {toSnapshotResult} = require('./utils/result');
@@ -138,10 +138,11 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
   /**
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
-  this.evaluate = function(input, cN, nR, rT) {
+  const evaluate = this.evaluate = function(input, cN, nR, rT) {
     input = preprocessInput(input);
     if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
-    dbg('evaluate() nR:', nR);
+
+    dbg('evaluate()', { input }, cN);
 
     var i, cur, stack = [{ t:'root', tokens:[] }],
       peek = function() { return stack[stack.length-1]; },
@@ -195,7 +196,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           dbg('handleXpathExpr()', 'new handling...');
           // chop the leading slash from expr
           if(expr.charAt(0) !== '/') throw new Error(`not sure how to handle expression called on nodeset that doesn't start with a '/': ${expr}`);
-          expr = new XPathEvaluator().createExpression(expr.substring(1)); // TODO can we cache this evaluator?  Can we use it instead of `wrapped`?
+          expr = new XPathEvaluator().createExpression(expr.substring(1), nR); // TODO can we cache this evaluator?  Can we use it instead of `wrapped`?
           const newNodeset = [];
           tokens[tokens.length-1].v.map(node => {
             const res = toInternalResult(expr.evaluate(node));
@@ -206,7 +207,10 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           //throw new Error('handleXpathExpr() should evaluate within the context of the nodeset: ' + expr);
         } else {
           dbg('handleXpathExpr()', 'classic handling...');
-          var evaluated = toInternalResult(wrapped(expr, cN, nR, returnType));
+          const res = wrapped(expr, cN, nR, returnType);
+          dbg('handleXpathExpr()', { requested:returnType, got:res.resultType });
+          var evaluated = toInternalResult(res);
+          dbg('handleXpathExpr()', evaluated);
 
           peek().tokens.push(evaluated);
         }
@@ -232,10 +236,68 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
 
     for(i=0; i<input.length; ++i) {
       var c = input.charAt(i);
-      if(cur.sq) {
-        cur.v += c;
-        if(c === ']') --cur.sq;
-        else if(c === '[') ++cur.sq;
+      //dbg('evaluate()', { c, cur });
+      if(cur.t === 'sq') {
+        // Build the entire expression found within the square brackets:
+        //
+        // > A predicate filters a node-set with respect to an axis to produce a
+        // > new node-set. For each node in the node-set to be filtered, the
+        // > PredicateExpr is evaluated with that node as the context node, with
+        // > the number of nodes in the node-set as the context size, and with
+        // > the proximity position of the node in the node-set with respect to
+        // > the axis as the context position; if PredicateExpr evaluates to
+        // > true for that node, the node is included in the new node-set;
+        // > otherwise, it is not included.
+        //   - https://www.w3.org/TR/1999/REC-xpath-19991116/#predicates
+        //
+        // TODO currently this will fail if a closing square bracket is included
+        // in a Literal (string) within the predicate expression.  This is
+        // unfortunate.  It could be solved with a two-step parse.  Currently
+        // it would be a big change to implement that; perhaps we could instead
+        // keep a simple track of whether we are in a Literal while stepping
+        // through these characters.
+        if(c === ']') {
+          if(!--cur.depth) {
+            let contextNodes;
+            const head = peek();
+            const { tokens } = head;
+            dbg('predicate-end', { cur, head });
+            if(tokens.length && tokens[tokens.length-1].t === 'arr') {
+              contextNodes = tokens[tokens.length-1].v;
+            } else if(head.t === 'root') {
+              contextNodes = [ cN ];
+              throw new Error('Not sure how to handle a predicate-only expression yet - this will probably break down when re-assigning tokens[tokens.length-1].v');
+            } else throw new Error('Not sure how to handle context node for predicate in this situation.');
+
+            // > A PredicateExpr is evaluated by evaluating the Expr and converting
+            // > the result to a boolean. If the result is a number, the result will
+            // > be converted to true if the number is equal to the context position
+            // > and will be converted to false otherwise; if the result is not a
+            // > number, then the result will be converted as if by a call to the
+            // > boolean function. Thus a location path para[3] is equivalent to
+            // > para[position()=3].
+            //   - https://www.w3.org/TR/1999/REC-xpath-19991116/#predicates
+            const expr = cur.v;
+            dbg('predicate-end', { expr, contextNodes });
+            const exprRes = contextNodes
+              .map(cN => {
+                return toInternalResult(evaluate(expr, cN, nR, XPathResult.ANY_TYPE));
+              });
+            const filteredRes = exprRes
+              .map((res, i) => {
+                if(res.t === 'num') {
+                  return asNumber(res) === 1+i;
+                } else {
+                  return asBoolean(res);
+                }
+              });
+            dbg('predicate-end', { expr, filteredRes });
+
+            tokens[tokens.length-1].v = contextNodes.filter((_, i) => filteredRes[i]);
+            newCurrent();
+          }
+        } else if(c === '[') ++cur.depth;
+        else cur.v += c;
         continue;
       }
       if(cur.t === 'str') {
@@ -275,14 +337,14 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           newCurrent();
           break;
         case ')':
-          if(nextChar() === '[') {
-            // collapse the stack, and let the native evaluator handle this...
-            var tail = stack.pop();
-            tail.v = tail.v + '(' + cur.v + c;
-            tail.t = '?';
-            cur = tail;
-            break;
-          }
+//          if(nextChar() === '[') {
+//            // collapse the stack, and let the native evaluator handle this...
+//            var tail = stack.pop();
+//            tail.v = tail.v + '(' + cur.v + c;
+//            tail.t = '?';
+//            cur = tail;
+//            break;
+//          }
 
           if(cur.v !== '') {
             handleXpathExpr();
@@ -408,8 +470,15 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           } else cur.v += c;
           break;
         case '[':
-          cur.sq = (cur.sq || 0) + 1;
-          /* falls through */
+          dbg('predicate-start', { cur, stack });
+          // evaluate previous part if there is any
+          if(cur.v.length) {
+            handleXpathExpr();
+            newCurrent();
+          }
+          cur.t = 'sq';
+          cur.depth = 1;
+          break;
         case '.':
           if(cur.v === '' && isNum(nextChar())) {
             cur = { t:'num', string:c };

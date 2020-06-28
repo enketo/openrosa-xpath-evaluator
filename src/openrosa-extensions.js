@@ -1,4 +1,5 @@
 require('./date-extensions');
+const { dbg } = require('./dbg');
 var {asGeopoints, area, distance} = require('./geo');
 var {digest} = require('./digest');
 var {randomToken} = require('./random-token');
@@ -300,6 +301,8 @@ var openrosa_xpath_extensions = function(config) {
       // This may not currently behave correctly if the supplied nodeset is not supplied
       // in document order.
       //
+      // TODO see https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition for ideas how to fix this
+      //
       // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-local-name
       if(arguments.length > 1) throw new Error('too many args');
       if(r.t && r.t !== 'arr') throw new Error('wrong arg type');
@@ -324,6 +327,8 @@ var openrosa_xpath_extensions = function(config) {
       //
       // This may not currently behave correctly if the supplied nodeset is not supplied
       // in document order.
+      //
+      // TODO see https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition for ideas how to fix this
       //
       // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-namespace-uri
       if(arguments.length > 1) throw new Error('too many args');
@@ -440,6 +445,13 @@ var openrosa_xpath_extensions = function(config) {
       if(arguments.length > 1) throw new Error(`string() passed wrong arg count (expected 0 or 1, but got ${arguments.length})`);
       return XPR.string(asString(r || this));
     }, // TODO this is not an extension - should be a "native" function
+    'string-length': function(r) {
+      if(arguments.length > 1) throw new Error('too many args');
+      const str = asString(r || this);
+      dbg('string-length()', (r || this), { str, len:str.length });
+      // implemented as per https://www.w3.org/TR/1999/REC-xpath-19991116/#function-string-length, rather than the restricted ODK implementation
+      return XPR.number(str.length);
+    },
     substr: function(s, startIndex, endIndex) {
       return XPR.string(asString(s).slice(asNumber(startIndex), endIndex && asNumber(endIndex)));
     },
