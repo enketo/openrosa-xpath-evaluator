@@ -340,15 +340,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           newCurrent();
           break;
         case ')':
-//          if(nextChar() === '[') {
-//            // collapse the stack, and let the native evaluator handle this...
-//            var tail = stack.pop();
-//            tail.v = tail.v + '(' + cur.v + c;
-//            tail.t = '?';
-//            cur = tail;
-//            break;
-//          }
-
           if(cur.v !== '') {
             handleXpathExpr();
           }
