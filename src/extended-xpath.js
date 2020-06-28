@@ -196,7 +196,8 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           dbg('handleXpathExpr()', 'new handling...');
           // chop the leading slash from expr
           if(expr.charAt(0) !== '/') throw new Error(`not sure how to handle expression called on nodeset that doesn't start with a '/': ${expr}`);
-          expr = new XPathEvaluator().createExpression(expr.substring(1), nR); // TODO can we cache this evaluator?  Can we use it instead of `wrapped`?
+          // prefix a '.' to make the expression relative to the context node:
+          expr = new XPathEvaluator().createExpression('.' + expr, nR); // TODO can we cache this evaluator?  Can we use it instead of `wrapped`?
           const newNodeset = [];
           tokens[tokens.length-1].v.map(node => {
             const res = toInternalResult(expr.evaluate(node));
