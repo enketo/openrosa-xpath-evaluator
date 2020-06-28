@@ -19,7 +19,6 @@ var OP_PRECEDENCE = [
   ['union'],
 ];
 
-var DIGIT = /[0-9]/;
 var FUNCTION_NAME = /^[a-z]/;
 
 var INVALID_ARGS = new Error('invalid args');
@@ -311,7 +310,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         continue;
       }
       if(cur.t === 'num') {
-        if(DIGIT.test(c) || c === 'e' ||
+        if(isNum(c) || c === 'e' ||
             (c === '-' && input[i-1] === 'e')) {
           cur.string += c;
           continue;
@@ -388,7 +387,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             cur = { t:'num', string:'-' };
           } else {
             if(cur.v !== '') {
-              if(!DIGIT.test(cur.v) && input[i-1] !== ' ') throw INVALID_ARGS;
               peek().tokens.push(cur);
             }
             pushOp(c);
