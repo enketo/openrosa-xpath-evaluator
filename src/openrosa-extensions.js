@@ -294,7 +294,6 @@ var openrosa_xpath_extensions = function(config) {
       return XPR.string(mapFn(asString, ...args).join(asString(delim)));
     },
     last: function() {
-      dbg('last()', { ...this });
       if(arguments.length) throw new Error(`last() does not take arguments`);
       return XPR.number(this.contextSize);
     },
