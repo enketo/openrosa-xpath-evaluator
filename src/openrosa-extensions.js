@@ -3,7 +3,7 @@ var {asGeopoints, area, distance} = require('./geo');
 var {digest} = require('./digest');
 var {randomToken} = require('./random-token');
 var xpr = require('./xpr');
-var {isValidDate} = require('./utils/date');
+var {dateToDays, isValidDate} = require('./utils/date');
 var shuffle = require('./utils/shuffle');
 var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
 
@@ -373,7 +373,12 @@ var openrosa_xpath_extensions = function(config) {
     },
     number: function(r) {
       if(arguments.length > 1) throw new Error(`number() passed wrong arg count (expected 0 or 1, but got ${arguments.length})`);
-      return XPR.number(asNumber(arguments.length ? r : this.cN));
+      const arg = arguments.length ? r : this.cN;
+      const str = asString(arg);
+      if(DATE_STRING.test(str)) {
+        return XPR.number(dateToDays(str));
+      }
+      return XPR.number(asNumber(arg));
     },
     today: function(rt) {
       var r = now_and_today(rt, !config.returnCurrentTimeForToday);

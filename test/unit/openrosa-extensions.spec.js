@@ -14,7 +14,7 @@ describe('openrosa-extensions', () => {
   });
 
   describe('func', () => {
-    const { min, max } = extensions.func;
+    const { min, max, number } = extensions.func;
 
     describe('min()', () => {
       [
@@ -45,6 +45,24 @@ describe('openrosa-extensions', () => {
         it(`should convert ${JSON.stringify(args)} to ${expected}`, () => {
           // when
           const actual = max(...args.map(wrapVal));
+
+          // then
+          assertVal(actual, expected);
+        });
+      });
+    });
+
+    describe('number()', () => {
+      [
+        [ 0.29,       '1970-01-01' ],
+        [ 1.29,       '1970-01-02' ],
+        [ -0.71,      '1969-12-31' ],
+        [ 14127.29,   '2008-09-05' ],
+        [ -10251.71,  '1941-12-07' ],
+      ].forEach(([ expected, ...args ]) => {
+        it(`should convert ${JSON.stringify(args)} to ${expected}`, () => {
+          // when
+          const actual = number(...args.map(wrapVal));
 
           // then
           assertVal(actual, expected);

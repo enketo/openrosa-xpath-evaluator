@@ -9,7 +9,7 @@ function dateToDays(d, rounded) {
     temp = new Date(temp[0], temp[1]-1, temp[2]);
   }
   var r = (temp.getTime()) / (1000 * 60 * 60 * 24);
-  return rounded === false ? r : Math.round(r*100000)/100000;
+  return rounded === false ? r : Math.round(r*100)/100;
 }
 
 /**

@@ -57,7 +57,7 @@ describe('#number()', () => {
     });
   });
 
-  describe.skip('called on a date string', () => {
+  describe('called on a date string', () => {
     _.forEach({
       'number("1970-01-01")': 0.29,
       'number("1970-01-02")': 1.29,
