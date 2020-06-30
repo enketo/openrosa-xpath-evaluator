@@ -79,14 +79,10 @@ orxe.customXPathFunction.type.DateType
 The library can be configured with:
 ```
 orxe.config = {
-  allowStringComparison: false,
   includeTimeForTodayString: false,
   returnCurrentTimeForToday: false
 };
 ```
-
-#### allowStringComparison (default: false)
-This flag allows comparing expressions like this: 'bcd' > 'abc'.
 
 #### includeTimeForTodayString (default: false)
 This flag allows the inclusion of time for today() expressions that expect XPathResult.STRING_TYPE.
