@@ -64,7 +64,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             case 'num':  return { resultType:XPathResult.NUMBER_TYPE,  numberValue:r.v,  stringValue:r.v.toString() };
             case 'str':  return { resultType:XPathResult.BOOLEAN_TYPE, stringValue:r.v };
             case 'bool': return { resultType:XPathResult.BOOLEAN_TYPE, booleanValue:r.v, stringValue:r.v.toString() };
-            case 'arr':  return toSnapshotResult(r.v, rt);
+            case 'arr':  return toSnapshotResult(r.v, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
             default: throw new Error('unrecognised internal type: ' + r.t);
           }
         case XPathResult.NUMBER_TYPE:  return { resultType:rt, numberValue: asNumber(r),  stringValue:r.v.toString() };
@@ -193,6 +193,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         } else {
           peek().tokens.push(toInternalResult(wrapped(expr, cN, nR)));
         }
+
         newCurrent();
       },
       nextChar = function() {
@@ -237,7 +238,9 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         } else if(c === '\'' || c === '"') {
           cur.inString = c;
         } else if(c === ']') {
-          if(!--cur.depth) {
+          if(--cur.depth) {
+            cur.v += c;
+          } else {
             let contextNodes;
             const head = peek();
             const { tokens } = head;

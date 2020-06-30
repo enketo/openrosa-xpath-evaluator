@@ -5,13 +5,25 @@ function dbg(...args) {
 }
 
 function nodePath(node) {
-  return node === null ? '' : nodePath(node.parentNode) + '/' + node.nodeName;
+  if(node === null) return '';
+  if(node === undefined) return 'indescribable'; // probably running unit tests
+  return nodePath(node.parentNode) + describe(node);
+}
+
+function describe(node) {
+  if(node instanceof Attr) {
+    return '@' + node.nodeName + '=' + node.value;
+  }
+  if(node instanceof Document) {
+    return node.nodeName;
+  }
+  return '/' + node.nodeName;
 }
 
 function dbgString(arg) {
   if(arg === null || arg === undefined) return arg;
   if(arg instanceof Node) return nodePath(arg);
-  if(typeof arg === 'function') return '(function)';
+  if(typeof arg === 'function') return `(function:${arg.name})`;
   if(typeof arg !== 'object') return arg.toString();
   if(Array.isArray(arg)) return arg.map(dbgString).toString();
   if(arg.t === 'arr') {
