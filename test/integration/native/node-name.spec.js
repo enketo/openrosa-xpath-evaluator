@@ -60,7 +60,7 @@ describe('node name for', () => {
     assertNodes("attribute::*", node, filterAttributes(node.attributes));
   });
 
-  it('any namespace', () => {
+  it.skip('any namespace', () => { // REVIEW support for namespace:: dropped
     const node = doc.getElementById('StepNodeTestCaseNameTestNamespace'),
       namespaces = [];
 
@@ -107,7 +107,7 @@ describe('node name for', () => {
     assertNodes("attribute::ev:*", node, attributes, nsResolver);
   });
 
-  it('any namespace with a specific namespace (?)', () => {
+  it.skip('any namespace with a specific namespace (?)', () => { // REVIEW support for namespace:: dropped
     const node = doc.getElementById('StepNodeTestCaseNameTestNamespace');
     assertNodesNamespace("namespace::ns2:*", node, []);
   });
@@ -138,7 +138,7 @@ describe('node name for', () => {
     assertNodes("attribute::ev:attrib2", node, attributes);
   });
 
-  it('specific namespace with a specific namespace', () => {
+  it.skip('specific namespace with a specific namespace', () => { // REVIEW support for namespace:: dropped
     const node = doc.getElementById('StepNodeTestCaseNameTestNamespace');
     assertNodesNamespace("namespace::ns2:ns2", node, []);
   });
@@ -172,7 +172,7 @@ describe('node name for', () => {
     assertNodes("attribute::attrib3", node, attributes);
   });
 
-  it('namespace with specific name', () => {
+  it.skip('namespace with specific name', () => { // REVIEW support for namespace:: dropped
     const node = doc.getElementById('StepNodeTestCaseNameTestNamespace');
     assertNodesNamespace("namespace::ns2", node, [['ns2', 'http://asdf/']]);
   });

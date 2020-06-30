@@ -204,7 +204,7 @@ describe('axis', () => {
       assertNodes("self::node()", h.getNodeProcessingInstruction(), [h.getNodeProcessingInstruction()]);
     });
 
-    it('works with node namespace context', () => {
+    it.skip('works with node namespace context', () => { // REVIEW: namespace:: support dropped
       assertNodes("self::node()", h.getNodeNamespace(), [h.getNodeNamespace()]);
     });
 
@@ -255,7 +255,7 @@ describe('axis', () => {
       assertNodes("child::node()", h.getNodeProcessingInstruction(), []);
     });
 
-    it('works with a namespace context', () => {
+    it.skip('works with a namespace context', () => { // REVIEW support for namespace:: dropped
       assertNodes("child::node()", h.getNodeNamespace(), []);
     });
   });
@@ -294,7 +294,7 @@ describe('axis', () => {
       assertNodes("descendant::node()", h.getNodeProcessingInstruction(), []);
     });
 
-    it('works with namespace context', () => {
+    it.skip('works with namespace context', () => { // REVIEW support for namespace:: dropped
       assertNodes("descendant::node()", h.getNodeNamespace(), []);
     });
   });
@@ -342,7 +342,7 @@ describe('axis', () => {
      ]);
     });
 
-    it('works with a namspace context', () => {
+    it.skip('works with a namspace context', () => { // REVIEW support for namespace:: dropped
       assertNodes("descendant-or-self::node()", h.getNodeNamespace(), [
           h.getNodeNamespace()
      ]);
@@ -378,7 +378,7 @@ describe('axis', () => {
       assertNodes("parent::node()", h.getNodeProcessingInstruction(), [doc.getElementById('testStepAxisNodeProcessingInstruction')]);
     });
 
-    it('works with a namespace', () => {
+    it.skip('works with a namespace', () => { // REVIEW support for namespace:: dropped
       assertNodes("parent::node()", h.getNodeNamespace(), [doc.getElementById('testStepAxisNodeNamespace')]);
     });
   });
@@ -441,7 +441,7 @@ describe('axis', () => {
      ]);
     });
 
-    it('works for a namespace context ', () => {
+    it.skip('works for a namespace context ', () => { // REVIEW support for namespace:: dropped
       assertNodes("ancestor::node()", h.getNodeNamespace(), [
           doc,
           doc.documentElement,
@@ -518,7 +518,7 @@ describe('axis', () => {
      ]);
     });
 
-    it('works for namespace context', () => {
+    it.skip('works for namespace context', () => { // REVIEW support for namespace:: dropped
       assertNodes("ancestor-or-self::node()", h.getNodeNamespace(), [
           doc,
           doc.documentElement,
@@ -559,7 +559,7 @@ describe('axis', () => {
       assertNodes("following-sibling::node()", h.getNodeProcessingInstruction(), h.followingSiblingNodes(h.getNodeProcessingInstruction()));
     });
 
-    it('works for a namespace context', () => {
+    it.skip('works for a namespace context', () => { // REVIEW support for namespace:: dropped
       assertNodes("following-sibling::node()", h.getNodeNamespace(), []);
     });
   });
@@ -593,7 +593,7 @@ describe('axis', () => {
       assertNodes("preceding-sibling::node()", h.getNodeProcessingInstruction(), h.precedingSiblingNodes(h.getNodeProcessingInstruction()));
     });
 
-    it('works for a Namespace context', () => {
+    it.skip('works for a Namespace context', () => { // REVIEW: support for namespace:: dropped
       assertNodes("preceding-sibling::node()", h.getNodeNamespace(), []);
     });
   });
@@ -627,7 +627,7 @@ describe('axis', () => {
       assertNodes("following::node()", h.getNodeProcessingInstruction(), h.followingNodes(h.getNodeProcessingInstruction()));
     });
 
-    it('works for a namespace context', () => {
+    it.skip('works for a namespace context', () => { // REVIEW support for namespace:: dropped
       assertNodes("following::node()", h.getNodeNamespace(), h.followingNodes(doc.getElementById('testStepAxisNodeNamespace')));
     });
   });
@@ -661,7 +661,7 @@ describe('axis', () => {
       assertNodes("preceding::node()", h.getNodeProcessingInstruction(), h.precedingNodes(h.getNodeProcessingInstruction()));
     });
 
-    it('works for a Namespace context', () => {
+    it.skip('works for a Namespace context', () => { // REVIEW support for namespace:: dropped
         assertNodes("preceding::node()", h.getNodeNamespace(), h.precedingNodes(doc.getElementById('testStepAxisNodeNamespace')));
     });
   });
@@ -687,7 +687,7 @@ describe('axis', () => {
       assertNodes("attribute::node()", h.getNodeProcessingInstruction(), []);
     });
 
-    it('works for a namespace context', () => {
+    it.skip('works for a namespace context', () => { // REVIEW support for namespace:: dropped
       assertNodes("attribute::node()", h.getNodeNamespace(), []);
     });
 
@@ -708,7 +708,8 @@ describe('axis', () => {
     });
   });
 
-  describe('namespace axis', () => {
+  // REVIEW support for namespace:: dropped
+  describe.skip('namespace axis', () => {
 
     it('works for a document context', () => {
       assertNodesNamespace("namespace::node()", doc, []);
@@ -868,7 +869,7 @@ describe('axis', () => {
     // assertNodes("attribute::node()", node, getAttributes(node));
   };
 
-  describe('attribute && namespace axes', () => {
+  describe.skip('attribute && namespace axes', () => { // REVIEW: namespace:: support dropped
     it('works for Attrib1Ns1', () => {
       const node = doc.getElementById('testStepAxisNodeAttrib1Ns1');
       assertAttributes(node);

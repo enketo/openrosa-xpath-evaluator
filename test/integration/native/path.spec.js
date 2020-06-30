@@ -70,7 +70,7 @@ describe('location path', () => {
     }
   });
 
-  it('root namespace', () => {
+  it.skip('root namespace', () => { // REVIEW dropped namespace:: support
     const node = h.oneNamespaceNode(doc.getElementById('LocationPathCaseNamespace'));
 
     // REVIEW: temporary dirty hack to explain confusion:

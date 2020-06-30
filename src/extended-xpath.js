@@ -1,8 +1,6 @@
-var {isNamespaceExpr, handleNamespaceExpr} = require('./utils/ns');
 var {handleOperation} = require('./utils/operation');
 var {preprocessNativeArgs} = require('./utils/native');
 var {toSnapshotResult} = require('./utils/result');
-var {preprocessInput} = require('./utils/input');
 var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
 /*
  * From http://www.w3.org/TR/xpath/#section-Expressions XPath infix
@@ -111,9 +109,6 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   const evaluate = this.evaluate = function(input, cN, nR, rT, _, contextSize=1, contextPosition=1) {
-    input = preprocessInput(input);
-    if(isNamespaceExpr(input)) return handleNamespaceExpr(input, cN);
-
     var i, cur, stack = [{ t:'root', tokens:[] }],
       peek = function() { return stack[stack.length-1]; },
       err = function(message) { throw new Error((message||'') + ' [stack=' + JSON.stringify(stack) + '] [cur=' + JSON.stringify(cur) + ']'); },

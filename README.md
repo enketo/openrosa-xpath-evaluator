@@ -105,3 +105,8 @@ This flag allows time to be considered for today() expressions that expect XPath
 * https://developer.mozilla.org/en-US/docs/Web/XPath/Introduction_to_using_XPath_in_JavaScript
 * https://developer.mozilla.org/en-US/docs/Web/API/XPathResult
 * https://developer.mozilla.org/en-US/docs/Web/API/Node
+
+# Known limitations / TODO!
+
+* `and`/`or` operators are not currently lazy
+* namespace:: axis is not supported (but it might work in your browser if you're lucky)
