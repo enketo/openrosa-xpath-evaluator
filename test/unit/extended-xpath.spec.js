@@ -77,7 +77,7 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
       'native_function(\'string-with-escaped-"-arg\')':
           /^<xpath:native_function\('string-with-escaped-"-arg'\)>$/,
       'native_function(1, 2, 3, "a", \'b\', "c")':
-          /^<xpath:native_function\(1, 2, 3, "a", "b", "c"\)>$/,
+          /^<xpath:native_function\(1,2,3,"a",'b',"c"\)>$/,
       'native-function()':
           /^<xpath:native-function\(\)>$/,
       'native-function(3)':
@@ -85,7 +85,7 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
       'native-function("string-arg")':
           /^<xpath:native-function\("string-arg"\)>$/,
       'native-function(1, 2, 3, "a", \'b\', "c")':
-          /^<xpath:native-function\(1, 2, 3, "a", "b", "c"\)>$/,
+          /^<xpath:native-function\(1,2,3,"a",'b',"c"\)>$/,
       /* 
       // Not clear what to do here as correcting this requires knowledge of return types of native functions.
       'native-function1(native-function2() + native-function3()) + native-function4(native-function5() + native-function6())':

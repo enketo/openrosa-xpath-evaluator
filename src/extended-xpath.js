@@ -79,21 +79,24 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
       }
     },
     callNative = function(name, args) {
-      var argString = '', arg, quote, i;
+      var argString = name + '(', arg, quote, i;
       for(i=0; i<args.length; ++i) {
+        if(i) argString += ',';
         arg = args[i];
-        if(arg.t !== 'num' && arg.t !== 'bool') {
-          quote = arg.v.indexOf('"') === -1 ? '"' : "'";
-          argString += quote;
+        switch(arg.t) {
+          case 'arr': throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
+          case 'bool': argString += arg.v + '()'; break;
+          case 'num':  argString += arg.v;        break;
+          case 'str':
+            quote = arg.quote || (arg.v.indexOf('"') === -1 ? '"' : "'");
+            // Firefox's native XPath implementation is 3.0, but Chrome's is 1.0.
+            // XPath 1.0 has no support for escaping quotes in strings, so:
+            if(arg.v.indexOf(quote) !== -1) throw new Error('Quote character found in String Literal: ' + JSON.stringify(arg.v));
+            argString += quote + arg.v + quote;
+          // there aren't any other native types TODO do we need a hook for allowing date conversion?
         }
-        argString += arg.v;
-        if(arg.t === 'arr') throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
-        if(arg.t === 'bool') argString += '()';
-        if(arg.t !== 'num' && arg.t !== 'bool') argString += quote;
-        if(i < args.length - 1) argString += ', ';
       }
-      const expr = name + '(' + argString + ')';
-      return toInternalResult(wrapped(expr));
+      return toInternalResult(wrapped(argString + ')'));
     },
     typefor = function(val) {
       if(extendedProcessors.typefor) {
