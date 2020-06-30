@@ -23,29 +23,29 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     extendedFuncs = extensions.func || {},
     extendedProcessors = extensions.process || {},
     toInternalResult = function(r) {
-      var n, v;
-      if(r.resultType === XPathResult.NUMBER_TYPE)  return { t:'num',  v:r.numberValue  };
-      if(r.resultType === XPathResult.BOOLEAN_TYPE) return { t:'bool', v:r.booleanValue };
-      if(r.resultType === XPathResult.STRING_TYPE)  return { t:'str',  v:r.stringValue  };
-      if( r.resultType === XPathResult.UNORDERED_NODE_ITERATOR_TYPE ||
-          r.resultType === XPathResult.ORDERED_NODE_ITERATOR_TYPE) {
-        v = [];
-        while((n = r.iterateNext())) v.push(n);
-        return { t:'arr', v:v };
+      var v, i;
+      switch(r.resultType) {
+        case XPathResult.NUMBER_TYPE:  return { t:'num',  v:r.numberValue  };
+        case XPathResult.BOOLEAN_TYPE: return { t:'bool', v:r.booleanValue };
+        case XPathResult.STRING_TYPE:  return { t:'str',  v:r.stringValue  };
+        case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
+        case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+          v = [];
+          while((i = r.iterateNext())) v.push(i);
+          return { t:'arr', v:v };
+        case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
+        case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
+          v = [];
+          for(i=0; i<r.snapshotLength; ++i) {
+            v.push(r.snapshotItem(i));
+          }
+          return { t:'arr', v:v };
+        case XPathResult.ANY_UNORDERED_NODE_TYPE:
+        case XPathResult.FIRST_ORDERED_NODE_TYPE:
+          return { t:'arr', v:[r.singleNodeValue] };
+        default:
+          throw new Error(`no handling for result type: ${r.resultType}`);
       }
-      if( r.resultType === XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE ||
-          r.resultType === XPathResult.ORDERED_NODE_SNAPSHOT_TYPE) {
-        v = [];
-        for(let i=0; i<r.snapshotLength; ++i) {
-          v.push(r.snapshotItem(i));
-        }
-        return { t:'arr', v:v };
-      }
-      if( r.resultType === XPathResult.ANY_UNORDERED_NODE_TYPE ||
-          r.resultType === XPathResult.FIRST_ORDERED_NODE_TYPE) {
-        return { t:'arr', v:[r.singleNodeValue] };
-      }
-      throw new Error(`no handling for result type: ${r.resultType}`);
     },
     toExternalResult = function(r, rt) {
       if(extendedProcessors.toExternalResult) {
@@ -104,7 +104,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         if(res) return res;
       }
       if(typeof val === 'boolean') return 'bool';
-      if(typeof val === 'number') return 'num';
+      if(typeof val === 'number')  return 'num';
       return 'str';
     };
 
@@ -258,21 +258,13 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             // > para[position()=3].
             //   - https://www.w3.org/TR/1999/REC-xpath-19991116/#predicates
             const expr = cur.v;
-            const exprRes = contextNodes
-              .map((cN, idx) => {
-                const contextPosition = 1 + idx;
-                return toInternalResult(evaluate(expr, cN, nR, XPathResult.ANY_TYPE, null, contextNodes.length, contextPosition));
-              });
-            const filteredRes = exprRes
-              .map((res, i) => {
-                if(res.t === 'num') {
-                  return asNumber(res) === 1+i;
-                } else {
-                  return asBoolean(res);
-                }
+            const filteredNodes = contextNodes
+              .filter((cN, i) => {
+                const res = toInternalResult(evaluate(expr, cN, nR, XPathResult.ANY_TYPE, null, contextNodes.length, i+1));
+                return res.t === 'num' ? asNumber(res) === 1+i : asBoolean(res);
               });
 
-            tokens[tokens.length-1].v = contextNodes.filter((_, i) => filteredRes[i]);
+            tokens[tokens.length-1].v = filteredNodes;
             newCurrent();
           }
           continue;
