@@ -1,7 +1,14 @@
+var sortByDocumentOrder = require('./sort-by-document-order');
+
 module.exports = { toSnapshotResult };
 
-function toSnapshotResult(nodes, resultType, singleItem) {
-  return (() => {
+function toSnapshotResult(arr, resultType, singleItem) {
+  if( resultType === XPathResult.ORDERED_NODE_ITERATOR_TYPE ||
+      resultType === XPathResult.ORDERED_NODE_SNAPSHOT_TYPE) {
+    sortByDocumentOrder(arr);
+  }
+
+  return (nodes => {
     let idx = 0;
     return {
       resultType,
@@ -10,5 +17,5 @@ function toSnapshotResult(nodes, resultType, singleItem) {
       snapshotItem: i => nodes[i] || null,
       iterateNext: () => nodes[idx++] || null,
     };
-  })();
+  })(arr.v);
 }

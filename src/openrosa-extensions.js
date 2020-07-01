@@ -6,6 +6,7 @@ var xpr = require('./xpr');
 var {dateToDays, isValidDate} = require('./utils/date');
 var shuffle = require('./utils/shuffle');
 var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
+var sortByDocumentOrder = require('./utils/sort-by-document-order');
 
 var openrosa_xpath_extensions = function(config) {
   var
@@ -301,15 +302,13 @@ var openrosa_xpath_extensions = function(config) {
       // ourselves than convert the supplied nodeset into a single node and pass this
       // somehow to the native implementation.
       //
-      // This may not currently behave correctly if the supplied nodeset is not supplied
-      // in document order.
-      //
-      // TODO see https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition for ideas how to fix this
-      //
       // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-local-name
       if(arguments.length > 1) throw new Error('too many args');
-      if(r.t && r.t !== 'arr') throw new Error('wrong arg type');
-      return XPR.string(r ? r.v.length ? r.v[0].nodeName : '' : this.cN.nodeName);
+      if(!r) return XPR.string(this.cN.nodeName);
+      if(r.t !== 'arr') throw new Error('wrong arg type');
+      if(!r.v.length) return XPR.string('');
+      sortByDocumentOrder(r);
+      return XPR.string(r.v[0].nodeName);
     },
     log: function(r) { return XPR.number(Math.log(r.v)); },
     log10: function(r) { return XPR.number(Math.log10(r.v)); },
@@ -328,19 +327,18 @@ var openrosa_xpath_extensions = function(config) {
       // ourselves than convert the supplied nodeset into a single node and pass this
       // somehow to the native implementation.
       //
-      // This may not currently behave correctly if the supplied nodeset is not supplied
-      // in document order.
-      //
-      // TODO see https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition for ideas how to fix this
-      //
       // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-namespace-uri
       if(arguments.length > 1) throw new Error('too many args');
-      if(r.t && r.t !== 'arr') throw new Error('wrong arg type');
-      return XPR.string(r ? r.v.length ? r.v[0].namespaceURI : '' : this.cN.namespaceURI);
+      if(!r) return XPR.string(this.cN.namespaceURI);
+      if(r.t !== 'arr') throw new Error('wrong arg type');
+      if(!r.v.length) return XPR.string('');
+      sortByDocumentOrder(r);
+      return XPR.string(r.v[0].namespaceURI);
     },
     'normalize-space': function(r) {
       // TODO this seems to do a lot more than the spec at https://www.w3.org/TR/1999/REC-xpath-19991116/#function-normalize-space
       // I think we should just be able to return: XPR.string(asString(r || this.cN).replace(/[\t\r\n ]+/g, ' ').trim());
+      // TODO check XPath 3.0 spec for normalize-space()?  https://www.w3.org/TR/xpath-functions-30/#func-normalize-space
       if(arguments.length > 1) throw new Error('too many args');
 
       let res = asString(r || this.cN);

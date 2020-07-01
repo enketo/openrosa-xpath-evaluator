@@ -42,11 +42,11 @@ describe('Union operator', () => {
     assertNodes(
       "id('eee40') | id('eee20') | id('eee25') | id('eee10') | id('eee30') | id('eee50')",
       doc, [
-        doc.getElementById('eee40'),
+        doc.getElementById('eee10'),
         doc.getElementById('eee20'),
         doc.getElementById('eee25'),
-        doc.getElementById('eee10'),
         doc.getElementById('eee30'),
+        doc.getElementById('eee40'),
         doc.getElementById('eee50'),
       ]);
   });
@@ -55,8 +55,8 @@ describe('Union operator', () => {
     // TODO these were created while debugging UNION, but should be somewhere else
     it('combines elements and attributes', () => {
       assertNodes("id('eee40')/attribute::*[1] | id('eee30')", doc, [
-        filterAttributes(doc.getElementById('eee40').attributes)[0],
         doc.getElementById('eee30'),
+        filterAttributes(doc.getElementById('eee40').attributes)[0],
       ]);
     });
 
@@ -81,36 +81,36 @@ describe('Union operator', () => {
 
   it('combines elements and attributes', () => {
     assertNodes("id('eee40')/attribute::*[1] | id('eee30')", doc, [
-      filterAttributes(doc.getElementById('eee40').attributes)[0],
       doc.getElementById('eee30'),
+      filterAttributes(doc.getElementById('eee40').attributes)[0],
     ]);
   });
 
   it('combines elements and attributes if they refer to the same element', () => {
     assertNodes("id('eee40')/attribute::*[1] | id('eee40')", doc, [
-      filterAttributes(doc.getElementById('eee40').attributes)[0],
       doc.getElementById('eee40'),
+      filterAttributes(doc.getElementById('eee40').attributes)[0],
     ]);
   });
 
   it('combines elements and attributs if they refer to different trees', () => {
     assertNodes("id('eee40')/attribute::*[1] | id('eee20')", doc, [
-      filterAttributes(doc.getElementById('eee40').attributes)[0],
       doc.getElementById('eee20'),
+      filterAttributes(doc.getElementById('eee40').attributes)[0],
     ]);
   });
 
   it('combines elements and attributes if the attribute is on a parent element in the same tree', () => {
     assertNodes("id('eee40') | id('eee30')/attribute::*[1]", doc, [
-      doc.getElementById('eee40'),
       filterAttributes(doc.getElementById('eee30').attributes)[0],
+      doc.getElementById('eee40'),
     ]);
   });
 
   it('combines elements and attributes if both are (on) elements under the same parent', () => {
     assertNodes("id('eee40') | id('eee35')/attribute::*[1]", doc, [
-      doc.getElementById('eee40'),
       filterAttributes(doc.getElementById('eee35').attributes )[0],
+      doc.getElementById('eee40'),
     ]);
   });
 
@@ -130,8 +130,8 @@ describe('Union operator', () => {
 
   it('combines attributes that live on descendent element (reversed)', () => {
     assertNodes("id('eee40')/attribute::*[1] | id('eee30')/attribute::*[1]", doc, [
-      filterAttributes(doc.getElementById('eee40').attributes)[0],
       filterAttributes(doc.getElementById('eee30').attributes)[0],
+      filterAttributes(doc.getElementById('eee40').attributes)[0],
     ]);
   });
 

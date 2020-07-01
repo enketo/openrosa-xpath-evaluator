@@ -5,22 +5,13 @@ var config = require('./config');
 var extensions = openrosaExtensions(config);
 
 function OpenrosaXPathEvaluator() {
-  var evaluator = new XPathEvaluator();
+  var wrapped = new XPathEvaluator();
+  const xevaluator = new ExtendedXPathEvaluator(wrapped, extensions);
+
   return {
-    createExpression: evaluator.createExpression,
-    createNSResolver: evaluator.createNSResolver,
-    evaluate: function (expr, node, nsr, rt) {
-      const xevaluator = new ExtendedXPathEvaluator(
-        (v, xnode, xnsr, xrt) => {
-          if(!rt || rt<7 || v.startsWith('//')) rt = null; // FIXME remove custom handling?
-          xrt = xrt || rt || XPathResult.ANY_TYPE; // FIXME remove custom handling?
-          const result = evaluator.evaluate(v, xnode || node, xnsr || nsr, xrt, null);
-          // console.log(`${v} => ${result.resultType}`);
-          return result;
-        },
-        extensions);
-      return xevaluator.evaluate(...arguments);
-    },
+    createExpression: wrapped.createExpression,
+    createNSResolver: wrapped.createNSResolver,
+    evaluate:         xevaluator.evaluate,
   };
 }
 

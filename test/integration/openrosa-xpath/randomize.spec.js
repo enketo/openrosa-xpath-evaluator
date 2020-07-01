@@ -65,7 +65,7 @@ describe('randomize()', () => {
     ].forEach(([seed, expected]) => {
       it(`with a seed: ${seed}`, () => {
         const result = doc.xEval(`randomize(${SELECTOR}, ${seed})`, doc,
-          XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+          XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE);
         let text = '';
         for (let j = 0; j < result.snapshotLength; j++) {
           text += result.snapshotItem(j).textContent;

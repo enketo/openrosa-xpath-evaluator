@@ -18,28 +18,30 @@ var OP_PRECEDENCE = [
 
 var FUNCTION_NAME = /^[a-z]/;
 
-var ExtendedXPathEvaluator = function(wrapped, extensions) {
+module.exports = function(wrapped, extensions) {
   var
     extendedFuncs = extensions.func || {},
     extendedProcessors = extensions.process || {},
     toInternalResult = function(r) {
-      var v, i;
+      var v, i, ordrd;
       switch(r.resultType) {
         case XPathResult.NUMBER_TYPE:  return { t:'num',  v:r.numberValue  };
         case XPathResult.BOOLEAN_TYPE: return { t:'bool', v:r.booleanValue };
         case XPathResult.STRING_TYPE:  return { t:'str',  v:r.stringValue  };
-        case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
         case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+          ordrd = true;
+        case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
           v = [];
           while((i = r.iterateNext())) v.push(i);
-          return { t:'arr', v:v };
-        case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
+          return { t:'arr', v:v, ordrd };
         case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
+          ordrd = true;
+        case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
           v = [];
           for(i=0; i<r.snapshotLength; ++i) {
             v.push(r.snapshotItem(i));
           }
-          return { t:'arr', v:v };
+          return { t:'arr', v:v, ordrd };
         case XPathResult.ANY_UNORDERED_NODE_TYPE:
         case XPathResult.FIRST_ORDERED_NODE_TYPE:
           return { t:'arr', v:[r.singleNodeValue] };
@@ -62,11 +64,11 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
             case 'num':  return { resultType:XPathResult.NUMBER_TYPE,  numberValue:r.v,  stringValue:r.v.toString() };
             case 'str':  return { resultType:XPathResult.BOOLEAN_TYPE, stringValue:r.v };
             case 'bool': return { resultType:XPathResult.BOOLEAN_TYPE, booleanValue:r.v, stringValue:r.v.toString() };
-            case 'arr':  return toSnapshotResult(r.v, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
+            case 'arr':  return toSnapshotResult(r, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
             default: throw new Error('unrecognised internal type: ' + r.t);
           }
         case XPathResult.NUMBER_TYPE:  return { resultType:rt, numberValue: asNumber(r),  stringValue:r.v.toString() };
-        case XPathResult.STRING_TYPE:  return { resultType:rt, stringValue: asString(r)  };
+        case XPathResult.STRING_TYPE:  return { resultType:rt, stringValue: asString(r) };
         case XPathResult.BOOLEAN_TYPE: return { resultType:rt, booleanValue:asBoolean(r), stringValue:r.v.toString() };
         case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
         case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
@@ -74,29 +76,9 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
         case XPathResult.ANY_UNORDERED_NODE_TYPE:
         case XPathResult.FIRST_ORDERED_NODE_TYPE:
-          return toSnapshotResult(r.v, rt);
+          return toSnapshotResult(r, rt);
         default: throw new Error('unrecognised return type:', rt);
       }
-    },
-    callNative = function(name, args) {
-      var argString = name + '(', arg, quote, i;
-      for(i=0; i<args.length; ++i) {
-        if(i) argString += ',';
-        arg = args[i];
-        switch(arg.t) {
-          case 'arr': throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
-          case 'bool': argString += arg.v + '()'; break;
-          case 'num':  argString += arg.v;        break;
-          case 'str':
-            quote = arg.quote || (arg.v.indexOf('"') === -1 ? '"' : "'");
-            // Firefox's native XPath implementation is 3.0, but Chrome's is 1.0.
-            // XPath 1.0 has no support for escaping quotes in strings, so:
-            if(arg.v.indexOf(quote) !== -1) throw new Error('Quote character found in String Literal: ' + JSON.stringify(arg.v));
-            argString += quote + arg.v + quote;
-          // there aren't any other native types TODO do we need a hook for allowing date conversion?
-        }
-      }
-      return toInternalResult(wrapped(argString + ')'));
     },
     typefor = function(val) {
       if(extendedProcessors.typefor) {
@@ -137,6 +119,26 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
         }
 
         return callNative(name, preprocessNativeArgs(name, args));
+      },
+      callNative = function(name, args) {
+        var argString = name + '(', arg, quote, i;
+        for(i=0; i<args.length; ++i) {
+          if(i) argString += ',';
+          arg = args[i];
+          switch(arg.t) {
+            case 'arr': throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
+            case 'bool': argString += arg.v + '()'; break;
+            case 'num':  argString += arg.v;        break;
+            case 'str':
+              quote = arg.quote || (arg.v.indexOf('"') === -1 ? '"' : "'");
+              // Firefox's native XPath implementation is 3.0, but Chrome's is 1.0.
+              // XPath 1.0 has no support for escaping quotes in strings, so:
+              if(arg.v.indexOf(quote) !== -1) throw new Error('Quote character found in String Literal: ' + JSON.stringify(arg.v));
+              argString += quote + arg.v + quote;
+              // there aren't any other native types TODO do we need a hook for allowing date conversion?
+          }
+        }
+        return toInternalResult(wrapped.evaluate(argString + ')', cN, nR, XPathResult.ANY_TYPE, null));
       },
       evalOp = function(lhs, op, rhs) {
         if(extendedProcessors.handleInfix) {
@@ -181,7 +183,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           // chop the leading slash from expr
           if(expr.charAt(0) !== '/') throw new Error(`not sure how to handle expression called on nodeset that doesn't start with a '/': ${expr}`);
           // prefix a '.' to make the expression relative to the context node:
-          expr = new XPathEvaluator().createExpression('.' + expr, nR); // TODO can we cache this evaluator?  Can we use it instead of `wrapped`?
+          expr = wrapped.createExpression('.' + expr, nR);
           const newNodeset = [];
           tokens[tokens.length-1].v.map(node => {
             const res = toInternalResult(expr.evaluate(node));
@@ -189,7 +191,7 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
           });
           tokens[tokens.length-1].v = newNodeset;
         } else {
-          peek().tokens.push(toInternalResult(wrapped(expr, cN, nR)));
+          peek().tokens.push(toInternalResult(wrapped.evaluate(expr, cN, nR, XPathResult.ANY_TYPE, null)));
         }
 
         newCurrent();
@@ -463,5 +465,3 @@ var ExtendedXPathEvaluator = function(wrapped, extensions) {
     return toExternalResult(stack[0].tokens[0], rT);
   };
 };
-
-module.exports = ExtendedXPathEvaluator;

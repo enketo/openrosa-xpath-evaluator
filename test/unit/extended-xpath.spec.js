@@ -149,8 +149,8 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
       num: function(v) { return { t:'num', v:v }; },
     },
     extendedXPathEvaluator = new ExtendedXPathEvaluator(
-      function wrappedXpathEvaluator(xpath) {
-        return { resultType:XPathResult.STRING_TYPE, stringValue:'<xpath:' + xpath + '>' };
+      {
+        evaluate: xpath => ({ resultType:XPathResult.STRING_TYPE, stringValue:'<xpath:' + xpath + '>' }),
       },
       {
         func: {
