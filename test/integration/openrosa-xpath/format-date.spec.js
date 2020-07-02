@@ -20,7 +20,7 @@ describe('#format-date()', () => {
           `${date.getDate()} | ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]}`
       ],
       ['format-date("not a date", "%M")', doc, 'Invalid Date' ],
-      ['format-date("Mon, 02 Jul 2012 00:00:00 GMT", )', doc, '']
+      //['format-date("Mon, 02 Jul 2012 00:00:00 GMT", )', doc, ''] // REVIEW: spec says this should take 2 args
       // the test below probably only works in the GMT -6 timezone...
       // [ 'format-date(., '%Y | %y | %m | %n | %b | %d | %e | %H | %h | %M | %S | %3 | %a')", doc.getElementById("FunctionDateCase5"),
       //     '2012 | 12 | 08 | 8 | Aug | 08 | 8 | 06 | 6 | 07 | 08 | 123 | Wed'

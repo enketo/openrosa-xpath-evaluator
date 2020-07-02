@@ -23,7 +23,7 @@ const initDoc = (xml, xnsr) => {
   xEval = function(e, xnode, xrt, xnsr) {
     node = xnode || doc;
     rt = xrt;
-    return evaluator.evaluate(e, node, xnsr || nsr, rt, null);
+    return evaluator.evaluate(e, node, xnsr || nsr, rt || XPathResult.ANY_TYPE, null);
   };
   doc.evaluator = evaluator;
   doc.xEval = xEval;
@@ -72,7 +72,7 @@ const assertString = (...args) => {
     simpleValueIs(args[args.length - 3]);
   }
   const node = args.length > 3 ? args[args.length - 4] : null;
-  assert.equal(xEval(regex, node).stringValue, expected);
+  assert.equal(xEval(regex, node, XPathResult.STRING_TYPE).stringValue, expected);
 };
 
 const assertStringValue = (...args) => {

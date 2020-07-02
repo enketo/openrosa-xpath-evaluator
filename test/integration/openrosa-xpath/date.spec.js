@@ -1,7 +1,7 @@
 const {initDoc, nsResolver, assertMatch, assertFalse, assertString,
   assertBoolean, assertStringValue, assertNumberRounded } = require('../helpers');
 
-describe.skip('#date()', () => {
+describe('#date()', () => {
 
   describe('invalid dates', () => {
     [
@@ -22,10 +22,14 @@ describe.skip('#date()', () => {
 
   describe('valid date string', () => {
     describe('should be left alone', () => {
-      it(`should handle ${expr}`, () => {
-        assertStringValue('date("1970-01-01")', '1970-01-01');
-        assertStringValue('date("2018-01-01")', '2018-01-01');
-        assertStringValue('"2018-01-01"', '2018-01-01');
+      [
+        [ 'date("1970-01-01")', '1970-01-01' ],
+        [ 'date("2018-01-01")', '2018-01-01' ],
+        [ '"2018-01-01"', '2018-01-01' ],
+      ].forEach(([ expr, expected ]) => {
+        it(`should convert ${expr} to ${expected}`, () => {
+          assertStringValue(expr, expected);
+        });
       });
     });
 
@@ -48,11 +52,11 @@ describe.skip('#date()', () => {
         'date(today() + 10)',
         'date(10 + today())'
       ].forEach( expr => {
-      it(`should convert ${expr} to a date string`, () => {
-        assertMatch(expr, /([0-9]{4}-[0-9]{2}-[0-9]{2})$/ );
+        it(`should convert ${expr} to a date string`, () => {
+          assertMatch(expr, /([0-9]{4}-[0-9]{2}-[0-9]{2})$/ );
+        });
       });
     });
-
   });
 
   describe('date string with single-digit day or month values', () => {
@@ -161,11 +165,11 @@ describe.skip('#date()', () => {
     });
 
     [
-      [".", doc.getElementById("FunctionDateCase1"), 15544.29],
-      [".", doc.getElementById("FunctionDateCase2"), 15572]
-    ].forEach(([expr, node, expected]) => {
-      it(`should convert ${expr} to ${expected}`, () => {
-        assertNumberRounded(expr, expected, 100, node);
+      [".", "FunctionDateCase1", 15544.29],
+      [".", "FunctionDateCase2", 15572]
+    ].forEach(([expr, id, expected]) => {
+      it(`should convert ${expr} on ${id} to ${expected}`, () => {
+        assertNumberRounded(expr, expected, 100, doc.getElementById(id));
       });
     });
   });
@@ -215,11 +219,12 @@ describe.skip('#date()', () => {
     });
 
     [
-      [". < date('2012-07-24')", doc.getElementById("FunctionDateCase1" ), true],
+      [ true, 'FunctionDateCase1', ". < date('2012-07-24')" ],
       //returns false if strings are compared but true if dates are compared
-      ["../node()[@id='FunctionDateCase2'] > ../node()[@id='FunctionDateCase3']", doc.getElementById("FunctionDateCase1" ), true]
-    ].forEach(([expr, node, expected]) => {
+      [ true, 'FunctionDateCase1', "../node()[@id='FunctionDateCase2'] > ../node()[@id='FunctionDateCase3']" ],
+    ].forEach(([ expected, id, expr ]) => {
       it(`should convert ${expr} to ${expected}`, () => {
+        const node = doc.getElementById(id);
         assertBoolean(node, null, expr, expected);
         expr = expr.replace('date(', 'date-time(');
         assertBoolean(node, null, expr, expected);
@@ -230,7 +235,7 @@ describe.skip('#date()', () => {
   describe('date calculations', () => {
     let doc;
 
-    before(() => {
+    beforeEach(() => {
       doc = initDoc(`
         <!DOCTYPE html>
         <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
@@ -248,15 +253,16 @@ describe.skip('#date()', () => {
     });
 
     [
-      ["today() > ('2012-01-01' + 10)", doc, true],
-      ["10 + date('2012-07-24') = date('2012-08-03')", doc, true],
-      [". = date('2012-07-24') - 1", doc.getElementById("FunctionDateCase1" ), true],
-      [". > date('2012-07-24') - 2", doc.getElementById("FunctionDateCase1" ), true],
-      [". < date('2012-07-25') - 1", doc.getElementById("FunctionDateCase1" ), true],
-      [". = 30 + /xhtml:html/xhtml:body/xhtml:div[@id='FunctionDate']/xhtml:div[@id='FunctionDateCase4']", doc.getElementById("FunctionDateCase1" ), true],
-      ["10 + '2012-07-24' = '2012-08-03'", doc, true],
-    ].forEach(([expr, node, expected]) => {
+      [true, doc, "today() > ('2012-01-01' + 10)" ],
+      [true, doc, "10 + date('2012-07-24') = date('2012-08-03')" ],
+      [true, 'FunctionDateCase1', ". = date('2012-07-24') - 1" ],
+      [true, 'FunctionDateCase1', ". > date('2012-07-24') - 2" ],
+      [true, 'FunctionDateCase1', ". < date('2012-07-25') - 1" ],
+      [true, 'FunctionDateCase1', ". = 30 + /xhtml:html/xhtml:body/xhtml:div[@id='FunctionDate']/xhtml:div[@id='FunctionDateCase4']" ],
+      [true, doc, "10 + '2012-07-24' = '2012-08-03'" ],
+    ].forEach(([ expected, node, expr ]) => {
       it(`should convert ${expr} to ${expected}`, () => {
+        if(node !== doc) node = doc.getElementById(node);
         assertBoolean(node, null, expr, expected);
         // do the same tests for the alias date-time()
         expr = expr.replace('date(', 'date-time(');

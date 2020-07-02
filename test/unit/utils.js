@@ -51,6 +51,9 @@ function wrapVal(v) {
       if(Array.isArray(v)) {
         return { t:'arr', v:v.map(text => new Node(text)) };
       }
+      if(v instanceof Date) {
+        return { t:'date', v };
+      }
     default: throw new Error(`No handling for type: ${typeof v}`);
   }
 }

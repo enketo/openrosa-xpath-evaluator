@@ -1,3 +1,4 @@
+// imported from https://github.com/enketo/enketo-xpathjs/blob/master/src/date-extensions.js
 // TODO probably shouldn't be changing Date.prototype
 /**
  * Converts a native Date UTC String to a RFC 3339-compliant date string with local offsets

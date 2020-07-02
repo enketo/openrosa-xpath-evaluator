@@ -1,3 +1,5 @@
+const { DATE_STRING, dateToDays, dateStringToDays } = require('./date');
+
 module.exports = {
   asBoolean:asBoolean,
   asNumber:asNumber,
@@ -8,18 +10,21 @@ module.exports = {
 function asBoolean(r) {
   if(isDomNode(r)) return !!asString(r).trim();
   switch(r.t) {
-    case 'arr': return !!r.v.length;
-    default:    return !!r.v;
+    case 'arr':  return !!r.v.length;
+    case 'date': return !isNaN(r.v); // TODO should be handled in an extension rather than core code
+    default:     return !!r.v;
   }
 }
 
 // cast to number, as per https://www.w3.org/TR/1999/REC-xpath-19991116/#section-Number-Functions
 function asNumber(r) {
-  if(r.t === 'num') return r.v;
+  if(r.t === 'num')  return r.v;
   if(r.t === 'bool') return r.v ? 1 : 0;
+  if(r.t === 'date') return dateToDays(r.v); // TODO should be handled in an extension rather than core code
 
   var str = asString(r).trim();
   if(str === '') return NaN;
+  if(DATE_STRING.test(str)) return dateStringToDays(str); // TODO should be handled in an extension rather than core code
   return +str;
 }
 

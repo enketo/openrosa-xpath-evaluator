@@ -51,7 +51,7 @@ module.exports = function(wrapped, extensions) {
     },
     toExternalResult = function(r, rt) {
       if(extendedProcessors.toExternalResult) {
-        var res = extendedProcessors.toExternalResult(r);
+        var res = extendedProcessors.toExternalResult(r, rt);
         if(res) return res;
       }
 

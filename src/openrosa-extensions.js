@@ -2,30 +2,18 @@ require('./date-extensions');
 var {asGeopoints, area, distance} = require('./geo');
 var {digest} = require('./digest');
 var {randomToken} = require('./random-token');
-var xpr = require('./xpr');
-var {dateToDays, isValidDate} = require('./utils/date');
+var {DATE_STRING, dateToDays, dateStringToDays, isValidDate} = require('./utils/date');
 var shuffle = require('./utils/shuffle');
 var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
 var sortByDocumentOrder = require('./utils/sort-by-document-order');
+
+const RAW_NUMBER = /^-?[0-9]+(\.[0-9]+)?$/;
 
 var openrosa_xpath_extensions = function(config) {
   var
       TOO_MANY_ARGS = new Error('too many args'),
       TOO_FEW_ARGS = new Error('too few args'),
       MILLIS_PER_DAY = 1000 * 60 * 60 * 24,
-      RAW_NUMBER = /^(-?[0-9]+)(\.[0-9]+)?$/,
-      DATE_STRING = /^\d\d\d\d-\d{1,2}-\d{1,2}(?:T\d\d:\d\d:\d\d\.?\d?\d?(?:Z|[+-]\d\d:\d\d)|.*)?$/,
-      XPR = xpr,
-      _zeroPad = function(n, len) {
-        len = len || 2;
-        n = n.toString();
-        while(n.length < len) n = '0' + n;
-        return n;
-      },
-      _dateToString = function(d) {
-            return d.getFullYear() + '-' + _zeroPad(d.getMonth()+1) + '-' +
-                _zeroPad(d.getDate());
-      },
       _round = function(num) {
         if(num < 0) {
           return -Math.round(-num);
@@ -37,67 +25,14 @@ var openrosa_xpath_extensions = function(config) {
             v = c == 'x' ? r : r&0x3|0x8;
         return v.toString(16);
       },
-      _date = function(it, keepTime) {
-        var temp, t;
-        if(it.v instanceof Date) {
-          return new Date(it.v);
-        }
-        it = asString(it);
-        if(RAW_NUMBER.test(it)) {
-          // Create a date at 00:00:00 1st Jan 1970 _in the current timezone_
-          temp = new Date(1970, 0, 1);
-          temp.setDate(1 + parseInt(it, 10));
-          return temp;
-        } else if(DATE_STRING.test(it)) {
-          if(keepTime && it.indexOf('T')>0) return new Date(it);
-          t = it.indexOf('T');
-          if(t !== -1) it = it.substring(0, t);
-          temp = it.split('-');
-          if(isValidDate(temp[0], temp[1], temp[2])) {
-            if(config.includeLocalTimeForDatesWithoutTime) {
-              var time = `${_zeroPad(temp[0])}-${_zeroPad(temp[1])}-${_zeroPad(temp[2])}`+
-                'T00:00:00.000' + (new Date(it)).getTimezoneOffsetAsTime();
-              return new Date(time);
-            }
-            return new Date(temp[0], temp[1]-1, temp[2]);
-          }
-        }
-        var d = new Date(it);
-        return d == 'Invalid Date' ? null : d;
-      },
-      _dateForReturnType = function(it, rt) {
-        // TODO this function shouldn't be necessary - type conversions should
-        // occur in functions or when extended-xpath is sharing a value externally.
-        if(rt === XPathResult.BOOLEAN_TYPE) {
-          if(!it) return XPR.boolean(false);
-          return XPR.boolean(!isNaN(new Date(it).getTime()));
-        }
-        if(rt === XPathResult.NUMBER_TYPE) {
-          if(!it) return XPR.number(0);
-          return XPR.number((new Date(it).getTime()) / (1000 * 60 * 60 * 24));
-        }
-        if(rt === XPathResult.STRING_TYPE) {
-          if(!it) {
-            return XPR.string(config.returnEmptyStringForInvalidDate ? '' : 'Invalid Date');
-          }
-          return XPR.string(new Date(it).toISOLocalString());
-        }
-        if(!it) return XPR.string('Invalid Date');
-        return XPR.date(it);
-      },
       uuid = function() {
           return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
                   .replace(/[xy]/g, _uuid_part);
       },
-      date = function(it, rt) {
-        it = _date(it);
-        return _dateForReturnType(it, rt);
-      },
       format_date = function(date, format) {
-        date = _date(date, true);
-        if(!format) return '';
+        date = asDate(date);
         format = asString(format);
-        if(!date) return 'Invalid Date';
+        if(isNaN(date)) return 'Invalid Date';
         var c, i, sb = '', f = {
           year: 1900 + date.getYear(),
           month: 1 + date.getMonth(),
@@ -161,10 +96,7 @@ var openrosa_xpath_extensions = function(config) {
 
         return sb;
       },
-      func, process, ret = {},
-      now_and_today = function(rt, resetTime) {
-        return _dateForReturnType(ret._now(resetTime), rt);
-      };
+      func, process, ret = {};
 
   func = {
     abs: function(r) { return XPR.number(Math.abs(asNumber(r))); },
@@ -227,9 +159,8 @@ var openrosa_xpath_extensions = function(config) {
       while(--i >= 0) if(parts[i].length) ++count;
       return XPR.number(count);
     },
-    date: function(it, rt) {
-      it = _date(it);
-      return _dateForReturnType(it, rt);
+    date: function(it) {
+      return XPR.date(asDate(it));
     },
     'decimal-date': function(date) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
@@ -278,6 +209,7 @@ var openrosa_xpath_extensions = function(config) {
       return XPR.boolean(false);
     },
     'format-date': function(date, format) {
+      if(arguments.length < 2) throw new Error('format-date() :: not enough args');
       return XPR.string(format_date(date, format)); },
     if: function(con, a, b) {
       return XPR.string(asBoolean(con) ? asString(a) : asString(b));
@@ -366,24 +298,20 @@ var openrosa_xpath_extensions = function(config) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
       return XPR.boolean(!r.v);
     },
-    now: function(rt) {
-      return now_and_today(rt);
+    now: function() {
+      return XPR.date(new Date());
     },
     number: function(r) {
       if(arguments.length > 1) throw new Error(`number() passed wrong arg count (expected 0 or 1, but got ${arguments.length})`);
-      const arg = arguments.length ? r : this.cN;
+      let arg = arguments.length ? r : this.cN;
       const str = asString(arg);
-      if(DATE_STRING.test(str)) {
-        return XPR.number(dateToDays(str));
+      if(DATE_STRING.test(str)) { // TODO cleanup regex and splitting
+        return XPR.number(dateStringToDays(str));
       }
       return XPR.number(asNumber(arg));
     },
-    today: function(rt) {
-      var r = now_and_today(rt, !config.returnCurrentTimeForToday);
-      if(rt === XPathResult.STRING_TYPE && !config.includeTimeForTodayString) {
-        r.v = r.v.split('T')[0];
-      }
-      return r;
+    today: function() {
+      return XPR.date(ret._now(!config.returnCurrentTimeForToday));
     },
     /**
      * The once function returns the value of the parameter if its own value
@@ -510,24 +438,34 @@ var openrosa_xpath_extensions = function(config) {
   func['format-date-time'] = func['format-date'];
 
   process = {
-      toExternalResult: function(r) {
-        if(r.t === 'date') return {
-          resultType:XPathResult.STRING_TYPE,
-          // TODO a bit naughty, but we return both a string and number value
-          // for dates.  We should actually know from where the xpath evaluator
-          // was initially called whether we expect a STRING_TYPE or NUMBER_TYPE
-          // result, but we should get away with it because:
-          //   1. this setup makes testing easy
-          //   2. dates should never leak outside openrosa functionality anyway
-          numberValue:r.v.getTime(),
-          stringValue:_dateToString(r.v),
-        };
+      toExternalResult: function(r, resultType) {
+        if(r.t === 'arr' && resultType === XPathResult.NUMBER_TYPE) {
+          const str = asString(r);
+          if(DATE_STRING.test(str)) {
+            return { resultType, numberValue:dateStringToDays(str) };
+          }
+        }
+        if(r.t === 'date') {
+          switch(resultType) {
+            case XPathResult.BOOLEAN_TYPE: return { resultType, booleanValue:!isNaN(r.v) };
+            case XPathResult.NUMBER_TYPE:  return { resultType, numberValue:dateToDays(r.v) };
+            case XPathResult.ANY_TYPE:
+            case XPathResult.STRING_TYPE:
+              return { resultType, stringValue:r.v.toISOLocalString().replace(/T00:00:00.000.*/, '') };
+            default: throw new Error(`toExternalResult() doesn't know how to convert a date to ${resultType}`);
+          }
+        }
       },
       typefor: function(val) {
         if(val instanceof Date) return 'date';
       },
       handleInfix: function(err, lhs, op, rhs) {
         if(lhs.t === 'date' || rhs.t === 'date') {
+          if(lhs.t === 'bool' || rhs.t === 'bool') {
+            // date comparisons with booleans should be coerced to boolean
+            return;
+          }
+
           // For comparisons, we must make sure that both values are numbers
           // Dates would be fine, except for equality!
           if( op.v === '=' ||
@@ -536,8 +474,8 @@ var openrosa_xpath_extensions = function(config) {
               op.v === '<=' ||
               op.v === '>=' ||
               op.v === '!=') {
-            if(lhs.t === 'arr' || lhs.t === 'str') lhs = date(lhs);
-            if(rhs.t === 'arr' || rhs.t === 'str') rhs = date(rhs);
+            if(lhs.t === 'arr' || lhs.t === 'str') lhs = XPR.date(asDate(lhs));
+            if(rhs.t === 'arr' || rhs.t === 'str') rhs = XPR.date(asDate(rhs));
             if(lhs.t !== 'date' || rhs.t !== 'date') {
               return op.v === '!=';
             } else {
@@ -556,13 +494,50 @@ var openrosa_xpath_extensions = function(config) {
           }
           return { t:'continue', lhs:lhs, op:op, rhs:rhs };
         }
+
+        // try to coerce non-dates into dates :o
+        if( op.v === '+' || op.v === '-') {
+          const lStr = asString(lhs);
+          if(DATE_STRING.test(lStr)) {
+            const lDays = dateStringToDays(lStr);
+            const rDays = asNumber(rhs);
+            const delta = op.v === '+' ? lDays + rDays : lDays - rDays;
+            const date = new Date(1970, 0, 1);
+            date.setDate(date.getDate() + delta);
+            return date;
+          }
+
+          const rStr = asString(rhs);
+          if(DATE_STRING.test(rStr)) {
+            const rDays = dateStringToDays(rStr);
+            const lDays = asNumber(lhs);
+            const delta = op.v === '+' ? lDays + rDays : lDays - rDays;
+            const date = new Date(1970, 0, 1);
+            date.setDate(date.getDate() + delta);
+            return date;
+          }
+        } else if( op.v === '=' ||
+                   op.v === '<' ||
+                   op.v === '>' ||
+                   op.v === '<=' ||
+                   op.v === '>=' ||
+                   op.v === '!=') {
+          const lStr = asString(lhs);
+          if(DATE_STRING.test(lStr)) lhs = XPR.number(dateStringToDays(lStr));
+
+          const rStr = asString(rhs);
+          if(DATE_STRING.test(rStr)) rhs = XPR.number(dateStringToDays(rStr));
+
+          return { t:'continue', lhs, op, rhs };
+        }
+
       },
   };
 
   ret.func = func;
   ret.process = process;
   ret.XPR = XPR;
-  ret._now = function(resetTime) {
+  ret._now = function(resetTime) { // This is exposed in ret to allow for unit testing, although this is not currently utilised.
     var t = new Date();
     if(resetTime) {
       return new Date(t.getFullYear(), t.getMonth(), t.getDate());
@@ -608,4 +583,53 @@ function mapFn(fn) {
 function asInteger(r) {
   var num = asNumber(r);
   return num > 0 ? Math.floor(num) : Math.ceil(num);
+}
+
+var XPR = {
+  boolean: function(v) { return { t:'bool', v:v }; },
+  number:  function(v) { return { t:'num',  v:v }; },
+  string:  function(v) { return { t:'str',  v:v }; },
+  date:    function(v) { return { t:'date', v:v }; },
+};
+
+function asDate(r) {
+      var temp, t;
+const keepTime = false;
+const  includeLocalTimeForDatesWithoutTime = true;
+  switch(r.t) {
+    case 'bool': return new Date(NaN);
+    case 'date': return r.v;
+    case 'num':  temp = new Date(1970, 0, 1); temp.setDate(temp.getDate() + r.v); return temp;
+    case 'arr':
+    case 'str':
+      r = asString(r);
+      if(RAW_NUMBER.test(r)) {
+        // Create a date at 00:00:00 1st Jan 1970 _in the current timezone_
+        temp = new Date(1970, 0, 1);
+        temp.setDate(1 + parseInt(r, 10));
+        return temp;
+      } else if(DATE_STRING.test(r)) {
+        if(keepTime && r.indexOf('T')>0) return new Date(r);
+        t = r.indexOf('T');
+        if(t !== -1) r = r.substring(0, t);
+        temp = r.split('-');
+        if(isValidDate(temp[0], temp[1], temp[2])) {
+          if(includeLocalTimeForDatesWithoutTime) {
+            var time = `${_zeroPad(temp[0])}-${_zeroPad(temp[1])}-${_zeroPad(temp[2])}`+
+              'T00:00:00.000' + (new Date(r)).getTimezoneOffsetAsTime();
+            return new Date(time);
+          }
+          return new Date(temp[0], temp[1]-1, temp[2]);
+        }
+      }
+      return new Date(r);
+    default: throw new Error(`asDate() can't handle ${r.t}s yet :-(`);
+  }
+}
+
+function _zeroPad(n, len) {
+  len = len || 2;
+  n = n.toString();
+  while(n.length < len) n = '0' + n;
+  return n;
 }
