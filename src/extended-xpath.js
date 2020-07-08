@@ -332,6 +332,7 @@ module.exports = function(wrapped, extensions) {
           peek().tokens.push(',');
           break;
         case '*':
+          // TODO loads going on here... what's it all about?
           if(c === '*' && (cur.v !== '' || peek().tokens.length === 0)) {
             cur.v += c;
             if(cur.v === './*') handleXpathExpr();
@@ -365,7 +366,7 @@ module.exports = function(wrapped, extensions) {
           }
           break;
         case '=':
-          if(cur.v === '<' || cur.v === '&lt;' ||
+          if( cur.v === '<' || cur.v === '&lt;' ||
               cur.v === '>' || cur.v === '&gt;' || cur.v === '!') {
             cur.v += c;
             switch(cur.v) {
@@ -391,11 +392,14 @@ module.exports = function(wrapped, extensions) {
           if(nextChar() === '=') {
             cur.v = c; break;
           }
-          /* falls through */
+          pushOp(c);
+          break;
         case '+':
+          if(cur.v) handleXpathExpr();
           pushOp(c);
           break;
         case '|':
+          if(cur.v) handleXpathExpr();
           pushOp('union');
           break;
         case '\n':
@@ -404,7 +408,6 @@ module.exports = function(wrapped, extensions) {
         case ' ':
           // whitespace, as defined at https://www.w3.org/TR/REC-xml/#NT-S
           if(cur.v === '') break; // trim leading whitespace
-          // trim trailing space from function names:
           if(!FUNCTION_NAME.test(cur.v)) handleXpathExpr();
           break;
         case 'v':

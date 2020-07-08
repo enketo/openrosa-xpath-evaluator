@@ -12,6 +12,7 @@ describe('predicates with function calls', ()=> {
     })();
 
     [
+      [ 1, `/*[1]/item/a/number`, 'siete' ],
       [ 1, `/data/item/a/number`, 'siete' ],
       [ 1, `/data/item/a/number/@OpenClinica:this`, 'seven' ],
       [ 1, `/data/item/a/number[@OpenClinica:this="three"]`, 'tres' ],

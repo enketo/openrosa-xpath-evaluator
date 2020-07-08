@@ -38,6 +38,63 @@ describe('Union operator', () => {
       ]);
   });
 
+  describe('without spaces around the operator', () => {
+    it('should work with a simple nodeset before the operator', () => {
+      assertNodes(
+        "/div/div/div/div/div|id('eee20')",
+        doc, [
+          // these are in document order, not the order they are listed in the expression // TODO check if this is to spec
+          doc.getElementById('eee20'),
+          doc.getElementById('eee25'),
+        ]);
+    });
+
+    it('should work with a predicated nodeset before the operator 0', () => {
+      assertNodes(
+        "/*[1]/*[1]|id('eee20')",
+        doc, [
+          doc.getElementById('eee10'),
+          doc.getElementById('eee20'),
+        ]);
+    });
+
+    it('should work with a predicated nodeset before the operator 1', () => {
+      assertNodes(
+        "/div/div[1]|id('eee20')",
+        doc, [
+          doc.getElementById('eee10'),
+          doc.getElementById('eee20'),
+        ]);
+    });
+
+    it('should work with a predicated nodeset before the operator 2', () => {
+      assertNodes(
+        "/div[1]/div[1]|id('eee20')",
+        doc, [
+          doc.getElementById('eee10'),
+          doc.getElementById('eee20'),
+        ]);
+    });
+
+    it('should work with a predicated nodeset before the operator 3', () => {
+      assertNodes(
+        "/div[1]/div[1]|id('eee20')",
+        doc, [
+          doc.getElementById('eee10'),
+          doc.getElementById('eee20'),
+        ]);
+    });
+
+    it('should work with a function call before the operator', () => {
+      assertNodes(
+        "id('eee10')|id('eee20')",
+        doc, [
+          doc.getElementById('eee10'),
+          doc.getElementById('eee20'),
+        ]);
+    });
+  });
+
   it('combines many elements', () => {
     assertNodes(
       "id('eee40') | id('eee20') | id('eee25') | id('eee10') | id('eee30') | id('eee50')",

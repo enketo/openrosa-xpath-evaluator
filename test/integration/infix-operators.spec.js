@@ -23,6 +23,11 @@ describe('infix operators', () => {
         it('should evaluate "' + expr + '" as ' + expected, () => {
           assertString(expr, expected);
         });
+
+        const spaceless = expr.replace(/\s/g, '');
+        it('should evaluate "' + spaceless + '" as ' + expected, () => {
+          assertString(spaceless, expected);
+        });
       });
     });
   });
@@ -197,17 +202,34 @@ describe('infix operators', () => {
       assertNumberValue('1 - 1', 0);
     });
 
-    it('calculation with node operand returned as string', () => {
-      initDoc(`
-      <data>
-        <number>4</number>
-      </data>`);
+    describe('node-based calculatations with strings', () => {
+      let doc;
 
-      // It doesn't matter whether a string or number is requested, an infix operator should ensure that both 
-      // left and right operands are converted to numbers during evaluation.
-      // If multiple nodes are returned, the value of the first node will be used.
-      assertString('/data/number + 1', '5'); // returns '41'
+      beforeEach(() => {
+        doc = initDoc(`<data><number id="num">4</number></data>`);
+      });
 
+      it('should support simple addition', () => {
+        // It doesn't matter whether a string or number is requested, an infix operator should ensure that both
+        // left and right operands are converted to numbers during evaluation.
+        // If multiple nodes are returned, the value of the first node will be used.
+        assertString('/data/number + 1', '5');
+      });
+
+      it('should support addition without spaces around the operator', () => {
+        // expect
+        assertString('/data/number+1', '5');
+      });
+
+      it('should support relative nodesets with strings', () => {
+        // expect
+        assertString(doc.getElementById('num'), null, '../number + 1', '5');
+      });
+
+      it('should support relative nodesets with strings without spaces around the operator', () => {
+        // expect
+        assertString(doc.getElementById('num'), null, '../number+1', '5');
+      });
     });
 
     it('calculation with multiple nodes operand returned as string', () => {
@@ -220,8 +242,7 @@ describe('infix operators', () => {
       // It doesn't matter whether a string or number is requested, an infix operator should ensure that both 
       // left and right operands are converted to numbers during evaluation.
       // If multiple nodes are returned, the value of the first node will be used.
-      assertString('/data/number + 1', '5'); // returns '4,101'
-
+      assertString('/data/number + 1', '5');
     });
   });
 });
