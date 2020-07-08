@@ -17,6 +17,7 @@ var OP_PRECEDENCE = [
 ];
 
 var FUNCTION_NAME = /^[a-z]/;
+const XPATH_EXPR = /([/@:]$)/;
 
 module.exports = function(wrapped, extensions) {
   var
@@ -331,20 +332,16 @@ module.exports = function(wrapped, extensions) {
           if(cur.v !== '') handleXpathExpr();
           peek().tokens.push(',');
           break;
-        case '*':
-          // TODO loads going on here... what's it all about?
-          if(c === '*' && (cur.v !== '' || peek().tokens.length === 0)) {
+        case '*': {
+          // check if part of an XPath expression
+          const prev = prevToken();
+          if(!prev || prev === ',' || prev.t === 'op' || (cur.v && XPATH_EXPR.test(cur.v))) {
             cur.v += c;
-            if(cur.v === './*') handleXpathExpr();
-          } else if(cur.v === '' &&
-            ([')', ''].includes(nextChar()) ||
-            input.substring(i+1).trim() === ')')) {
-            cur.v = c;
-            handleXpathExpr();
-          } else {
-            pushOp(c);
+            break;
           }
-          break;
+          if(cur.v) handleXpathExpr();
+          pushOp(c);
+        } break;
         case '-':
           var prev = prevToken();
           if(cur.v !== '' && nextChar() !== ' ' && input.charAt(i-1) !== ' ') {

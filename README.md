@@ -107,3 +107,4 @@ This flag allows time to be considered for today() expressions that expect XPath
 * `and`/`or` operators are not currently lazy
 * namespace:: axis is not supported (but it might work in your browser if you're lucky)
 * arrange source code, e.g. `src/core` and `src/openrosa`
+* xpath variables (`$var`) are not supported
