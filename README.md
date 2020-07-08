@@ -107,16 +107,3 @@ This flag allows time to be considered for today() expressions that expect XPath
 * `and`/`or` operators are not currently lazy
 * namespace:: axis is not supported (but it might work in your browser if you're lucky)
 * arrange source code, e.g. `src/core` and `src/openrosa`
-
-## doesn't work in the morning
-
-	FAILED TESTS:
-	  #now()
-	    ✖ should return a timestamp for this instant
-	      HeadlessChrome 78.0.3882 (Linux 0.0.0)
-	      Firefox 78.0.0 (Ubuntu 0.0.0)
-	    expected '2020-07-08' to equal '2020-07-07'
-	    AssertionError@node_modules/chai/chai.js:9449:13
-	    [3]</module.exports/Assertion.prototype.assert@node_modules/chai/chai.js:239:13
-	    [6]</module.exports/assert.equal@node_modules/chai/chai.js:4306:10
-	    ./test/integration/openrosa-xpath/now.spec.js/</</<@test/integration/openrosa-xpath/now.spec.js:35198:14

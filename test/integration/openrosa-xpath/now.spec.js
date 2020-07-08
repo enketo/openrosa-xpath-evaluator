@@ -11,7 +11,8 @@ const { assert,initDoc } = require('../helpers');
       // this check might fail if run at precisely midnight ;-)
 
       // given
-      const today = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const today = `${now.getFullYear()}-${(1+now.getMonth()).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
 
       // when
       const result = doc.xEval('now()', null, XPathResult.STRING_TYPE).stringValue;
