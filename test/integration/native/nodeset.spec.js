@@ -3,32 +3,42 @@ const { initDoc, nsResolver, filterAttributes,
 
 describe('native nodeset functions', () => {
 
-  it('last()', () => {
-    const doc = initDoc(`
-      <!DOCTYPE html>
-      <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
-        <head>
-          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-          <title>xpath-test</title>
-        </head>
-        <body class="yui3-skin-sam" id="body">
-          <div id="testFunctionNodeset">
-            <div id="testFunctionNodeset2">
-              <p>1</p>
-              <p>2</p>
-              <p>3</p>
-              <p>4</p>
+  describe('last()', () => {
+    let doc;
+
+    beforeEach(() => {
+      doc = initDoc(`
+        <!DOCTYPE html>
+        <html xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://some-namespace.com/nss">
+          <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <title>xpath-test</title>
+          </head>
+          <body class="yui3-skin-sam" id="body">
+            <div id="testFunctionNodeset">
+              <div id="testFunctionNodeset2">
+                <p>1</p>
+                <p>2</p>
+                <p>3</p>
+                <p>4</p>
+              </div>
             </div>
-          </div>
-        </body>
-      </html>`, nsResolver);
-    const node = doc.getElementById('testFunctionNodeset2');
+          </body>
+        </html>`, nsResolver);
+    });
+
     [
       ["last()", 1],
       ["xhtml:p[last()]", 4],
-      [ "xhtml:p[last()-last()+1]", 1 ]
+      ["xhtml:p[last()-last()+1]", 1],
     ].forEach(([expr, value]) => {
-      assertNumberValue(node, null, expr, value);
+      it(`should evaluate ${expr} as ${value}`, () => {
+        // given
+        const node = doc.getElementById('testFunctionNodeset2');
+
+        // expect
+        assertNumberValue(node, null, expr, value);
+      });
     });
   });
 

@@ -17,7 +17,7 @@ var OP_PRECEDENCE = [
 ];
 
 var FUNCTION_NAME = /^[a-z]/;
-const XPATH_EXPR = /([/@:]$)/;
+const D = 0xDEAD;
 
 module.exports = function(wrapped, extensions) {
   var
@@ -100,6 +100,11 @@ module.exports = function(wrapped, extensions) {
       err = function(message) { throw new Error((message||'') + ' [stack=' + JSON.stringify(stack) + '] [cur=' + JSON.stringify(cur) + ']'); },
       newCurrent = function() { cur = { t:'?', v:'' }; },
       pushOp = function(t) {
+        if(t === '|' || t === '&') {
+          backtrack(t === '&');
+          const prev = asBoolean(prevToken());
+          if(t === '|' ? prev : !prev) peek().dead = true;
+        }
         peek().tokens.push({ t:'op', v:t });
         newCurrent();
       },
@@ -142,6 +147,9 @@ module.exports = function(wrapped, extensions) {
         return toInternalResult(wrapped.evaluate(argString + ')', cN, nR, XPathResult.ANY_TYPE, null));
       },
       evalOp = function(lhs, op, rhs) {
+        if(op.v !== '|' && op.v !== '&' && (lhs === D || rhs === D)) {
+          return D;
+        }
         if(extendedProcessors.handleInfix) {
           var res = extendedProcessors.handleInfix(err, lhs, op, rhs);
           if(res && res.t === 'continue') {
@@ -163,11 +171,11 @@ module.exports = function(wrapped, extensions) {
           tokens[opIndex - 1] = { t:typefor(res), v:res };
         }
       },
-      backtrack = function() {
-        // handle infix operators
+      backtrack = function(skipOr) { // TODO should probably be named e.g. collapseTokens
         var i, j, ops, tokens;
         tokens = peek().tokens;
-        for(j=OP_PRECEDENCE.length-1; j>=0; --j) {
+        if(tokens.length < 2) return;
+        for(j=OP_PRECEDENCE.length-1; j>=(skipOr ? 1 : 0); --j) {
           ops = OP_PRECEDENCE[j];
           i = 1;
           while(i < tokens.length-1) {
@@ -178,6 +186,12 @@ module.exports = function(wrapped, extensions) {
         }
       },
       handleXpathExpr = function() {
+        if(cur.t !== '?') throw new Error('type already known');
+        if(peek().dead) {
+          peek().tokens.push(D);
+          newCurrent();
+          return;
+        }
         var expr = cur.v;
         var tokens = peek().tokens;
         if(tokens.length && tokens[tokens.length-1].t === 'arr') {
@@ -306,20 +320,21 @@ module.exports = function(wrapped, extensions) {
           } else err('Not sure how to handle: ' + c);
           break;
         case '(':
+          cur.dead = peek().dead;
           cur.t = 'fn';
           cur.tokens = [];
           stack.push(cur);
           newCurrent();
           break;
         case ')':
-          if(cur.v !== '') {
-            handleXpathExpr();
-          }
+          if(cur.v !== '') handleXpathExpr();
           backtrack();
           cur = stack.pop();
 
           if(cur.t !== 'fn') err('")" outside function!');
-          if(cur.v) {
+          if(peek().dead) {
+            peek().tokens.push(D);
+          } else if(cur.v) {
             peek().tokens.push(callFn(cur.v, cur.tokens));
           } else {
             if(cur.tokens.length !== 1) err('Expected one token, but found: ' + cur.tokens.length);
@@ -335,11 +350,10 @@ module.exports = function(wrapped, extensions) {
         case '*': {
           // check if part of an XPath expression
           const prev = prevToken();
-          if(!prev || prev === ',' || prev.t === 'op' || (cur.v && XPATH_EXPR.test(cur.v))) {
+          if(!prev || prev === ',' || prev.t === 'op' || cur.v) {
             cur.v += c;
             break;
           }
-          if(cur.v) handleXpathExpr();
           pushOp(c);
         } break;
         case '-':
@@ -356,9 +370,6 @@ module.exports = function(wrapped, extensions) {
             // -ve number
             cur = { t:'num', string:'-' };
           } else {
-            if(cur.v !== '') {
-              peek().tokens.push(cur);
-            }
             pushOp(c);
           }
           break;
@@ -459,7 +470,7 @@ module.exports = function(wrapped, extensions) {
     if(stack.length > 1) err('Stuff left on stack.');
     if(stack[0].t !== 'root') err('Weird stuff on stack.');
     if(stack[0].tokens.length === 0) err('No tokens.');
-    if(stack[0].tokens.length >= 3) backtrack();
+    backtrack();
     if(stack[0].tokens.length > 1) err('Too many tokens.');
 
     return toExternalResult(stack[0].tokens[0], rT);

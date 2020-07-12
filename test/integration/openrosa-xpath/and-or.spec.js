@@ -46,9 +46,8 @@ describe('and/or operators', () => {
     assertFalse("false() and 1 and true()");
   });
 
-  it.skip('and laziness', () => {
+  it('and laziness', () => {
     // REVIEW: we're not currently supporting $variables, so I've changed these to calls to calling substring() without an arg (this would throw an error if actually run)
-    // REVIEW: currently skipping these _as we don't currently evaluate lazily_
     assertFalse("false() and substring()");
     assertFalse("false() and substring() and true()");
     assertFalse("true() and false() and substring()");
@@ -102,9 +101,8 @@ describe('and/or operators', () => {
     });
   });
 
-  it.skip('or laziness', () => {
+  it('or laziness', () => {
     // REVIEW: we're not currently supporting $variables, so I've changed these to calls to calling substring() without an arg (this would throw an error if actually run)
-    // REVIEW: currently skipping these _as we don't currently evaluate lazily_
     [
       [ "true() or substring()", true ],
       [ "true() or substring() and true()", true ],
@@ -114,15 +112,17 @@ describe('and/or operators', () => {
     });
   });
 
-  it('or/and precendence rules are applied correctly', () => {
+  describe('or/and precendence rules are applied correctly', () => {
     [
       [ "true() or true() and false()", true ],
       [ "true() and false() or true()", true ],
       [ "false() and false() or false()", false ],
       [ "0 or 1 and 0", false ],
       [ "0 or 1 and 0+1", true ]
-    ].forEach(([expr, value]) => {
-      assertBoolean(expr, value);
+    ].forEach(([expr, expected]) => {
+      it(`should evaluate ${expr} as ${expected}`, () => {
+        assertBoolean(expr, expected);
+      });
     });
   });
 });

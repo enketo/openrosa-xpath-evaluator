@@ -49,17 +49,17 @@ describe('number operators', () => {
     it('with string without spacing BEFORE - fails', () => {
       const doc = initDoc('');
       const test = () => {
-        doc.xEval(doc, null, "asdf- asdf", XPathResult.NUMBER_TYPE);
+        doc.xEval(doc, null, "'asdf'- 'asdf'", XPathResult.NUMBER_TYPE);
       };
       assert.throw(test);
     });
 
     it('with string without spacing AFTER - fails ', () => {
-      assertNumberValue("asdf -asdf", NaN);
+      assertNumberValue("'asdf' -'asdf'", NaN);
     });
 
     it('with strings', () => {
-      assertNumberValue("asdf - asdf", NaN);
+      assertNumberValue("'asdf' - 'asdf'", NaN);
     });
 
     [
@@ -240,5 +240,42 @@ describe('number operators', () => {
     assertBoolean('1 + 1', true);
     assertBoolean('0 + 1', true);
     assertBoolean('0 + 0', false);
+  });
+
+  describe('with nodesets', () => {
+    let doc;
+
+    beforeEach(() => {
+      doc = initDoc(`
+        <data>
+          <p>1</p>
+          <p>2</p>
+          <p>3</p>
+          <p>4</p>
+        </data>`);
+    });
+
+    [
+      ["/data/p[1] + /data/p[2]", 3],
+      ["/data/p[1]+ /data/p[2]", 3],
+      ["/data/p[1] +/data/p[2]", 3],
+      ["/data/p[1]+/data/p[2]", 3],
+      ["/data/p[4] - /data/p[2]", 2],
+      ["/data/p[4]- /data/p[2]", 2],
+      ["/data/p[4] -/data/p[2]", 2],
+      ["/data/p[4]-/data/p[2]", 2],
+      ["/data/p[2] * /data/p[3]", 6],
+      ["/data/p[2]* /data/p[3]", 6],
+      ["/data/p[2] */data/p[3]", 6],
+      ["/data/p[2]*/data/p[3]", 6],
+    ].forEach(([expr, value]) => {
+      it(`should evaluate ${expr} as ${value}`, () => {
+        // given
+        const node = doc.getElementById('testFunctionNodeset2');
+
+        // expect
+        assertNumberValue(node, null, expr, value);
+      });
+    });
   });
 });

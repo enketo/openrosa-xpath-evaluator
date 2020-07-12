@@ -86,7 +86,7 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
           /^<xpath:native-function\("string-arg"\)>$/,
       'native-function(1, 2, 3, "a", \'b\', "c")':
           /^<xpath:native-function\(1,2,3,"a",'b',"c"\)>$/,
-      /* 
+      /*
       // Not clear what to do here as correcting this requires knowledge of return types of native functions.
       'native-function1(native-function2() + native-function3()) + native-function4(native-function5() + native-function6())':
           /^<xpath:native-function1\("<xpath:native-function2\(\)><xpath:native-function3\(\)>"\)><xpath:native-function4\("<xpath:native-function5\(\)><xpath:native-function6\(\)>"\)>$/,
@@ -95,6 +95,10 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
           /^<xpath:native-function-with-space-before-bracket\(\)>$/,
       '3 * 2 + 1':
         /^7$/,
+      '2 + 3 * 4 + 5 * 6 + 7 * 8 + 9':
+        /^109$/,
+      '2+3*4+5*6+7*8+9':
+        /^109$/,
       '1 + 2 * 3':
         /^7$/,
       '1 > 0':
@@ -118,9 +122,63 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
       '-1 < -2':
         /^false$/,
       '0.23':
-        /^0.23/,
+        /^0.23$/,
       '.23':
-        /^0.23/,
+        /^0.23$/,
+      'concat(0+1,3-1,6 div 2,4*1)':
+        /^1234$/,
+      '0 or 1':
+        true,
+      '1 or throw-overkeen-error()':
+        /^true/,
+      '1 or 1 + throw-overkeen-error()':
+        /^true/,
+      '1 or throw-overkeen-error() + 1':
+        /^true/,
+      '0 and 1':
+        false,
+      '0 and throw-overkeen-error()':
+        false,
+      '0 and 1 + throw-overkeen-error()':
+        false,
+      '0 and throw-overkeen-error() + 1':
+        false,
+      '(1 or 1) or 1':
+        true,
+      '0 = 0 and false() != "true"':
+        true,
+      '1 or 1 and 0':
+        true,
+      '0 and 0 or 1':
+        true,
+      '0 and 1 or 1':
+        true,
+      '1 and 0 or 1':
+        /^true/,
+      '0 and throw-overkeen-error() or 1':
+        true,
+      '0 and (throw-overkeen-error())':
+        false,
+      '0 and concat(throw-overkeen-error())':
+        false,
+      '1 or /explode':
+        /^true/,
+      '1 or 1 + /explode':
+        /^true/,
+      '1 or /explode + 1':
+        /^true/,
+      '0 and /explode':
+        false,
+      '0 and 1 + /explode':
+        false,
+      '0 and /explode + 1':
+        false,
+      '0 and /explode or 1':
+        true,
+      '0 and (/explode)':
+        false,
+      '0 and concat(/explode)':
+        false,
     },
     trickyStandardXpath_supported = [
       // REVIEW: removed expressions from here that contain predicates, as these can't be supported in unit tests as they rely on the browser's implementation to some extent
@@ -154,7 +212,11 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
     },
     extendedXPathEvaluator = new ExtendedXPathEvaluator(
       {
-        evaluate: xpath => ({ resultType:XPathResult.STRING_TYPE, stringValue:'<xpath:' + xpath + '>' }),
+        evaluate: xpath => {
+          if(xpath === 'throw-overkeen-error()') throw new Error('This path should not have been evaluated, because and/or should be lazy!');
+          if(xpath === '/explode') throw new Error('The forbidden path was accessed!');
+          return { resultType:XPathResult.STRING_TYPE, stringValue:'<xpath:' + xpath + '>' };
+        },
       },
       {
         func: {
@@ -178,14 +240,10 @@ describe('ExtendedXpathEvaluator', function() {
 
   _.map(examples, function(expected, expr) {
     it(expr + ' should be evaluated', function() {
-      if(typeof expected === 'string') {
-        assert.equal(
-          extendedXPathEvaluator.evaluate(expr).stringValue,
-          expected);
-      } else {
-        assert.match(
-          extendedXPathEvaluator.evaluate(expr).stringValue,
-          expected);
+      switch(typeof expected) {
+        case 'boolean': return assert.equal(extendedXPathEvaluator.evaluate(expr).booleanValue, expected);
+        case 'string':  return assert.equal(extendedXPathEvaluator.evaluate(expr).stringValue,  expected);
+        default:        return assert.match(extendedXPathEvaluator.evaluate(expr).stringValue,  expected);
       }
     });
   });
