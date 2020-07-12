@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const { registerDomGlobals, teardownDomGlobals, wrapOp, wrapVal } = require('./utils');
+const { registerDomGlobals, teardownDomGlobals, wrapVal } = require('./utils');
 
 const evalInfix = require('../../src/utils/operation').handleOperation;
 
@@ -351,7 +351,7 @@ function singleOpTestsFor(op, ...testCases) {
 function testCaseFor(lhs, op, rhs, expected) {
   it(`should evaluate "${JSON.stringify(lhs)} ${op} ${JSON.stringify(rhs)}" as ${expected}`, () => {
     // when
-    const res = evalInfix(wrapVal(lhs), wrapOp(op), wrapVal(rhs));
+    const res = evalInfix(wrapVal(lhs), op, wrapVal(rhs));
 
     // then
     assert.equal(res, expected);

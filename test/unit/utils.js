@@ -4,7 +4,6 @@ module.exports = {
   assertVal,
   registerDomGlobals,
   teardownDomGlobals,
-  wrapOp,
   wrapVal,
 };
 
@@ -56,8 +55,4 @@ function wrapVal(v) {
       }
     default: throw new Error(`No handling for type: ${typeof v}`);
   }
-}
-
-function wrapOp(v) {
-  return { t:'op', v };
 }

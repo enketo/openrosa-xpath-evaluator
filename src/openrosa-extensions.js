@@ -468,27 +468,27 @@ var openrosa_xpath_extensions = function(config) {
 
           // For comparisons, we must make sure that both values are numbers
           // Dates would be fine, except for equality!
-          if( op.v === '=' ||
-              op.v === '<' ||
-              op.v === '>' ||
-              op.v === '<=' ||
-              op.v === '>=' ||
-              op.v === '!=') {
+          if( op === '=' ||
+              op === '<' ||
+              op === '>' ||
+              op === '<=' ||
+              op === '>=' ||
+              op === '!=') {
             if(lhs.t === 'arr' || lhs.t === 'str') lhs = XPR.date(asDate(lhs));
             if(rhs.t === 'arr' || rhs.t === 'str') rhs = XPR.date(asDate(rhs));
             if(lhs.t !== 'date' || rhs.t !== 'date') {
-              return op.v === '!=';
+              return op === '!=';
             } else {
               lhs = { t:'num', v:lhs.v.getTime() };
               rhs = { t:'num', v:rhs.v.getTime() };
             }
-          } else if(op.v === '+' || op.v === '-') {
+          } else if(op === '+' || op === '-') {
             // for math operators, we need to do it ourselves
             if(lhs.t === 'date' && rhs.t === 'date') err('No handling for simple arithmetic with two dates.');
             var d = lhs.t === 'date'? lhs.v: rhs.v,
                 n = lhs.t !== 'date'? asInteger(lhs): asInteger(rhs),
                 res = new Date(d.getTime());
-            if(op.v === '-') n = -n;
+            if(op === '-') n = -n;
             res.setDate(d.getDate() + n);
             return res;
           }
@@ -496,12 +496,12 @@ var openrosa_xpath_extensions = function(config) {
         }
 
         // try to coerce non-dates into dates :o
-        if( op.v === '+' || op.v === '-') {
+        if( op === '+' || op === '-') {
           const lStr = asString(lhs);
           if(DATE_STRING.test(lStr)) {
             const lDays = dateStringToDays(lStr);
             const rDays = asNumber(rhs);
-            const delta = op.v === '+' ? lDays + rDays : lDays - rDays;
+            const delta = op === '+' ? lDays + rDays : lDays - rDays;
             const date = new Date(1970, 0, 1);
             date.setDate(date.getDate() + delta);
             return date;
@@ -511,17 +511,17 @@ var openrosa_xpath_extensions = function(config) {
           if(DATE_STRING.test(rStr)) {
             const rDays = dateStringToDays(rStr);
             const lDays = asNumber(lhs);
-            const delta = op.v === '+' ? lDays + rDays : lDays - rDays;
+            const delta = op === '+' ? lDays + rDays : lDays - rDays;
             const date = new Date(1970, 0, 1);
             date.setDate(date.getDate() + delta);
             return date;
           }
-        } else if( op.v === '=' ||
-                   op.v === '<' ||
-                   op.v === '>' ||
-                   op.v === '<=' ||
-                   op.v === '>=' ||
-                   op.v === '!=') {
+        } else if( op === '=' ||
+                   op === '<' ||
+                   op === '>' ||
+                   op === '<=' ||
+                   op === '>=' ||
+                   op === '!=') {
           const lStr = asString(lhs);
           if(DATE_STRING.test(lStr)) lhs = XPR.number(dateStringToDays(lStr));
 

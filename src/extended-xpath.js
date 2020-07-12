@@ -147,7 +147,7 @@ module.exports = function(wrapped, extensions) {
         return toInternalResult(wrapped.evaluate(argString + ')', cN, nR, XPathResult.ANY_TYPE, null));
       },
       evalOp = function(lhs, op, rhs) {
-        if(op.v !== '|' && op.v !== '&' && (lhs === D || rhs === D)) {
+        if(op !== '|' && op !== '&' && (lhs === D || rhs === D)) {
           return D;
         }
         if(extendedProcessors.handleInfix) {
@@ -163,7 +163,7 @@ module.exports = function(wrapped, extensions) {
       evalOpAt = function(tokens, opIndex) {
         var res = evalOp(
             tokens[opIndex - 1],
-            tokens[opIndex],
+            tokens[opIndex].v,
             tokens[opIndex + 1]);
 
         if(typeof res !== 'undefined' && res !== null) {

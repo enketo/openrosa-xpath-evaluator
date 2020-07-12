@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const { assertVal, registerDomGlobals, teardownDomGlobals, wrapOp, wrapVal } = require('./utils');
+const { assertVal, registerDomGlobals, teardownDomGlobals, wrapVal } = require('./utils');
 
 const extensions = require('../../src/openrosa-extensions')({});
 
@@ -36,14 +36,14 @@ describe('openrosa-extensions', () => {
 
         // equality
         [ true, '=', new Date(), undefined ],
-        [ '2018-06-25', '=', '2018-06-25T00:00:00.000-07:00', { t:'continue', lhs:wrapVal(17707.291666666668), op:wrapOp('='), rhs:wrapVal(17707.291666666668) } ],
+        [ '2018-06-25', '=', '2018-06-25T00:00:00.000-07:00', { t:'continue', lhs:wrapVal(17707.291666666668), op:'=', rhs:wrapVal(17707.291666666668) } ],
 
         // comparison
-        [ '2018-06-25', '<', '2018-06-25T00:00:00.001-07:00', { t:'continue', lhs:wrapVal(17707.291666666668), op:wrapOp('<'), rhs:wrapVal(17707.29166667824) } ],
+        [ '2018-06-25', '<', '2018-06-25T00:00:00.001-07:00', { t:'continue', lhs:wrapVal(17707.291666666668), op:'<', rhs:wrapVal(17707.29166667824) } ],
       ].forEach(([ lhs, op, rhs, expected ]) => {
         it(`should evaluate ${lhs} ${op} ${rhs} as ${expected}`, () => {
           // when
-          const res = handleInfix(null, wrapVal(lhs), wrapOp(op), wrapVal(rhs));
+          const res = handleInfix(null, wrapVal(lhs), op, wrapVal(rhs));
 
           // then
           if(expected instanceof Date) {
