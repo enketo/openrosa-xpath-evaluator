@@ -256,13 +256,13 @@ module.exports = function(wrapped, extensions) {
           if(--cur.depth) {
             cur.v += c;
           } else {
-            let contextNodes;
             const head = peek();
             if(head.dead) {
               newCurrent();
               continue;
             }
             const { tokens } = head;
+            let contextNodes;
             if(tokens.length && tokens[tokens.length-1].t === 'arr') {
               contextNodes = tokens[tokens.length-1].v;
             } else if(head.t === 'root') {
