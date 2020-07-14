@@ -17,7 +17,7 @@ var OP_PRECEDENCE = [
 ];
 
 var FUNCTION_NAME = /^[a-z]/;
-const D = 0xDEAD;
+const D = 0xDEAD; // dead-end marker for the unevaluated side of a lazy expression
 
 module.exports = function(wrapped, extensions) {
   var
