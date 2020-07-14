@@ -160,17 +160,6 @@ module.exports = function(wrapped, extensions) {
         }
         return handleOperation(lhs, op, rhs);
       },
-      evalOpAt = function(tokens, opIndex) {
-        var res = evalOp(
-            tokens[opIndex - 1],
-            tokens[opIndex].v,
-            tokens[opIndex + 1]);
-
-        if(typeof res !== 'undefined' && res !== null) {
-          tokens.splice(opIndex, 2);
-          tokens[opIndex - 1] = { t:typefor(res), v:res };
-        }
-      },
       backtrack = function(skipOr) { // TODO should probably be named e.g. collapseTokens
         var i, j, ops, tokens;
         tokens = peek().tokens;
@@ -180,7 +169,9 @@ module.exports = function(wrapped, extensions) {
           i = 1;
           while(i < tokens.length-1) {
             if(tokens[i].t === 'op' && ops.indexOf(tokens[i].v) !== -1) {
-              evalOpAt(tokens, i);
+              var res = evalOp(tokens[i-1], tokens[i].v, tokens[i+1]);
+              tokens.splice(i, 2);
+              tokens[i-1] = { t:typefor(res), v:res };
             } else ++i;
           }
         }
