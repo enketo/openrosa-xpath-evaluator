@@ -215,7 +215,7 @@ module.exports = function(wrapped, extensions) {
         return input.charAt(i+1);
       },
       finaliseNum = function() {
-        cur.v = parseFloat(cur.string);
+        cur.v = parseFloat(cur.str);
         peek().tokens.push(cur);
         newCurrent();
       },
@@ -303,18 +303,18 @@ module.exports = function(wrapped, extensions) {
       if(cur.t === 'num') {
         if(isNum(c) || c === 'e' ||
             (c === '-' && input[i-1] === 'e')) {
-          cur.string += c;
+          cur.str += c;
           continue;
-        } else if(c === ' ' && cur.string === '-') {
+        } else if(c === ' ' && cur.str === '-') {
           continue;
         } else if(c === '.' && !cur.decimal) {
           cur.decimal = 1;
-          cur.string += c;
+          cur.str += c;
         } else finaliseNum();
       }
       if(isNum(c)) {
         if(cur.v === '') {
-          cur = { t:'num', string:c };
+          cur = { t:'num', str:c };
         } else cur.v += c;
       } else switch(c) {
         case "'":
@@ -372,7 +372,7 @@ module.exports = function(wrapped, extensions) {
               // previous was a separate function arg
               prev === ',')) {
             // -ve number
-            cur = { t:'num', string:'-' };
+            cur = { t:'num', str:'-' };
           } else {
             pushOp(c);
           }
@@ -459,7 +459,7 @@ module.exports = function(wrapped, extensions) {
           break;
         case '.':
           if(cur.v === '' && isNum(nextChar())) {
-            cur = { t:'num', string:c };
+            cur = { t:'num', str:c };
             break;
           }
           /* falls through */
