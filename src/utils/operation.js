@@ -20,7 +20,7 @@ function handleOperation(lhs, op, rhs) {
     case '!=': return equalityCompare(lhs, rhs, (a, b) => a !== b);
     case '&':  return asBoolean(lhs) && asBoolean(rhs);
     case '|':  return asBoolean(lhs) || asBoolean(rhs);
-    case 'union': return [...lhs.v, ...rhs.v];
+    case 'u': return [...lhs.v, ...rhs.v];
   }
 }
 

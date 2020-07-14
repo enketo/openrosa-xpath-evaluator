@@ -13,7 +13,7 @@ var OP_PRECEDENCE = [
   ['<', '<=', '>=', '>'],
   ['+', '-'],
   ['*', '/', '%'],
-  ['union'],
+  ['u'],
 ];
 
 var FUNCTION_NAME = /^[a-z]/;
@@ -403,7 +403,7 @@ module.exports = function(wrapped, extensions) {
           break;
         case '|':
           if(cur.v) handleXpathExpr();
-          pushOp('union');
+          pushOp('u');
           break;
         case '\n':
         case '\r':
