@@ -4,23 +4,40 @@ module.exports = {
   handleOperation:handleOperation,
 };
 
+// Operator constants copied from extended-xpath.js
+const OR    = 0b00000;
+const AND   = 0b00100;
+const EQ    = 0b01000;
+const NE    = 0b01001;
+const LT    = 0b01100;
+const LTE   = 0b01101;
+const GT    = 0b01110;
+const GTE   = 0b01111;
+const PLUS  = 0b10000;
+const MINUS = 0b10001;
+const MULT  = 0b10100;
+const DIV   = 0b10101;
+const MOD   = 0b10110;
+const UNION = 0b11000;
+
 function handleOperation(lhs, op, rhs) {
   // comparison operators as per: https://www.w3.org/TR/1999/REC-xpath-19991116/#booleans
   switch(op) {
-    case '+' : return asNumber(lhs) + asNumber(rhs);
-    case '-' : return asNumber(lhs) - asNumber(rhs);
-    case '*' : return asNumber(lhs) * asNumber(rhs);
-    case '/' : return asNumber(lhs) / asNumber(rhs);
-    case '%' : return asNumber(lhs) % asNumber(rhs);
-    case '>' : return relationalCompare(lhs, rhs, (a, b) => a >  b);
-    case '<' : return relationalCompare(lhs, rhs, (a, b) => a <  b);
-    case '>=': return relationalCompare(lhs, rhs, (a, b) => a >= b);
-    case '<=': return relationalCompare(lhs, rhs, (a, b) => a <= b);
-    case '=' : return equalityCompare(lhs, rhs, (a, b) => a === b);
-    case '!=': return equalityCompare(lhs, rhs, (a, b) => a !== b);
-    case '&':  return asBoolean(lhs) && asBoolean(rhs);
-    case '|':  return asBoolean(lhs) || asBoolean(rhs);
-    case 'u': return [...lhs.v, ...rhs.v];
+    case OR:    return asBoolean(lhs) || asBoolean(rhs);
+    case AND:   return asBoolean(lhs) && asBoolean(rhs);
+    case EQ:    return equalityCompare(lhs, rhs, (a, b) => a === b);
+    case NE:    return equalityCompare(lhs, rhs, (a, b) => a !== b);
+    case LT:    return relationalCompare(lhs, rhs, (a, b) => a <  b);
+    case LTE:   return relationalCompare(lhs, rhs, (a, b) => a <= b);
+    case GT:    return relationalCompare(lhs, rhs, (a, b) => a >  b);
+    case GTE:   return relationalCompare(lhs, rhs, (a, b) => a >= b);
+    case PLUS:  return asNumber(lhs) + asNumber(rhs);
+    case MINUS: return asNumber(lhs) - asNumber(rhs);
+    case MULT:  return asNumber(lhs) * asNumber(rhs);
+    case DIV:   return asNumber(lhs) / asNumber(rhs);
+    case MOD:   return asNumber(lhs) % asNumber(rhs);
+    case UNION: return [...lhs.v, ...rhs.v];
+    default: throw new Error(`No handling for op ${op}`);
   }
 }
 

@@ -3,18 +3,36 @@ var {preprocessNativeArgs} = require('./utils/native');
 var {toSnapshotResult} = require('./utils/result');
 var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
 /*
- * From http://www.w3.org/TR/xpath/#section-Expressions XPath infix
- * operator precedence is left-associative, and as follows:
+ * From http://www.w3.org/TR/xpath/#section-Expressions XPath infix operator
+ * precedence is left-associative.  In the constants that follow, all but the
+ * bottom two bits indicate precendence, and the entire value represents the
+ * unique ID of the operator.
+ *
+ * These values are defined here rather than imported in an object so that they
+ * can be inlined.  Copy/paste the definitions into other files where they are
+ * used.
  */
-var OP_PRECEDENCE = [
-  ['|'],
-  ['&'],
-  ['=', '!='],
-  ['<', '<=', '>=', '>'],
-  ['+', '-'],
-  ['*', '/', '%'],
-  ['u'],
-];
+const OR    = 0b00000;
+// --- precedence group separator
+const AND   = 0b00100;
+// --- precedence group separator
+const EQ    = 0b01000;
+const NE    = 0b01001;
+// --- precedence group separator
+const LT    = 0b01100;
+const LTE   = 0b01101;
+const GT    = 0b01110;
+const GTE   = 0b01111;
+// --- precedence group separator
+const PLUS  = 0b10000;
+const MINUS = 0b10001;
+// --- precedence group separator
+const MULT  = 0b10100;
+const DIV   = 0b10101;
+const MOD   = 0b10110;
+// --- precedence group separator
+const UNION = 0b11000;
+// --- end operators
 
 var FUNCTION_NAME = /^[a-z]/;
 const D = 0xDEAD; // dead-end marker for the unevaluated side of a lazy expression
@@ -100,10 +118,10 @@ module.exports = function(wrapped, extensions) {
       err = function(message) { throw new Error((message||'') + ' [stack=' + JSON.stringify(stack) + '] [cur=' + JSON.stringify(cur) + ']'); },
       newCurrent = function() { cur = { t:'?', v:'' }; },
       pushOp = function(t) {
-        if(t === '|' || t === '&') {
-          backtrack(t === '&');
+        if(t <= AND) {
+          evalOps(t);
           const prev = asBoolean(prevToken());
-          if(t === '|' ? prev : !prev) peek().dead = true;
+          if(t === OR ? prev : !prev) peek().dead = true;
         }
         peek().tokens.push({ t:'op', v:t });
         newCurrent();
@@ -147,7 +165,7 @@ module.exports = function(wrapped, extensions) {
         return toInternalResult(wrapped.evaluate(argString + ')', cN, nR, XPathResult.ANY_TYPE, null));
       },
       evalOp = function(lhs, op, rhs) {
-        if(op !== '|' && op !== '&' && (lhs === D || rhs === D)) {
+        if(op > AND && (lhs === D || rhs === D)) {
           return D;
         }
         if(extendedProcessors.handleInfix) {
@@ -160,8 +178,8 @@ module.exports = function(wrapped, extensions) {
         }
         return handleOperation(lhs, op, rhs);
       },
-      backtrack = function(skipOr) { // TODO should probably be named e.g. collapseTokens
-        var i, j, ops, tokens;
+      evalOps = function(lastOp) {
+        var i, j, tokens;
         tokens = peek().tokens;
 
         if(peek().dead) for(i=2; i<tokens.length; ++i) {
@@ -173,11 +191,10 @@ module.exports = function(wrapped, extensions) {
 
         if(tokens.length < 2) return;
 
-        for(j=OP_PRECEDENCE.length-1; j>=(skipOr ? 1 : 0); --j) {
-          ops = OP_PRECEDENCE[j];
+        for(j=UNION; j>=lastOp; j-=0b100) {
           i = 1;
           while(i < tokens.length-1) {
-            if(tokens[i].t === 'op' && ops.indexOf(tokens[i].v) !== -1) {
+            if(tokens[i].t === 'op' && tokens[i].v >= j) {
               var res = evalOp(tokens[i-1], tokens[i].v, tokens[i+1]);
               tokens.splice(i, 2);
               tokens[i-1] = { t:typefor(res), v:res };
@@ -332,7 +349,7 @@ module.exports = function(wrapped, extensions) {
           break;
         case ')':
           if(cur.v !== '') handleXpathExpr();
-          backtrack();
+          evalOps(OR);
           cur = stack.pop();
 
           if(cur.t !== 'fn') err('")" outside function!');
@@ -358,7 +375,7 @@ module.exports = function(wrapped, extensions) {
             cur.v += c;
             break;
           }
-          pushOp(c);
+          pushOp(MULT);
         } break;
         case '-':
           var prev = prevToken();
@@ -374,7 +391,7 @@ module.exports = function(wrapped, extensions) {
             // -ve number
             cur = { t:'num', str:'-' };
           } else {
-            pushOp(c);
+            pushOp(MINUS);
           }
           break;
         case '=':
@@ -382,13 +399,13 @@ module.exports = function(wrapped, extensions) {
               cur.v === '>' || cur.v === '&gt;' || cur.v === '!') {
             cur.v += c;
             switch(cur.v) {
-              case '<=': case '&lt;=': pushOp('<='); break;
-              case '>=': case '&gt;=': pushOp('>='); break;
-              case '!=':               pushOp('!='); break;
+              case '<=': case '&lt;=': pushOp(LTE); break;
+              case '>=': case '&gt;=': pushOp(GTE); break;
+              case '!=':               pushOp(NE);  break;
             }
           } else {
             if(cur.v) handleXpathExpr();
-            pushOp(c);
+            pushOp(EQ);
           }
           break;
         case ';':
@@ -404,15 +421,15 @@ module.exports = function(wrapped, extensions) {
           if(nextChar() === '=') {
             cur.v = c; break;
           }
-          pushOp(c);
+          pushOp(c === '>' ? GT : LT);
           break;
         case '+':
           if(cur.v) handleXpathExpr();
-          pushOp(c);
+          pushOp(PLUS);
           break;
         case '|':
           if(cur.v) handleXpathExpr();
-          pushOp('u');
+          pushOp(UNION);
           break;
         case '\n':
         case '\r':
@@ -427,7 +444,7 @@ module.exports = function(wrapped, extensions) {
           // there is no requirement for ExprWhitespace before or after any
           // ExprToken, including OperatorName.
           if(cur.v === 'di') { // OperatorName: 'div'
-            pushOp('/');
+            pushOp(DIV);
           } else cur.v += c;
           break;
         case 'r':
@@ -435,7 +452,7 @@ module.exports = function(wrapped, extensions) {
           // there is no requirement for ExprWhitespace before or after any
           // ExprToken, including OperatorName.
           if(cur.v === 'o') { // OperatorName: 'or'
-            pushOp('|');
+            pushOp(OR);
           } else cur.v += c;
           break;
         case 'd':
@@ -443,9 +460,9 @@ module.exports = function(wrapped, extensions) {
           // there is no requirement for ExprWhitespace before or after any
           // ExprToken, including OperatorName.
           if(cur.v === 'an') { // OperatorName: 'and'
-            pushOp('&');
+            pushOp(AND);
           } else if(cur.v === 'mo') { // OperatorName: 'mod'
-            pushOp('%');
+            pushOp(MOD);
           } else cur.v += c;
           break;
         case '[':
@@ -471,11 +488,11 @@ module.exports = function(wrapped, extensions) {
     if(cur.t === 'num') finaliseNum();
     if(cur.t === '?' && cur.v !== '') handleXpathExpr();
     if(cur.t !== '?' || cur.v !== '' || (cur.tokens && cur.tokens.length)) err('Current item not evaluated!');
-    if(stack.length > 1) err('Stuff left on stack.');
+    if(stack.length !== 1) err('Stuff left on stack.');
     if(stack[0].t !== 'root') err('Weird stuff on stack.');
     if(stack[0].tokens.length === 0) err('No tokens.');
-    backtrack();
-    if(stack[0].tokens.length > 1) err('Too many tokens.');
+    evalOps(OR);
+    if(stack[0].tokens.length !== 1) err('Too many tokens.');
 
     return toExternalResult(stack[0].tokens[0], rT);
   };

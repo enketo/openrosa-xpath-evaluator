@@ -9,6 +9,12 @@ var sortByDocumentOrder = require('./utils/sort-by-document-order');
 
 const RAW_NUMBER = /^-?[0-9]+(\.[0-9]+)?$/;
 
+// Operator constants copied from extended-xpath.js
+const EQ    = 0b01000;
+const GTE   = 0b01111;
+const PLUS  = 0b10000;
+const MINUS = 0b10001;
+
 var openrosa_xpath_extensions = function(config) {
   var
       TOO_MANY_ARGS = new Error('too many args'),
@@ -468,12 +474,7 @@ var openrosa_xpath_extensions = function(config) {
 
           // For comparisons, we must make sure that both values are numbers
           // Dates would be fine, except for equality!
-          if( op === '=' ||
-              op === '<' ||
-              op === '>' ||
-              op === '<=' ||
-              op === '>=' ||
-              op === '!=') {
+          if(op >= EQ && op <= GTE) {
             if(lhs.t === 'arr' || lhs.t === 'str') lhs = XPR.date(asDate(lhs));
             if(rhs.t === 'arr' || rhs.t === 'str') rhs = XPR.date(asDate(rhs));
             if(lhs.t !== 'date' || rhs.t !== 'date') {
@@ -482,13 +483,13 @@ var openrosa_xpath_extensions = function(config) {
               lhs = { t:'num', v:lhs.v.getTime() };
               rhs = { t:'num', v:rhs.v.getTime() };
             }
-          } else if(op === '+' || op === '-') {
+          } else if(op === PLUS || op === MINUS) {
             // for math operators, we need to do it ourselves
             if(lhs.t === 'date' && rhs.t === 'date') err('No handling for simple arithmetic with two dates.');
             var d = lhs.t === 'date'? lhs.v: rhs.v,
                 n = lhs.t !== 'date'? asInteger(lhs): asInteger(rhs),
                 res = new Date(d.getTime());
-            if(op === '-') n = -n;
+            if(op === MINUS) n = -n;
             res.setDate(d.getDate() + n);
             return res;
           }
@@ -496,12 +497,12 @@ var openrosa_xpath_extensions = function(config) {
         }
 
         // try to coerce non-dates into dates :o
-        if( op === '+' || op === '-') {
+        if(op === PLUS || op === MINUS) {
           const lStr = asString(lhs);
           if(DATE_STRING.test(lStr)) {
             const lDays = dateStringToDays(lStr);
             const rDays = asNumber(rhs);
-            const delta = op === '+' ? lDays + rDays : lDays - rDays;
+            const delta = op === PLUS ? lDays + rDays : lDays - rDays;
             const date = new Date(1970, 0, 1);
             date.setDate(date.getDate() + delta);
             return date;
@@ -511,17 +512,12 @@ var openrosa_xpath_extensions = function(config) {
           if(DATE_STRING.test(rStr)) {
             const rDays = dateStringToDays(rStr);
             const lDays = asNumber(lhs);
-            const delta = op === '+' ? lDays + rDays : lDays - rDays;
+            const delta = op === PLUS ? lDays + rDays : lDays - rDays;
             const date = new Date(1970, 0, 1);
             date.setDate(date.getDate() + delta);
             return date;
           }
-        } else if( op === '=' ||
-                   op === '<' ||
-                   op === '>' ||
-                   op === '<=' ||
-                   op === '>=' ||
-                   op === '!=') {
+        } else if(op >= EQ && op <= GTE) {
           const lStr = asString(lhs);
           if(DATE_STRING.test(lStr)) lhs = XPR.number(dateStringToDays(lStr));
 
