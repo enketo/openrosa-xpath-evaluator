@@ -1,6 +1,35 @@
-const { assertNumberValue, assertStringValue, assertTrue, initDoc } = require('./helpers');
+const {
+  assertBoolean,
+  assertNumberValue,
+  assertStringValue,
+  assertTrue,
+  initDoc,
+} = require('./helpers');
 
 describe('predicates with function calls', ()=> {
+
+  describe('little predicates', () => {
+    [
+      [ 1, '//*[@id="3"] and /data/*[@id="1"]', false, ],
+      [ 1, '/data/*[@id="3"] and /data/*[@id="1"]', false, ],
+      [ 1, '/data/c[@id="3"] and /data/a[@id="1"]', false, ],
+      [ 1, '/data/*[@id="1"] and //*[@id="3"]', false, ],
+      [ 1, '/data/*[@id="3"] or /data/*[@id="2"]', true, ],
+      [ 1, '/data/*[@id="1"] and //*[@id="2"]', true, ],
+      [ 1, '/data/*[@id="3"] or /data/*[@id="4"]', false, ],
+    ].forEach(([ runThis, expr, expected ]) => {
+      (runThis ? it : it.skip)(`should evaluate ${expr} as ${expected}`, () => {
+        initDoc(`
+          <data>
+            <a id="1">aa</a>
+            <b id="2">bb</b>
+          </data>
+        `);
+
+        assertBoolean(expr, expected);
+      });
+    });
+  });
 
   describe('fiendishly complicated examples #2', () => {
     const namespaceResolver = (() => {

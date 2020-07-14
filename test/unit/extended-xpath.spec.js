@@ -179,6 +179,8 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
         false,
       '0 and concat(/explode)':
         false,
+      '0 and /explode[/explode]':
+        false,
     },
     trickyStandardXpath_supported = [
       // REVIEW: removed expressions from here that contain predicates, as these can't be supported in unit tests as they rely on the browser's implementation to some extent

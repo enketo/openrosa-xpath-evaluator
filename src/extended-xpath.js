@@ -258,6 +258,10 @@ module.exports = function(wrapped, extensions) {
           } else {
             let contextNodes;
             const head = peek();
+            if(head.dead) {
+              newCurrent();
+              continue;
+            }
             const { tokens } = head;
             if(tokens.length && tokens[tokens.length-1].t === 'arr') {
               contextNodes = tokens[tokens.length-1].v;
