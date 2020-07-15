@@ -25,8 +25,9 @@ describe('predicates with function calls', ()=> {
     `);
 
     // expect
-    //assertStringValue(' /model/instance[1]/data/PROCEDURE/PROC_GRID[position() = 1]/PROC = 6 or /model/instance[1]/data/PROCEDURE/PROC_GRID[position() = 2]/PROC = 6',
-    assertStringValue('/model/instance[1]/data/PROCEDURE/PROC_GRID[position()=1]/PROC = 6 or /model/instance[1]/data/PROCEDURE/PROC_GRID[position()=2]/PROC = 7',
+    assertBoolean(' /model/instance[1]/data/PROCEDURE/PROC_GRID[position() = 1]/PROC = 6 or /model/instance[1]/data/PROCEDURE/PROC_GRID[position() = 2]/PROC = 6',
+        true);
+    assertStringValue(' /model/instance[1]/data/PROCEDURE/PROC_GRID[position() = 1]/PROC = 6 or /model/instance[1]/data/PROCEDURE/PROC_GRID[position() = 2]/PROC = 6',
         'true');
   });
 
@@ -69,6 +70,8 @@ describe('predicates with function calls', ()=> {
     `);
 
     // expect
+    assertBoolean('/model/instance[@id="cities"]/root/item[country=/model/instance[1]/new_cascading_selections/group4/country4 and name=/model/instance[1]/new_cascading_selections/group4/city4]',
+        false);
     assertStringValue('/model/instance[@id="cities"]/root/item[country=/model/instance[1]/new_cascading_selections/group4/country4 and name=/model/instance[1]/new_cascading_selections/group4/city4]',
         '');
   });
