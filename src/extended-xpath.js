@@ -365,7 +365,7 @@ module.exports = function(wrapped, extensions) {
           break;
         case ',':
           if(peek().t !== 'fn') err('Unexpected comma outside function arguments.');
-          if(cur.v !== '') handleXpathExpr();
+          if(cur.v) handleXpathExpr();
           peek().tokens.push(',');
           break;
         case '*': {
@@ -391,37 +391,28 @@ module.exports = function(wrapped, extensions) {
             // -ve number
             cur = { t:'num', str:'-' };
           } else {
+            // TODO do we need to check for cur.v here?
             pushOp(MINUS);
           }
           break;
         case '=':
-          if( cur.v === '<' || cur.v === '&lt;' ||
-              cur.v === '>' || cur.v === '&gt;' || cur.v === '!') {
-            cur.v += c;
-            switch(cur.v) {
-              case '<=': case '&lt;=': pushOp(LTE); break;
-              case '>=': case '&gt;=': pushOp(GTE); break;
-              case '!=':               pushOp(NE);  break;
-            }
-          } else {
-            if(cur.v) handleXpathExpr();
-            pushOp(EQ);
+          switch(cur.v) {
+            case '<': pushOp(LTE); break;
+            case '>': pushOp(GTE); break;
+            case '!': pushOp(NE);  break;
+            default:
+              if(cur.v) handleXpathExpr();
+              pushOp(EQ);
           }
           break;
-        case ';':
-          switch(cur.v) {
-            case '&lt': cur.v = ''; c = '<'; break;
-            case '&gt': cur.v = ''; c = '>'; break;
-            default: cur.v += c; continue;
-          }
-          /* falls through */
         case '>':
         case '<':
           if(cur.v) handleXpathExpr();
           if(nextChar() === '=') {
-            cur.v = c; break;
+            cur.v = c;
+          } else {
+            pushOp(c === '>' ? GT : LT);
           }
-          pushOp(c === '>' ? GT : LT);
           break;
         case '+':
           if(cur.v) handleXpathExpr();
@@ -467,7 +458,7 @@ module.exports = function(wrapped, extensions) {
           break;
         case '[':
           // evaluate previous part if there is any
-          if(cur.v.length) {
+          if(cur.v) {
             handleXpathExpr();
             newCurrent();
           }
@@ -486,8 +477,7 @@ module.exports = function(wrapped, extensions) {
     }
 
     if(cur.t === 'num') finaliseNum();
-    if(cur.t === '?' && cur.v !== '') handleXpathExpr();
-    if(cur.t !== '?' || cur.v !== '' || (cur.tokens && cur.tokens.length)) err('Current item not evaluated!');
+    if(cur.v) handleXpathExpr();
     if(stack.length !== 1) err('Stuff left on stack.');
     if(stack[0].t !== 'root') err('Weird stuff on stack.');
     if(stack[0].tokens.length === 0) err('No tokens.');

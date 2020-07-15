@@ -7,10 +7,8 @@ describe('some complex examples', () => {
 
   _.forEach({
     'concat("uuid:", uuid())':/uuid:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/,
-    '"2015-07-15" &lt; today()': true,
     '"2015-07-15" < today()' : true,
-    "'2015-07-15' &lt; today()" : true,
-    "'2015-07-15' < today()" : true,
+    "'2015-07-15' > today()" : false,
     "'raw-string'" : 'raw-string',
     'format-date-time(date-time(decimal-date-time("2003-03-12") + 280), "%b %e, %Y")': /Dec 17, 2003/,
     "decimal-date-time(today()- 60 )": /^-?[0-9]+(\.[0-9]+)?$/,
