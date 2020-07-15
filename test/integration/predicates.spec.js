@@ -8,6 +8,71 @@ const {
 
 describe('predicates with function calls', ()=> {
 
+  it('should handle deep example 1', () => {
+    // given
+    initDoc(`
+      <model>
+        <instance>
+          <data>
+            <PROCEDURE>
+              <PROC_GRID>
+                <PROC>6</PROC>
+              </PROC_GRID>
+            </PROCEDURE>
+          </data>
+        </instance>
+      </model>
+    `);
+
+    // expect
+    //assertStringValue(' /model/instance[1]/data/PROCEDURE/PROC_GRID[position() = 1]/PROC = 6 or /model/instance[1]/data/PROCEDURE/PROC_GRID[position() = 2]/PROC = 6',
+    assertStringValue('/model/instance[1]/data/PROCEDURE/PROC_GRID[position()=1]/PROC = 6 or /model/instance[1]/data/PROCEDURE/PROC_GRID[position()=2]/PROC = 7',
+        'true');
+  });
+
+  it('should handle deep example 2', () => {
+    // given
+    initDoc(`
+      <model>
+        <instance>
+           <new_cascading_selections_inside_repeats id="cascading_select_inside_repeats">
+             <group1>
+                <country/>
+                <city/>
+                <neighborhood/>
+             </group1>
+             <meta>
+                <instanceID/>
+             </meta>
+           </new_cascading_selections_inside_repeats>
+        </instance>
+        <instance id="cities">
+           <root>
+             <item>
+                <itextId>static_instance-cities-0</itextId>
+                <country>nl</country>
+                <name>ams</name>
+             </item>
+             <item>
+                <itextId>static_instance-cities-1</itextId>
+                <country>usa</country>
+                <name>den</name>
+             </item>
+             <item>
+                <itextId>static_instance-cities-2</itextId>
+                <country>usa</country>
+                <name>nyc</name>
+             </item>
+           </root>
+        </instance>
+      </model>
+    `);
+
+    // expect
+    assertStringValue('/model/instance[@id="cities"]/root/item[country=/model/instance[1]/new_cascading_selections/group4/country4 and name=/model/instance[1]/new_cascading_selections/group4/city4]',
+        '');
+  });
+
   describe('little predicates', () => {
     [
       [ 1, '//*[@id="3"] and /data/*[@id="1"]', false, ],

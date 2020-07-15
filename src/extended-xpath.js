@@ -163,7 +163,16 @@ module.exports = function(wrapped, extensions) {
       backtrack = function(skipOr) { // TODO should probably be named e.g. collapseTokens
         var i, j, ops, tokens;
         tokens = peek().tokens;
+
+        if(peek().dead) for(i=2; i<tokens.length; ++i) {
+          if(tokens[i] === D) {
+            tokens.splice(i-1);
+            tokens[i-2] = { t:'bool', v:asBoolean(tokens[i-2]) };
+          }
+        }
+
         if(tokens.length < 2) return;
+
         for(j=OP_PRECEDENCE.length-1; j>=(skipOr ? 1 : 0); --j) {
           ops = OP_PRECEDENCE[j];
           i = 1;
