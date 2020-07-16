@@ -589,9 +589,7 @@ var XPR = {
 };
 
 function asDate(r) {
-      var temp, t;
-const keepTime = false;
-const  includeLocalTimeForDatesWithoutTime = true;
+  var temp;
   switch(r.t) {
     case 'bool': return new Date(NaN);
     case 'date': return r.v;
@@ -605,17 +603,13 @@ const  includeLocalTimeForDatesWithoutTime = true;
         temp.setDate(1 + parseInt(r, 10));
         return temp;
       } else if(DATE_STRING.test(r)) {
-        if(keepTime && r.indexOf('T')>0) return new Date(r);
-        t = r.indexOf('T');
-        if(t !== -1) r = r.substring(0, t);
+        temp = r.indexOf('T');
+        if(temp !== -1) r = r.substring(0, temp);
         temp = r.split('-');
         if(isValidDate(temp[0], temp[1], temp[2])) {
-          if(includeLocalTimeForDatesWithoutTime) {
-            var time = `${_zeroPad(temp[0])}-${_zeroPad(temp[1])}-${_zeroPad(temp[2])}`+
-              'T00:00:00.000' + (new Date(r)).getTimezoneOffsetAsTime();
-            return new Date(time);
-          }
-          return new Date(temp[0], temp[1]-1, temp[2]);
+          var time = `${_zeroPad(temp[0])}-${_zeroPad(temp[1])}-${_zeroPad(temp[2])}`+
+            'T00:00:00.000' + (new Date(r)).getTimezoneOffsetAsTime();
+          return new Date(time);
         }
       }
       return new Date(r);
