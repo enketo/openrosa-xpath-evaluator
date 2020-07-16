@@ -57,7 +57,7 @@ describe('openrosa-extensions', () => {
   });
 
   describe('func', () => {
-    const { date, min, max, number } = extensions.func;
+    const { date, 'date-time':dateTime, min, max, number } = extensions.func;
 
     describe('date()', () => {
       [ 'asdf', 123, true ].forEach(arg => {
@@ -85,6 +85,38 @@ describe('openrosa-extensions', () => {
       it('should convert zero to 1 Jan 1970 in local timezone', () => {
         // when
         const res = date(wrapVal(0));
+
+        // then
+        assert.equal(res.v.toISOString(), '1970-01-01T07:00:00.000Z');
+      });
+    });
+
+    describe('date-time()', () => {
+      [ 'asdf', 123, true ].forEach(arg => {
+        it(`should convert a ${typeof arg} to a Date`, () => {
+          // when
+          const result = dateTime(wrapVal(arg));
+
+          // then
+          assert.isTrue(result.v instanceof Date);
+        });
+      });
+
+      [ true, false, 'some string' ].forEach(arg => {
+        it(`should convert ${arg} to an Invalid date`, () => {
+          // when
+          const res = dateTime(wrapVal(arg));
+
+          // then
+          assert.isTrue(isNaN(res.v));
+          assert.equal(res.v.toString(), 'Invalid Date');
+          assert.isNaN(res.v.valueOf());
+        });
+      });
+
+      it('should convert zero to 1 Jan 1970 in local timezone', () => {
+        // when
+        const res = dateTime(wrapVal(0));
 
         // then
         assert.equal(res.v.toISOString(), '1970-01-01T07:00:00.000Z');
