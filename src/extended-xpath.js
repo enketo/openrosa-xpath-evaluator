@@ -203,7 +203,6 @@ module.exports = function(wrapped, extensions) {
         }
       },
       handleXpathExpr = function() {
-        if(cur.t !== '?') throw new Error('type already known');
         if(peek().dead) {
           peek().tokens.push(D);
           newCurrent();
