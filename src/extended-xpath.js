@@ -261,7 +261,7 @@ module.exports = function(wrapped, extensions) {
         // > otherwise, it is not included.
         //   - https://www.w3.org/TR/1999/REC-xpath-19991116/#predicates
         //
-        // Note because the ']' character is allowed within a Listeral (string),
+        // Note because the ']' character is allowed within a Literal (string),
         // there is special handling for tracking when we're within a string.
         if(cur.inString) {
           if(cur.inString === c) delete cur.inString;
