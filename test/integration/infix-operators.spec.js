@@ -100,8 +100,8 @@ describe('infix operators', () => {
         '"1" != "2"' : true,
         // > When neither object to be compared is a node-set and the operator
         // > is <=, <, >= or >, then the objects are compared by converting both
-        // objects to numbers and comparing the numbers according to IEEE 754.
-        // - https://www.w3.org/TR/1999/REC-xpath-19991116/#booleans
+        // > objects to numbers and comparing the numbers according to IEEE 754.
+        //   - https://www.w3.org/TR/1999/REC-xpath-19991116/#booleans
         '"1" < "2"' : true,
         '"1" > "2"' : false,
         '"2" < "1"' : false,
