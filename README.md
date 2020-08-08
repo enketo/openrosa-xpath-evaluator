@@ -75,21 +75,6 @@ orxe.customXPathFunction.type.BooleanType
 orxe.customXPathFunction.type.DateType
 ```
 
-## Configuration support
-The library can be configured with:
-```
-orxe.config = {
-  includeTimeForTodayString: false,
-  returnCurrentTimeForToday: false
-};
-```
-
-#### includeTimeForTodayString (default: false)
-This flag allows the inclusion of time for today() expressions that expect XPathResult.STRING_TYPE.
-
-#### returnCurrentTimeForToday (default: false)
-This flag allows time to be considered for today() expressions that expect XPathResult.ANY_TYPE, XPathResult.NUMBER_TYPE, etc.
-
 # Development
 
 ## Useful resources
@@ -102,9 +87,11 @@ This flag allows time to be considered for today() expressions that expect XPath
 * https://developer.mozilla.org/en-US/docs/Web/API/XPathResult
 * https://developer.mozilla.org/en-US/docs/Web/API/Node
 
-# Known limitations / TODO!
+# Known limitations
 
-* `and`/`or` operators are not currently lazy
 * namespace:: axis is not supported (but it might work in your browser if you're lucky)
-* arrange source code, e.g. `src/core` and `src/openrosa`
 * xpath variables (`$var`) are not supported
+
+# TODO
+
+* arrange source code, e.g. `src/core` and `src/openrosa`

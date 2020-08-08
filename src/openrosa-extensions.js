@@ -15,7 +15,7 @@ const GTE   = 0b01111;
 const PLUS  = 0b10000;
 const MINUS = 0b10001;
 
-var openrosa_xpath_extensions = function(config) {
+var openrosa_xpath_extensions = function() {
   var
       TOO_MANY_ARGS = new Error('too many args'),
       TOO_FEW_ARGS = new Error('too few args'),
@@ -317,7 +317,7 @@ var openrosa_xpath_extensions = function(config) {
       return XPR.number(asNumber(arg));
     },
     today: function() {
-      return XPR.date(ret._now(!config.returnCurrentTimeForToday));
+      return XPR.date(ret._now());
     },
     /**
      * The once function returns the value of the parameter if its own value
@@ -533,12 +533,9 @@ var openrosa_xpath_extensions = function(config) {
   ret.func = func;
   ret.process = process;
   ret.XPR = XPR;
-  ret._now = function(resetTime) { // This is exposed in ret to allow for unit testing, although this is not currently utilised.
+  ret._now = function() { // This is exposed in ret to allow for unit testing, although this is not currently utilised.
     var t = new Date();
-    if(resetTime) {
-      return new Date(t.getFullYear(), t.getMonth(), t.getDate());
-    }
-    return t;
+    return new Date(t.getFullYear(), t.getMonth(), t.getDate());
   };
   ret.customXPathFunction = {
     type: {

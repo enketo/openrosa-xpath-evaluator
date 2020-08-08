@@ -1,8 +1,7 @@
 require('./date-extensions');
 var ExtendedXPathEvaluator = require('./extended-xpath');
 var openrosaExtensions = require('./openrosa-extensions');
-var config = require('./config');
-var extensions = openrosaExtensions(config);
+var extensions = openrosaExtensions();
 
 function OpenrosaXPathEvaluator() {
   var wrapped = new XPathEvaluator();
@@ -18,7 +17,6 @@ function OpenrosaXPathEvaluator() {
 module.exports = (function(){
 
   var module = {
-    config: config,
     customXPathFunction: extensions.customXPathFunction,
     XPathEvaluator: OpenrosaXPathEvaluator,
 
