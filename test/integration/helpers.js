@@ -1,6 +1,6 @@
 // TODO this should be moved to test/integration
 const assert = chai.assert;
-const engine = require('../../src/engine');
+const OpenRosaXpath = require('../../src/openrosa-xpath');
 const { toDbgString } = require('../dbg');
 
 let doc, xEval, evaluator, nsr, rt, node;
@@ -20,7 +20,7 @@ const initDoc = (xml, xnsr) => {
   doc = new DOMParser().parseFromString(xml, 'application/xml');
   node = null;
   nsr = xnsr;
-  evaluator = new engine.XPathEvaluator();
+  evaluator = OpenRosaXpath();
   xEval = function(e, xnode, xrt, xnsr) {
     node = xnode || doc;
     rt = xrt;

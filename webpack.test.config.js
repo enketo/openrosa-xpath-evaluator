@@ -1,13 +1,8 @@
 var path = require('path');
 
-var entryPath = './src/index.js';
-
 module.exports = {
   target: 'web',
   mode: 'development',
-  entry: {
-    'orxe': entryPath,
-  },
   output: {
     path: path.resolve(__dirname, 'dist/'),
     filename: '[name].js',

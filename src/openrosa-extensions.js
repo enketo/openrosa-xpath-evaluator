@@ -537,24 +537,6 @@ var openrosa_xpath_extensions = function() {
     var t = new Date();
     return new Date(t.getFullYear(), t.getMonth(), t.getDate());
   };
-  ret.customXPathFunction = {
-    type: {
-      StringType: XPR.string,
-      NumberType: XPR.number,
-      BooleanType: XPR.boolean,
-      DateType: XPR.date
-    },
-    add: function(name, fnObj) {
-      func[name] = fnObj;
-    },
-    remove: function(name) {
-      delete func[name];
-    },
-    all: function() {
-      return func;
-    }
-  };
-
 
   return ret;
 };

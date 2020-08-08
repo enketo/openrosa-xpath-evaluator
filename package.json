@@ -2,12 +2,9 @@
   "name": "openrosa-xpath-evaluator",
   "version": "2.0.0-beta.9",
   "description": "Wrapper for browsers' XPath evaluator with added support for OpenRosa extensions.",
-  "main": "src/index.js",
+  "main": "src/openrosa-xpath.js",
   "scripts": {
     "lint": "eslint --ignore-path .gitignore .",
-    "lint:watch": "esw --ignore-path .gitignore . -w",
-    "prebuild": "rimraf dist",
-    "build": "webpack",
     "test": "npm run lint && npm run test:mocha && npm run test:karma",
     "test:mocha": "TZ=America/Phoenix mocha test/extended-xpath.js test/unit/*.spec.js",
     "test:karma": "karma start --single-run",
@@ -15,8 +12,8 @@
   },
   "author": "Alex",
   "license": "UNLICENSED",
-  "dependencies": {
-    "node-forge": "^0.9.0"
+  "peerDependencies": {
+    "node-forge": "^0.9.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -38,9 +35,9 @@
     "karma-webpack": "^4.0.2",
     "lodash": "^4.17.15",
     "mocha": "^6.2.0",
+    "node-forge": "^0.9.1",
     "puppeteer": "^1.19.0",
     "terser-webpack-plugin": "^1.4.1",
-    "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.7"
+    "webpack": "^4.39.3"
   }
 }
