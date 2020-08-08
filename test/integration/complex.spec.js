@@ -168,7 +168,7 @@ describe('some complex examples', () => {
 
     // These tests exposed a weird bug which would return "Too many tokens" if dot was followed by a comparator
     // In all these tests, the root node is being passed to `number()` to allow its comparison with the number
-    // 1.  The text is null, so its numeric value is NaN.  This make all comparisons return false.
+    // 1.  The text is null, so its numeric value is NaN.  This makes all comparisons return false.
 
     ".>1": false,
     ".> 1": false,
