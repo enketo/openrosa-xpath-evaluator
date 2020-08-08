@@ -1,7 +1,7 @@
 // TODO this should be moved to test/integration
 const assert = chai.assert;
 const engine = require('../../src/engine');
-const { dbgString } = require('../../src/dbg');
+const { toDbgString } = require('../dbg');
 
 let doc, xEval, evaluator, nsr, rt, node;
 
@@ -199,7 +199,7 @@ const assertNodes = (expr, node, expected, nsr) => {
   assert.equal(result.snapshotLength, expected.length);
   for(let j = 0; j < result.snapshotLength; j++) {
     const item = result.snapshotItem(j);
-    assert.equal(item, expected[j], `expected: ${dbgString(expected[j])}, got: ${dbgString(item)}`);
+    assert.equal(item, expected[j], `expected: ${toDbgString(expected[j])}, got: ${toDbgString(item)}`);
   }
 };
 

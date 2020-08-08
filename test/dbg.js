@@ -1,7 +1,7 @@
-module.exports = { dbg, dbgString };
+module.exports = { dbg, toDbgString };
 
 function dbg(...args) {
-  console.log(args.map(dbgString));
+  console.log(args.map(toDbgString));
 }
 
 function nodePath(node) {
@@ -20,12 +20,12 @@ function describe(node) {
   return '/' + node.nodeName;
 }
 
-function dbgString(arg) {
+function toDbgString(arg) {
   if(arg === null || arg === undefined) return arg;
   if(arg instanceof Node) return nodePath(arg);
   if(typeof arg === 'function') return `(function:${arg.name})`;
   if(typeof arg !== 'object') return arg.toString();
-  if(Array.isArray(arg)) return arg.map(dbgString).toString();
+  if(Array.isArray(arg)) return arg.map(toDbgString).toString();
   if(arg.t === 'arr') {
     const { t, v } = arg;
     return JSON.stringify({ t, v:v.map(nodePath) });
