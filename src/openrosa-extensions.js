@@ -6,6 +6,7 @@ var {DATE_STRING, dateToDays, dateStringToDays, isValidDate} = require('./utils/
 var shuffle = require('./utils/shuffle');
 var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
 var sortByDocumentOrder = require('./utils/sort-by-document-order');
+const XPR = require('./xpr-types');
 
 const RAW_NUMBER = /^-?[0-9]+(\.[0-9]+)?$/;
 
@@ -559,13 +560,6 @@ function asInteger(r) {
   var num = asNumber(r);
   return num > 0 ? Math.floor(num) : Math.ceil(num);
 }
-
-var XPR = {
-  boolean: function(v) { return { t:'bool', v:v }; },
-  number:  function(v) { return { t:'num',  v:v }; },
-  string:  function(v) { return { t:'str',  v:v }; },
-  date:    function(v) { return { t:'date', v:v }; },
-};
 
 function asDate(r) {
   var temp;
