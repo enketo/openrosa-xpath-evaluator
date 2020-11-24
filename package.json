@@ -11,8 +11,8 @@
     "travis": "npm run test"
   },
   "author": "Alex",
-  "license": "UNLICENSED",
-  "peerDependencies": {
+  "license": "Apache-2.0",
+  "dependencies": {
     "node-forge": "^0.9.1"
   },
   "devDependencies": {
