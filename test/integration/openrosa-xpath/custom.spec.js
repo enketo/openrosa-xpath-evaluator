@@ -74,14 +74,14 @@ describe('custom XPath functions', () => {
     it('should throw if too few args are provided', () => {
       assert.throws(
         () => evaluator.evaluate('pad2()'),
-        'Expected 1 arg(s), but got 0',
+        'Function "pad2" expected 1 arg(s), but got 0',
       );
     });
 
     it('should throw if too many args are provided', () => {
       assert.throws(
         () => evaluator.evaluate('pad2("1", 2)'),
-        'Expected 1 arg(s), but got 2',
+        'Function "pad2" expected 1 arg(s), but got 2',
       );
     });
   });

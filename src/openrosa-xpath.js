@@ -36,7 +36,7 @@ module.exports = function() {
 
       ore.func[name] = (...args) => {
         if(args.length !== argTypes.length) {
-          throw new Error(`Expected ${argTypes.length} arg(s), but got ${args.length}`);
+          throw new Error(`Function "${name}" expected ${argTypes.length} arg(s), but got ${args.length}`);
         }
 
         const convertedArgs = argTypes.map((type, idx) => cast[type](args[idx]));
