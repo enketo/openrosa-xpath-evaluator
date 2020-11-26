@@ -1,7 +1,7 @@
-var {handleOperation} = require('./utils/operation');
-var {preprocessNativeArgs} = require('./utils/native');
-var {toSnapshotResult} = require('./utils/result');
-var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
+const { handleOperation } = require('./utils/operation');
+const { preprocessNativeArgs } = require('./utils/native');
+const { toSnapshotResult } = require('./utils/result');
+const { asBoolean, asNumber, asString } = require('./utils/xpath-cast');
 /*
  * From http://www.w3.org/TR/xpath/#section-Expressions XPath infix operator
  * precedence is left-associative.  In the constants that follow, all but the
@@ -34,15 +34,15 @@ const MOD   = 0b10110;
 const UNION = 0b11000;
 // --- end operators
 
-var FUNCTION_NAME = /^[a-z]/;
+const FUNCTION_NAME = /^[a-z]/;
 const D = 0xDEAD; // dead-end marker for the unevaluated side of a lazy expression
 
 module.exports = function(wrapped, extensions) {
-  var
+  const
     extendedFuncs = extensions.func || {},
     extendedProcessors = extensions.process || {},
     toInternalResult = function(r) {
-      var v, i, ordrd;
+      let v, i, ordrd;
       switch(r.resultType) {
         case XPathResult.NUMBER_TYPE:  return { t:'num',  v:r.numberValue  };
         case XPathResult.BOOLEAN_TYPE: return { t:'bool', v:r.booleanValue };
@@ -52,7 +52,7 @@ module.exports = function(wrapped, extensions) {
         case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
           v = [];
           while((i = r.iterateNext())) v.push(i);
-          return { t:'arr', v:v, ordrd };
+          return { t:'arr', v, ordrd };
         case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
           ordrd = true;
         case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
@@ -60,7 +60,7 @@ module.exports = function(wrapped, extensions) {
           for(i=0; i<r.snapshotLength; ++i) {
             v.push(r.snapshotItem(i));
           }
-          return { t:'arr', v:v, ordrd };
+          return { t:'arr', v, ordrd };
         case XPathResult.ANY_UNORDERED_NODE_TYPE:
         case XPathResult.FIRST_ORDERED_NODE_TYPE:
           return { t:'arr', v:[r.singleNodeValue] };
@@ -70,7 +70,7 @@ module.exports = function(wrapped, extensions) {
     },
     toExternalResult = function(r, rt) {
       if(extendedProcessors.toExternalResult) {
-        var res = extendedProcessors.toExternalResult(r, rt);
+        const res = extendedProcessors.toExternalResult(r, rt);
         if(res) return res;
       }
 
@@ -101,7 +101,7 @@ module.exports = function(wrapped, extensions) {
     },
     typefor = function(val) {
       if(extendedProcessors.typefor) {
-        var res = extendedProcessors.typefor(val);
+        const res = extendedProcessors.typefor(val);
         if(res) return res;
       }
       if(typeof val === 'boolean') return 'bool';
@@ -113,7 +113,8 @@ module.exports = function(wrapped, extensions) {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   const evaluate = this.evaluate = function(input, cN, nR, rT, _, contextSize=1, contextPosition=1) {
-    var i, cur, stack = [{ t:'root', tokens:[] }],
+    let i, cur;
+    const stack = [{ t:'root', tokens:[] }],
       peek = function() { return stack[stack.length-1]; },
       err = function(message) { throw new Error((message||'') + ' [stack=' + JSON.stringify(stack) + '] [cur=' + JSON.stringify(cur) + ']'); },
       newCurrent = function() { cur = { t:'?', v:'' }; },
@@ -131,8 +132,8 @@ module.exports = function(wrapped, extensions) {
         // From the spec, this looks valid, if you assume that ExprWhitespace is a
         // valid Expr.
         // see: https://www.w3.org/TR/1999/REC-xpath-19991116/#section-Function-Calls
-        var args = [], i;
-        for(i=0; i<supplied.length; ++i) {
+        const args = [];
+        for(let i=0; i<supplied.length; ++i) {
           if(i % 2) {
             if(supplied[i] !== ',') throw new Error('Weird args (should be separated by commas):' + JSON.stringify(supplied));
           } else args.push(supplied[i]);
@@ -145,21 +146,22 @@ module.exports = function(wrapped, extensions) {
         return callNative(name, preprocessNativeArgs(name, args));
       },
       callNative = function(name, args) {
-        var argString = name + '(', arg, quote, i;
-        for(i=0; i<args.length; ++i) {
+        let argString = name + '(';
+        for(let i=0; i<args.length; ++i) {
           if(i) argString += ',';
-          arg = args[i];
+          const arg = args[i];
           switch(arg.t) {
             case 'arr': throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
             case 'bool': argString += arg.v + '()'; break;
             case 'num':  argString += arg.v;        break;
-            case 'str':
-              quote = arg.quote || (arg.v.indexOf('"') === -1 ? '"' : "'");
+            case 'str': {
+              const quote = arg.quote || (arg.v.indexOf('"') === -1 ? '"' : "'");
               // Firefox's native XPath implementation is 3.0, but Chrome's is 1.0.
               // XPath 1.0 has no support for escaping quotes in strings, so:
               if(arg.v.indexOf(quote) !== -1) throw new Error('Quote character found in String Literal: ' + JSON.stringify(arg.v));
               argString += quote + arg.v + quote;
-              // there aren't any other native types TODO do we need a hook for allowing date conversion?
+            }
+            // there aren't any other native types TODO do we need a hook for allowing date conversion?
           }
         }
         return toInternalResult(wrapped.evaluate(argString + ')', cN, nR, XPathResult.ANY_TYPE, null));
@@ -169,7 +171,7 @@ module.exports = function(wrapped, extensions) {
           return D;
         }
         if(extendedProcessors.handleInfix) {
-          var res = extendedProcessors.handleInfix(err, lhs, op, rhs);
+          let res = extendedProcessors.handleInfix(err, lhs, op, rhs);
           if(res && res.t === 'continue') {
             lhs = res.lhs; op = res.op; rhs = res.rhs; res = null;
           }
@@ -179,10 +181,9 @@ module.exports = function(wrapped, extensions) {
         return handleOperation(lhs, op, rhs);
       },
       evalOps = function(lastOp) {
-        var i, j, tokens;
-        tokens = peek().tokens;
+        const tokens = peek().tokens;
 
-        if(peek().dead) for(i=2; i<tokens.length; ++i) {
+        if(peek().dead) for(let i=2; i<tokens.length; ++i) {
           if(tokens[i] === D) {
             tokens.splice(i-1);
             tokens[i-2] = { t:'bool', v:asBoolean(tokens[i-2]) };
@@ -191,11 +192,11 @@ module.exports = function(wrapped, extensions) {
 
         if(tokens.length < 2) return;
 
-        for(j=UNION; j>=lastOp; j-=0b100) {
-          i = 1;
+        for(let j=UNION; j>=lastOp; j-=0b100) {
+          let i = 1;
           while(i < tokens.length-1) {
             if(tokens[i].t === 'op' && tokens[i].v >= j) {
-              var res = evalOp(tokens[i-1], tokens[i].v, tokens[i+1]);
+              const res = evalOp(tokens[i-1], tokens[i].v, tokens[i+1]);
               tokens.splice(i, 2);
               tokens[i-1] = { t:typefor(res), v:res };
             } else ++i;
@@ -208,8 +209,8 @@ module.exports = function(wrapped, extensions) {
           newCurrent();
           return;
         }
-        var expr = cur.v;
-        var tokens = peek().tokens;
+        let expr = cur.v;
+        const { tokens } = peek();
         if(tokens.length && tokens[tokens.length-1].t === 'arr') {
           // chop the leading slash from expr
           if(expr.charAt(0) !== '/') throw new Error(`not sure how to handle expression called on nodeset that doesn't start with a '/': ${expr}`);
@@ -236,7 +237,7 @@ module.exports = function(wrapped, extensions) {
         newCurrent();
       },
       prevToken = function() {
-        var peeked = peek().tokens;
+        const peeked = peek().tokens;
         return peeked[peeked.length - 1];
       },
       isNum = function(c) {
@@ -246,7 +247,7 @@ module.exports = function(wrapped, extensions) {
     newCurrent();
 
     for(i=0; i<input.length; ++i) {
-      var c = input.charAt(i);
+      const c = input.charAt(i);
       if(cur.t === 'sq') {
         // Build the entire expression found within the square brackets:
         //
@@ -376,8 +377,8 @@ module.exports = function(wrapped, extensions) {
           }
           pushOp(MULT);
         } break;
-        case '-':
-          var prev = prevToken();
+        case '-': {
+          const prev = prevToken();
           if(cur.v !== '' && nextChar() !== ' ' && input.charAt(i-1) !== ' ') {
             // function name expr
             cur.v += c;
@@ -393,7 +394,7 @@ module.exports = function(wrapped, extensions) {
             // TODO do we need to check for cur.v here?
             pushOp(MINUS);
           }
-          break;
+        } break;
         case '=':
           switch(cur.v) {
             case '<': pushOp(LTE); break;

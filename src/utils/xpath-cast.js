@@ -22,7 +22,7 @@ function asNumber(r) {
   if(r.t === 'bool') return r.v ? 1 : 0;
   if(r.t === 'date') return dateToDays(r.v); // TODO should be handled in an extension rather than core code
 
-  var str = asString(r).trim();
+  const str = asString(r).trim();
   if(str === '') return NaN;
   if(DATE_STRING.test(str)) return dateStringToDays(str); // TODO should be handled in an extension rather than core code
   return +str;
