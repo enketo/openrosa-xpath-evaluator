@@ -1,11 +1,11 @@
 require('./date-extensions');
-var {asGeopoints, area, distance} = require('./geo');
-var {digest} = require('./digest');
-var {randomToken} = require('./random-token');
-var {DATE_STRING, dateToDays, dateStringToDays, isValidDate} = require('./utils/date');
-var shuffle = require('./utils/shuffle');
-var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
-var sortByDocumentOrder = require('./utils/sort-by-document-order');
+const { asGeopoints, area, distance } = require('./geo');
+const { digest } = require('./digest');
+const { randomToken } = require('./random-token');
+const { DATE_STRING, dateToDays, dateStringToDays, isValidDate} = require('./utils/date');
+const shuffle = require('./utils/shuffle');
+const { asBoolean, asNumber, asString } = require('./utils/xpath-cast');
+const sortByDocumentOrder = require('./utils/sort-by-document-order');
 const XPR = require('./xpr');
 
 const RAW_NUMBER = /^-?[0-9]+(\.[0-9]+)?$/;
@@ -16,8 +16,8 @@ const GTE   = 0b01111;
 const PLUS  = 0b10000;
 const MINUS = 0b10001;
 
-var openrosa_xpath_extensions = function() {
-  var
+const openrosa_xpath_extensions = function() {
+  const
       TOO_MANY_ARGS = new Error('too many args'),
       TOO_FEW_ARGS = new Error('too few args'),
       MILLIS_PER_DAY = 1000 * 60 * 60 * 24,
@@ -28,7 +28,7 @@ var openrosa_xpath_extensions = function() {
         return Math.round(num);
       },
       _uuid_part = function(c) {
-        var r = Math.random()*16|0,
+        const r = Math.random()*16|0,
             v = c == 'x' ? r : r&0x3|0x8;
         return v.toString(16);
       },
@@ -40,7 +40,8 @@ var openrosa_xpath_extensions = function() {
         date = asDate(date);
         format = asString(format);
         if(isNaN(date)) return 'Invalid Date';
-        var c, i, sb = '', f = {
+        let c, i, sb = '';
+        const f = {
           year: 1900 + date.getYear(),
           month: 1 + date.getMonth(),
           day: date.getDate(),
@@ -51,7 +52,7 @@ var openrosa_xpath_extensions = function() {
           secTicks: date.getTime(),
           dow: 1 + date.getDay(),
         };
-        var locale = window ? window.enketoFormLocale : undefined;
+        const locale = window ? window.enketoFormLocale : undefined;
 
         for(i=0; i<format.length; ++i) {
           c = format.charAt(i);
@@ -103,17 +104,17 @@ var openrosa_xpath_extensions = function() {
 
         return sb;
       },
-      func, process, ret = {};
+      ret = {};
 
-  func = {
+  const func = {
     abs: function(r) { return XPR.number(Math.abs(asNumber(r))); },
     acos: function(r) { return XPR.number(Math.acos(asNumber(r))); },
     asin: function(r) { return XPR.number(Math.asin(asNumber(r))); },
     atan: function(r) { return XPR.number(Math.atan(asNumber(r))); },
     atan2: function(r) {
       if(arguments.length > 1) {
-        var y = asNumber(arguments[0]);
-        var x = asNumber(arguments[1]);
+        const y = asNumber(arguments[0]);
+        const x = asNumber(arguments[1]);
         return XPR.number(Math.atan2(y, x));
       }
       return XPR.number(Math.atan2(asNumber(r)));
@@ -135,10 +136,9 @@ var openrosa_xpath_extensions = function() {
       return XPR.number(area(asGeopoints(r)));
     },
     checklist: function(min, max, ...list) {
-      var trues;
       min = asNumber(min);
       max = asNumber(max);
-      trues = mapFn(asBoolean, ...list).reduce((acc, v) => v ? acc + 1 : acc, 0);
+      const trues = mapFn(asBoolean, ...list).reduce((acc, v) => v ? acc + 1 : acc, 0);
       return XPR.boolean((min < 0 || trues >= min) && (max < 0 || trues <= max));
     },
     coalesce: function(a, b) { return XPR.string(asString(a) || asString(b)); },
@@ -160,8 +160,8 @@ var openrosa_xpath_extensions = function() {
       return XPR.number(mapFn(asString, r).reduce((acc, v) => v ? acc + 1 : acc, 0));
     },
     'count-selected': function(s) {
-      var parts = asString(s).split(' '),
-          i = parts.length,
+      const parts = asString(s).split(' ');
+      let i = parts.length,
           count = 0;
       while(--i >= 0) if(parts[i].length) ++count;
       return XPR.number(count);
@@ -171,17 +171,17 @@ var openrosa_xpath_extensions = function() {
     },
     'decimal-date': function(date) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
-      var res = Date.parse(asString(date)) / MILLIS_PER_DAY;
+      const res = Date.parse(asString(date)) / MILLIS_PER_DAY;
       return XPR.number(res);
     },
     'decimal-time': function(r) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
       if(r.t === 'num') return XPR.number(NaN);
-      var time = r.v;
+      const time = r.v;
       // There is no Time type, and so far we don't need it so we do all validation
       // and conversion here, manually.
-      var  m = time.match(/^(\d\d):(\d\d):(\d\d)(\.\d\d?\d?)?(\+|-)(\d\d):(\d\d)$/);
-      var dec;
+      const m = time.match(/^(\d\d):(\d\d):(\d\d)(\.\d\d?\d?)?(\+|-)(\d\d):(\d\d)$/);
+      let dec;
       if (m &&
         m[1] < 24 && m[1] >= 0 &&
         m[2] < 60 && m[2] >= 0 &&
@@ -189,9 +189,8 @@ var openrosa_xpath_extensions = function() {
         m[6] < 24 && m[6] >= 0 && // this could be tighter
         m[7] < 60 && m[7] >= 0 // this is probably either 0 or 30
       ) {
-        var pad2 = function(x) { return (x < 10) ? '0' + x : x; };
-        var today = new Date(); // use today to cater to daylight savings time.
-        var d = new Date(today.getFullYear() + '-' + pad2(today.getMonth() + 1) + '-' + pad2(today.getDate()) + 'T' + time);
+        const today = new Date(); // use today to cater to daylight savings time.
+        const d = new Date(today.getFullYear() + '-' + _zeroPad(today.getMonth() + 1) + '-' + _zeroPad(today.getDate()) + 'T' + time);
         if(d.toString() === 'Invalid Date'){
           dec = NaN;
         } else {
@@ -343,9 +342,9 @@ var openrosa_xpath_extensions = function() {
 
       if(!r) return XPR.number(this.contextPosition);
 
-      var position = 1;
-      var node = r.v[0];
-      var nodeName = node.tagName;
+      let position = 1;
+      let node = r.v[0];
+      const nodeName = node.tagName;
       while (node.previousElementSibling && node.previousElementSibling.tagName === nodeName) {
         node = node.previousElementSibling;
         position++;
@@ -373,7 +372,7 @@ var openrosa_xpath_extensions = function() {
         return XPR.number(_round(number));
       }
       num_digits = asInteger(num_digits);
-      var pow = Math.pow(10, Math.abs(num_digits));
+      const pow = Math.pow(10, Math.abs(num_digits));
       if(num_digits > 0) {
         return XPR.number(_round(number * pow) / pow);
       } else {
@@ -404,7 +403,7 @@ var openrosa_xpath_extensions = function() {
     },
     sum: function(r) {
       if(!r || r.t !== 'arr') throw new Error('sum() must be called on a nodeset');
-      var sum = 0, i = r.v.length;
+      let sum = 0, i = r.v.length;
       while(i--) sum += asNumber(r.v[i]);
       return XPR.number(sum);
     },
@@ -420,17 +419,17 @@ var openrosa_xpath_extensions = function() {
     'weighted-checklist': function(min, max, ...list) {
       min = asNumber(min);
       max = asNumber(max);
-      var i, values = [], weights = [], weightedTrues = 0;
-      for(i=0; i<list.length; i+=2) {
-        var v = list[i];
-        var w = list[i+1];
+      let values = [], weights = [], weightedTrues = 0;
+      for(let i=0; i<list.length; i+=2) {
+        const v = list[i];
+        const w = list[i+1];
         if(v && w) {
           // value or weight might be a nodeset
           values  = values. concat(mapFn(asBoolean, v));
           weights = weights.concat(mapFn(asNumber,  w));
         }
       }
-      for(i=0; i < values.length; i++) {
+      for(let i=0; i < values.length; i++) {
         if(values[i]) {
           weightedTrues += weights[i] || 0;
         }
@@ -444,7 +443,7 @@ var openrosa_xpath_extensions = function() {
   func['decimal-date-time'] = func['decimal-date'];
   func['format-date-time'] = func['format-date'];
 
-  process = {
+  const process = {
       toExternalResult: function(r, resultType) {
         if(r.t === 'arr' && resultType === XPathResult.NUMBER_TYPE) {
           const str = asString(r);
@@ -487,9 +486,9 @@ var openrosa_xpath_extensions = function() {
           } else if(op === PLUS || op === MINUS) {
             // for math operators, we need to do it ourselves
             if(lhs.t === 'date' && rhs.t === 'date') err('No handling for simple arithmetic with two dates.');
-            var d = lhs.t === 'date'? lhs.v: rhs.v,
-                n = lhs.t !== 'date'? asInteger(lhs): asInteger(rhs),
+            const d = lhs.t === 'date'? lhs.v: rhs.v,
                 res = new Date(d.getTime());
+            let n = lhs.t !== 'date'? asInteger(lhs): asInteger(rhs);
             if(op === MINUS) n = -n;
             res.setDate(d.getDate() + n);
             return res;
@@ -535,7 +534,7 @@ var openrosa_xpath_extensions = function() {
   ret.process = process;
   ret.XPR = XPR;
   ret._now = function() { // This is exposed in ret to allow for unit testing, although this is not currently utilised.
-    var t = new Date();
+    const t = new Date();
     return new Date(t.getFullYear(), t.getMonth(), t.getDate());
   };
 
@@ -545,10 +544,10 @@ var openrosa_xpath_extensions = function() {
 module.exports = openrosa_xpath_extensions;
 
 function mapFn(fn) {
-  var res = [], i, j;
-  for(i=1; i<arguments.length; ++i) {
+  const res = [];
+  for(let i=1; i<arguments.length; ++i) {
     if(arguments[i].t === 'arr') {
-      for(j=0; j<arguments[i].v.length; ++j) {
+      for(let j=0; j<arguments[i].v.length; ++j) {
         res.push(fn(arguments[i].v[j]));
       }
     } else res.push(fn(arguments[i]));
@@ -557,12 +556,12 @@ function mapFn(fn) {
 }
 
 function asInteger(r) {
-  var num = asNumber(r);
+  const num = asNumber(r);
   return num > 0 ? Math.floor(num) : Math.ceil(num);
 }
 
 function asDate(r) {
-  var temp;
+  let temp;
   switch(r.t) {
     case 'bool': return new Date(NaN);
     case 'date': return r.v;
@@ -580,7 +579,7 @@ function asDate(r) {
         if(temp !== -1) r = r.substring(0, temp);
         temp = r.split('-');
         if(isValidDate(temp[0], temp[1], temp[2])) {
-          var time = `${_zeroPad(temp[0])}-${_zeroPad(temp[1])}-${_zeroPad(temp[2])}`+
+          const time = `${_zeroPad(temp[0])}-${_zeroPad(temp[1])}-${_zeroPad(temp[2])}`+
             'T00:00:00.000' + (new Date(r)).getTimezoneOffsetAsTime();
           return new Date(time);
         }
