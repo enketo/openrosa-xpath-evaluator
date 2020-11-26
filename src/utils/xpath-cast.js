@@ -1,9 +1,9 @@
 const { DATE_STRING, dateToDays, dateStringToDays } = require('./date');
 
 module.exports = {
-  asBoolean:asBoolean,
-  asNumber:asNumber,
-  asString:asString,
+  asBoolean,
+  asNumber,
+  asString,
 };
 
 // cast to number, as per https://www.w3.org/TR/1999/REC-xpath-19991116/#section-Boolean-Functions
