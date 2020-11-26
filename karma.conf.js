@@ -13,25 +13,18 @@ module.exports = function(config) {
     files: [
       'node_modules/chai/chai.js',
       'node_modules/lodash/lodash.js',
-      'src/**/*.js',
       'test/integration/**/*.spec.js',
     ],
     preprocessors: {
       'src/**/*.js': ['webpack'],
-      'test/helpers.js': ['webpack'],
       'test/integration/**/*.spec.js': ['webpack'],
     },
     reporters: [
       'mocha',
-      'coverage'
     ],
     webpack: require('./webpack.test.config.js'),
     webpackMiddleware: {
       watchOptions: { poll: 100 }
-    },
-    coverageReporter: {
-      type: 'lcov',
-      subdir: '.'
-    },
+    }
   });
 };
