@@ -9,7 +9,6 @@ const fns = {
   'floor':            { min:1, max:1 },
   'id':               { min:1, max:1, conv:r => [ xpr.string(r.t === 'arr' ? r.v.map(asString).join(' ') : asString(r)) ] },
   'lang':             { min:1, max:1 },
-  'name':             { min:0, max:1, args:['arr'] }, // TODO name() probably needs similar re-implementation as local-name()
   'starts-with':      { min:2, max:2 },
   'substring':        { min:2, max:3, conv:convertSubstringArgs },
   'substring-after':  { min:2, max:2 },
@@ -22,11 +21,6 @@ function preprocessNativeArgs(name, args) {
   if(!def) return args;
   if(args.length < def.min) throw new Error('too few args');
   if(args.length > def.max) throw new Error('too many args');
-  if(def.args) {
-    args.forEach((arg, i) => {
-      if(arg.t !== def.args[i]) throw new Error(`Function "${name}" bad argument at ${i}: expected ${def.args[i]} but got ${arg.t}`);
-    });
-  }
   if(def.conv) {
     return def.conv(...args);
   }

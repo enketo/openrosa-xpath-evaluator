@@ -241,12 +241,16 @@ const openrosa_xpath_extensions = function() {
       // somehow to the native implementation.
       //
       // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-local-name
-      if(arguments.length > 1) throw new Error('too many args');
-      if(!r) return XPR.string(this.cN.nodeName);
-      if(r.t !== 'arr') throw new Error('wrong arg type');
-      if(!r.v.length) return XPR.string('');
-      sortByDocumentOrder(r);
-      return XPR.string(r.v[0].nodeName);
+      const name = getNodeName(this, r);
+      return XPR.string(name.match(/^(?:[^:]*:)?(.*)/)[1]);
+    },
+    name: function(r) {
+      // This is actually supported natively, but currently it's simpler to implement
+      // ourselves than convert the supplied nodeset into a single node and pass this
+      // somehow to the native implementation.
+      //
+      // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-name
+      return XPR.string(getNodeName(this, r));
     },
     log: function(r) { return XPR.number(Math.log(r.v)); },
     log10: function(r) { return XPR.number(Math.log10(r.v)); },
@@ -266,12 +270,8 @@ const openrosa_xpath_extensions = function() {
       // somehow to the native implementation.
       //
       // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-namespace-uri
-      if(arguments.length > 1) throw new Error('too many args');
-      if(!r) return XPR.string(this.cN.namespaceURI);
-      if(r.t !== 'arr') throw new Error('wrong arg type');
-      if(!r.v.length) return XPR.string('');
-      sortByDocumentOrder(r);
-      return XPR.string(r.v[0].namespaceURI);
+      const node = getNode(this, r);
+      return XPR.string(node && node.namespaceURI || '');
     },
     'normalize-space': function(r) {
       // TODO this seems to do a lot more than the spec at https://www.w3.org/TR/1999/REC-xpath-19991116/#function-normalize-space
@@ -594,4 +594,34 @@ function _zeroPad(n, len) {
   n = n.toString();
   while(n.length < len) n = '0' + n;
   return n;
+}
+
+function getNodeName(ctx, r) {
+  const node = getNode(ctx, r);
+  return node ? node.nodeName : '';
+}
+
+/**
+ * If r is supplied, returns the first Element or Attribute in r by document order.
+ * If r is not supplied, returns the ctx iff it is an Element or Attribute.
+ */
+function getNode(ctx, r) {
+  if(arguments.length > 2) throw new Error('too many args');
+  if(!r) return isNodeish(ctx.cN) ? ctx.cN : null;
+  if(r.t !== 'arr') throw new Error('wrong arg type');
+  if(!r.v.length) return;
+  sortByDocumentOrder({ t:'arr', v:r.v.filter(isNodeish) });
+  return r.v[0];
+}
+
+/**
+ * I can't decode what a QName is from the spec, but it seems like only the
+ * following nodeTypes are considered by XPath:
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
+ */
+function isNodeish({ nodeType }) {
+  return nodeType === 1 ||
+         nodeType === 2 ||
+         nodeType === 7 ||
+         nodeType === 10;
 }

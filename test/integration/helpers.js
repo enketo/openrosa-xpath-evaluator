@@ -27,6 +27,7 @@ const initDoc = (xml, xnsr) => {
     return evaluator.evaluate(e, node, xnsr || nsr, rt || XPathResult.ANY_TYPE, null);
   };
   doc.evaluator = evaluator;
+  doc.evaluate = evaluator.evaluate;
   doc.xEval = xEval;
   return doc;
 };
