@@ -17,9 +17,11 @@ describe('number operators', () => {
       ["1.0+1.0", 2],
       ["true()+true()", 2],
       ["false()+1", 1],
+      ["(1 div 0) * 0", NaN],
       ["(1 div 0) + 1", Number.POSITIVE_INFINITY],
       ["(-1 div 0) + 1", Number.NEGATIVE_INFINITY],
       ["1 + (-1 div 0)", Number.NEGATIVE_INFINITY],
+      ["(1 div 0) + (-1 div 0)", NaN],
       ["number('a') + 0", NaN],
       ["0 + number('a')", NaN],
     ].forEach(([ expr, expected ]) => {
@@ -129,7 +131,7 @@ describe('number operators', () => {
       ["1 mod -1", 0],
       ["0 mod 1", 0],
       ["10 mod (1 div 0)", 10],
-      ["-10 mod (-1 div 0)", -10]
+      ["-10 mod (-1 div 0)", -10],
     ].forEach(t => {
       assertNumber(t[0], t[1]);
     });
@@ -183,7 +185,7 @@ describe('number operators', () => {
       ["true() div true()", 1],
       ["false() div 1", 0],
       ["1 div 0", Number.POSITIVE_INFINITY],
-      ["-1 div 0", Number.NEGATIVE_INFINITY]
+      ["-1 div 0", Number.NEGATIVE_INFINITY],
     ].forEach(t => {
       assertNumberValue(t[0], t[1]);
     });
@@ -211,7 +213,7 @@ describe('number operators', () => {
       ["1.5 * 3", 4.5],
       ["(1 div 0) * 1", Number.POSITIVE_INFINITY],
       ["(-1 div 0) * -1", Number.POSITIVE_INFINITY],
-      ["(1 div 0) * -1", Number.NEGATIVE_INFINITY]
+      ["(1 div 0) * -1", Number.NEGATIVE_INFINITY],
     ].forEach(t => {
       assertNumber(t[0], t[1]);
     });

@@ -31,11 +31,13 @@ function handleOperation(lhs, op, rhs) {
     case LTE:   return relationalCompare(lhs, rhs, (a, b) => a <= b);
     case GT:    return relationalCompare(lhs, rhs, (a, b) => a >  b);
     case GTE:   return relationalCompare(lhs, rhs, (a, b) => a >= b);
+
     case PLUS:  return asNumber(lhs) + asNumber(rhs);
     case MINUS: return asNumber(lhs) - asNumber(rhs);
     case MULT:  return asNumber(lhs) * asNumber(rhs);
     case DIV:   return asNumber(lhs) / asNumber(rhs);
     case MOD:   return asNumber(lhs) % asNumber(rhs);
+
     case UNION: return [...lhs.v, ...rhs.v];
     default: throw new Error(`No handling for op ${op}`);
   }

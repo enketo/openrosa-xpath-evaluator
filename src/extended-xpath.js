@@ -153,7 +153,11 @@ module.exports = function(wrapped, extensions) {
           switch(arg.t) {
             case 'arr': throw new Error(`callNative() can't handle nodeset functions yet for ${name}()`);
             case 'bool': argString += arg.v + '()'; break;
-            case 'num':  argString += arg.v;        break;
+            case 'num':
+              if     (arg.v ===  Infinity) argString += '( 1 div 0)';
+              else if(arg.v === -Infinity) argString += '(-1 div 0)';
+              else                         argString += arg.v;
+              break;
             case 'str': {
               const quote = arg.quote || (arg.v.indexOf('"') === -1 ? '"' : "'");
               // Firefox's native XPath implementation is 3.0, but Chrome's is 1.0.

@@ -39,6 +39,17 @@ describe('native number functions', () => {
     assertNumber('number(" . ")', NaN);
   });
 
+  describe('Infinities', () => {
+    [
+      [ 'number( 1 div 0)',  Infinity ],
+      [ 'number(-1 div 0)', -Infinity ],
+    ].forEach(([ expr, expected ]) => {
+      it(`should evaluate "${expr}" as "${expected}"`, () => {
+        assertNumber(expr, expected);
+      });
+    });
+  });
+
   describe('conversion of nodesets', () => {
     let doc;
 

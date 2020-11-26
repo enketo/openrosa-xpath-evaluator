@@ -181,6 +181,10 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
         false,
       '0 and /explode[/explode]':
         false,
+      '1 div 0':
+        Infinity,
+      '-1 div 0':
+        -Infinity,
     },
     trickyStandardXpath_supported = [
       // REVIEW: removed expressions from here that contain predicates, as these can't be supported in unit tests as they rely on the browser's implementation to some extent
@@ -244,6 +248,7 @@ describe('ExtendedXpathEvaluator', function() {
     it(expr + ' should be evaluated', function() {
       switch(typeof expected) {
         case 'boolean': return assert.equal(extendedXPathEvaluator.evaluate(expr).booleanValue, expected);
+        case 'number':  return assert.equal(extendedXPathEvaluator.evaluate(expr).numberValue,  expected);
         case 'string':  return assert.equal(extendedXPathEvaluator.evaluate(expr).stringValue,  expected);
         default:        return assert.match(extendedXPathEvaluator.evaluate(expr).stringValue,  expected);
       }
