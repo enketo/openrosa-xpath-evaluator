@@ -6,7 +6,7 @@ var {DATE_STRING, dateToDays, dateStringToDays, isValidDate} = require('./utils/
 var shuffle = require('./utils/shuffle');
 var {asBoolean, asNumber, asString} = require('./utils/xpath-cast');
 var sortByDocumentOrder = require('./utils/sort-by-document-order');
-const XPR = require('./xpr-types');
+const XPR = require('./xpr');
 
 const RAW_NUMBER = /^-?[0-9]+(\.[0-9]+)?$/;
 

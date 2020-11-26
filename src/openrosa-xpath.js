@@ -2,7 +2,7 @@ require('./date-extensions'); // TODO remove?
 
 const ExtendedXPathEvaluator = require('./extended-xpath');
 const openrosaExtensions = require('./openrosa-extensions');
-const XPR = require('./xpr-types');
+const XPR = require('./xpr');
 const { asBoolean, asNumber, asString } = require('./utils/xpath-cast');
 
 const cast = {
