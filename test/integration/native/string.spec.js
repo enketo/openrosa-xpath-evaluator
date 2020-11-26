@@ -189,21 +189,27 @@ describe('native string functions', () => {
     assertThrow("substring-after(1)");
   });
 
-  it('substring()', () => {
-    assertString("substring('12345', 2, 3)", '234');
-    assertString("substring('12345', 2)", '2345');
-    assertString("substring('12345', -1)", '12345');
-    assertString("substring('12345', 1 div 0)", '');
-    assertString("substring('12345', 0 div 0)", '');
-    assertString("substring('12345', -1 div 0)", '12345');
-    assertString("substring('12345', 1.5, 2.6)", '234');
-    assertString("substring('12345', 1.3, 2.3)", '12');
-    assertString("substring('12345', 0, 3)", '12');
-    assertString("substring('12345', 0, -1 div 0)", '');
-    assertString("substring('12345', 0 div 0, 3)", '');
-    assertString("substring('12345', 1, 0 div 0)", '');
-    assertString("substring('12345', -42, 1 div 0)", '12345');
-    assertString("substring('12345', -1 div 0, 1 div 0)", '');
+  describe('substring()', () => {
+    [
+      [ "substring('12345', 2, 3)", '234' ],
+      [ "substring('12345', 2)", '2345' ],
+      [ "substring('12345', -1)", '12345' ],
+      [ "substring('12345', 1 div 0)", '' ],
+      [ "substring('12345', 0 div 0)", '' ],
+      [ "substring('12345', -1 div 0)", '12345' ], // REVIEW this diverges from Firefox and Chrome implementations, but seems to follow the spec
+      [ "substring('12345', 1.5, 2.6)", '234' ],
+      [ "substring('12345', 1.3, 2.3)", '12' ],
+      [ "substring('12345', 0, 3)", '12' ],
+      [ "substring('12345', 0, -1 div 0)", '' ],
+      [ "substring('12345', 0 div 0, 3)", '' ],
+      [ "substring('12345', 1, 0 div 0)", '' ],
+      [ "substring('12345', -42, 1 div 0)", '12345' ],
+      [ "substring('12345', -1 div 0, 1 div 0)", '' ],
+    ].forEach(([ expr, expected ]) => {
+      it(`should evaluate "${expr}" to "${expected}"`, () => {
+        assertString(expr, expected);
+      });
+    });
   });
 
   it('substring() fails when too many arguments are provided', () => {
