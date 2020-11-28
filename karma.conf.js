@@ -11,11 +11,10 @@ module.exports = function(config) {
       'FirefoxHeadless',
     ],
     files: [
-      'test/integration/**/*.spec.js',
+      'test/integration/index.js',
     ],
     preprocessors: {
-      'src/**/*.js': ['webpack'],
-      'test/integration/**/*.spec.js': ['webpack'],
+      'test/integration/index.js': ['webpack'],
     },
     webpack: {
       mode: 'development',
