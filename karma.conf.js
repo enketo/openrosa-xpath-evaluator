@@ -4,27 +4,22 @@ module.exports = function(config) {
   process.env.TZ = 'America/Phoenix';
   config.set({
     frameworks: [
-      'mocha'
+      'mocha',
     ],
     browsers: [
       'ChromeHeadless',
       'FirefoxHeadless',
     ],
     files: [
-      'node_modules/chai/chai.js',
-      'node_modules/lodash/lodash.js',
       'test/integration/**/*.spec.js',
     ],
     preprocessors: {
       'src/**/*.js': ['webpack'],
       'test/integration/**/*.spec.js': ['webpack'],
     },
-    reporters: [
-      'mocha',
-    ],
-    webpack: require('./webpack.test.config.js'),
-    webpackMiddleware: {
-      watchOptions: { poll: 100 }
-    }
+    webpack: {
+      mode: 'development',
+      devtool: false,
+    },
   });
 };

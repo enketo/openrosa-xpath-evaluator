@@ -1,7 +1,11 @@
 const {initDoc, assert, simpleValueIs} = require('./helpers');
 
 describe('date comparison', () => {
-  const doc = initDoc('');
+  let doc;
+  beforeEach(() => {
+    doc = initDoc('');
+  });
+
   function relativeDateAsString(offset, noQuotes) {
     var d = new Date(),
         ret = noQuotes ? '' : '"';
@@ -126,8 +130,9 @@ describe('date comparison', () => {
 
   describe('comparisons with a field', () => {
     describe('set to today', () => {
+      let doc;
       beforeEach(() => {
-        simpleValueIs(relativeDateAsString(0, true));
+        doc = simpleValueIs(relativeDateAsString(0, true));
       });
 
       it('should be less than tomorrow', () => {

@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 const {assertBoolean, assertString, assertNumberValue, initDoc} = require('./helpers');
 
 describe('infix operators', () => {

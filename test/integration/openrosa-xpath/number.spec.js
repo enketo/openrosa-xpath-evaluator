@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 const { assert, assertThrow, assertNumberValue,
   assertNumberRounded, initDoc } = require('../helpers');
 

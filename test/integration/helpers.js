@@ -1,39 +1,35 @@
-// TODO this should be moved to test/integration
-const assert = chai.assert;
+const { assert } = require('chai');
 const OpenRosaXpath = require('../../src/openrosa-xpath');
 const { toDbgString } = require('../dbg');
 
-let doc, xEval, evaluator, nsr, rt, node;
+let xEval;
 
-const nsResolver = (prefix) => {
-  var ns = {
-    'xhtml' : 'http://www.w3.org/1999/xhtml',
-    'mathml': 'http://www.w3.org/1998/Math/MathML',
-    'jr': 'http://openrosa.org/javarosa'
-  };
-  return ns[prefix] || null;
+const nsResolver = {
+  lookupNamespaceURI: prefix => {
+    var ns = {
+      'xhtml' : 'http://www.w3.org/1999/xhtml',
+      'mathml': 'http://www.w3.org/1998/Math/MathML',
+      'jr': 'http://openrosa.org/javarosa'
+    };
+    return ns[prefix];
+  },
 };
 
-nsResolver.lookupNamespaceURI = nsResolver;
-
-const initDoc = (xml, xnsr) => {
-  doc = new DOMParser().parseFromString(xml, 'application/xml');
-  node = null;
-  nsr = xnsr;
-  evaluator = OpenRosaXpath();
-  xEval = function(e, xnode, xrt, xnsr) {
-    node = xnode || doc;
-    rt = xrt;
-    return evaluator.evaluate(e, node, xnsr || nsr, rt || XPathResult.ANY_TYPE, null);
+const initDoc = (xml, nsr) => {
+  const doc = new DOMParser().parseFromString(xml, 'application/xml');
+  const evaluator = OpenRosaXpath();
+  xEval = function(e, xnode, xrt) {
+    const node = xnode || doc;
+    const rt = xrt || XPathResult.ANY_TYPE;
+    return evaluator.evaluate(e, node, nsr, rt);
   };
-  doc.evaluator = evaluator;
   doc.evaluate = evaluator.evaluate;
   doc.xEval = xEval;
   return doc;
 };
 
 const simpleValueIs = (textValue) => {
-  initDoc(`<simple><xpath><to>
+  return initDoc(`<simple><xpath><to>
              <node>${textValue}</node>
            </to></xpath><empty/></simple>`);
 };
