@@ -11,7 +11,7 @@ module.exports = function(config) {
       'FirefoxHeadless',
     ],
     files: [
-      'test/integration/index.js',
+      { pattern:'test/integration/index.js', watched:false },
     ],
     preprocessors: {
       'test/integration/index.js': ['webpack'],
