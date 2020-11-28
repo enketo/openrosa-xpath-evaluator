@@ -1,9 +1,7 @@
-require('./basic-xpath.spec');
-require('./complex.spec');
-require('./complex.spec');
-require('./date-comparison.spec');
-require('./infix-operators.spec');
-require('./predicates.spec');
+// see: https://github.com/ryanclark/karma-webpack#alternative-usage
 
-require('./native');
-require('./openrosa-xpath');
+// require all modules ending in "_test" from the
+// current directory and all subdirectories
+const testsContext = require.context('.', true, /.spec$/);
+
+testsContext.keys().forEach(testsContext);
