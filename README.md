@@ -56,6 +56,22 @@ your project.
 * namespace:: axis is not supported (but it might work in your browser if you're lucky)
 * xpath variables (`$var`) are not supported
 
+# Not implemented
+
+The following XPath/ODK/OpenRosa functions are not implemented in this library, but may still work depending on your usage.
+
+## XPath 1.0 functions
+
+* instance()
+* current()
+
+## ODK functions
+
+* pulldata()
+* jr:choice-name()
+* jr:itext()
+* indexed-repeat()
+
 # TODO
 
 * arrange source code, e.g. `src/core` and `src/openrosa`
