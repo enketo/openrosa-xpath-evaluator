@@ -1,3 +1,10 @@
+/**
+ * XForms 1.1 digest() function.
+ * @see https://www.w3.org/TR/xforms/#fn-digest
+ *
+ * This implementation depends on the node-forge module, and will throw an Error
+ * at runtime if the module is not available.
+ */
 module.exports = (message, algo, encoding) => {
   let forge;
   try {
