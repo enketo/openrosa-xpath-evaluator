@@ -10,14 +10,29 @@ For more info on extended XPath expressions/bindings supported by XForms/OpenRos
 * [ODK XForm Specification](https://getodk.github.io/xforms-spec/)
 
 
-## Getting Started
+# Installation
 
-  1. Include with `npm install openrosa-xpath-evaluator --save` or `yarn add openrosa-xpath-evaluator`
+## yarn
 
-  3. You can now use XPath expressions to query the DOM:
+    yarn add openrosa-xpath-evaluator
+
+## npm
+
+    npm install --save openrosa-xpath-evaluator
+
+# Use
+
+## Initialisation
 
     ```js
-    var result = document.evaluate(
+    const orxe = require('openrosa-xpath-evaluator');
+    const evaluate = orxe();
+    ```
+
+## Querying
+
+    ```js
+    var result = evaluate(
         '//ul/li/text()', // XPath expression
         document, // context node
         null, // namespace resolver
@@ -31,13 +46,15 @@ For more info on extended XPath expressions/bindings supported by XForms/OpenRos
     }
     ```
 
-# External Libraries
 
-This library has no explicit dependencies.
+# Dependencies
+
+This library has no explicit dependencies, but expects various DOM & XPath-related values to be supplied by the browser (`Element`, `Node`, `XPathResult` etc.).
 
 To use the [ODK `digest()` function](https://getodk.github.io/xforms-spec/#fn:digest),
 you'll need to add [`node-forge`](https://www.npmjs.com/package/node-forge) to
 your project.
+
 
 # Development
 
@@ -51,10 +68,12 @@ your project.
 * https://developer.mozilla.org/en-US/docs/Web/API/XPathResult
 * https://developer.mozilla.org/en-US/docs/Web/API/Node
 
+
 # Known limitations
 
 * namespace:: axis is not supported (but it might work in your browser if you're lucky)
 * xpath variables (`$var`) are not supported
+
 
 # Not implemented
 
@@ -71,6 +90,7 @@ The following XPath/ODK/OpenRosa functions are not implemented in this library, 
 * jr:choice-name()
 * jr:itext()
 * indexed-repeat()
+
 
 # TODO
 
