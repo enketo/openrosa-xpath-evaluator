@@ -1,6 +1,11 @@
-const forge = require('node-forge');
+module.exports = (message, algo, encoding) => {
+  let forge;
+  try {
+    forge = require('node-forge');
+  } catch(err) {
+    throw new Error(`Cannot find module 'node-forge'; this is required to use the digest() function.`);
+  }
 
-const digest = (message, algo, encoding) => {
   message = message.v;
   algo = algo && algo.v && algo.v.toLowerCase();
   encoding = (encoding && encoding.v && encoding.v.toLowerCase()) || 'base64';
@@ -17,8 +22,4 @@ const digest = (message, algo, encoding) => {
     return forge.util.encode64(hashBuffer.bytes());
   }
   return md.digest().toHex();
-};
-
-module.exports = {
-  digest
 };

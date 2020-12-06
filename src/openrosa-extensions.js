@@ -1,6 +1,6 @@
 require('./date-extensions');
 const { asGeopoints, area, distance } = require('./geo');
-const { digest } = require('./digest');
+const digest = require('./digest');
 const { randomToken } = require('./random-token');
 const { DATE_STRING, dateToDays, dateStringToDays, isValidDate} = require('./utils/date');
 const shuffle = require('./utils/shuffle');
