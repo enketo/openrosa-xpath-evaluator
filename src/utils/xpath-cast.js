@@ -6,7 +6,7 @@ module.exports = {
   asString,
 };
 
-// cast to number, as per https://www.w3.org/TR/1999/REC-xpath-19991116/#section-Boolean-Functions
+// cast to boolean, as per https://www.w3.org/TR/1999/REC-xpath-19991116/#section-Boolean-Functions
 function asBoolean(r) {
   if(isDomNode(r)) return !!asString(r).trim();
   switch(r.t) {
