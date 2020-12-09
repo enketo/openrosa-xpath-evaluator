@@ -1,12 +1,9 @@
 const { assert } = require('chai');
-const { encodeOp, registerDomGlobals, teardownDomGlobals, wrapVal } = require('./utils');
+const { encodeOp, wrapVal } = require('./utils');
 
 const evalInfix = require('../../src/utils/operation').handleOperation;
 
 describe('evalInfix()', () => {
-  before(registerDomGlobals);
-  after(teardownDomGlobals);
-
   describe('booleans', () => {
     /* see https://www.w3.org/TR/1999/REC-xpath-19991116/#booleans */
 

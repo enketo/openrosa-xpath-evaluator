@@ -619,9 +619,12 @@ function getNode(ctx, r) {
  * following nodeTypes are considered by XPath:
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
  */
+const NODEISH = {
+  [Node.ELEMENT_NODE               ]: true,
+  [Node.ATTRIBUTE_NODE             ]: true,
+  [Node.PROCESSING_INSTRUCTION_NODE]: true,
+  [Node.DOCUMENT_TYPE_NODE         ]: true,
+};
 function isNodeish({ nodeType }) {
-  return nodeType === 1 ||
-         nodeType === 2 ||
-         nodeType === 7 ||
-         nodeType === 10;
+  return NODEISH[nodeType];
 }

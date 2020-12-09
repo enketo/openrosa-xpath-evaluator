@@ -1,12 +1,9 @@
 const { assert } = require('chai');
-const { assertVal, encodeOp, opVals, registerDomGlobals, teardownDomGlobals, wrapVal } = require('./utils');
+const { assertVal, encodeOp, opVals, wrapVal } = require('./utils');
 
 const extensions = require('../../src/openrosa-extensions')({});
 
 describe('openrosa-extensions', () => {
-  before(registerDomGlobals);
-  after(teardownDomGlobals);
-
   it('should have expected functions', () => {
     assert.containsAllKeys(extensions.func, [
       'max', 'randomize',

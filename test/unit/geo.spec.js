@@ -1,12 +1,9 @@
 const { assert } = require('chai');
-const { registerDomGlobals, teardownDomGlobals, wrapVal } = require('./utils');
+const { wrapVal } = require('./utils');
 
 const { asGeopoints } = require('../../src/geo');
 
 describe('geo', () => {
-  before(registerDomGlobals);
-  after(teardownDomGlobals);
-
   describe('asGeopoints()', () => {
     [
       [ '1;2;3', [ '1', '2', '3' ] ],

@@ -2,7 +2,6 @@
 const ExtendedXPathEvaluator = require('../../src/extended-xpath');
 const assert = require('chai').assert;
 const _ = require('lodash');
-const { registerDomGlobals, teardownDomGlobals } = require('./utils');
 
 var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d\\d 20\\d\\d \\d\\d:\\d\\d:\\d\\d GMT([+-]\\d\\d\\d\\d (.+))?',
     examples = {
@@ -241,9 +240,6 @@ var DATE_MATCH = '(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug
     );
 
 describe('ExtendedXpathEvaluator', function() {
-  before(registerDomGlobals);
-  after(teardownDomGlobals);
-
   _.map(examples, function(expected, expr) {
     it(expr + ' should be evaluated', function() {
       switch(typeof expected) {
