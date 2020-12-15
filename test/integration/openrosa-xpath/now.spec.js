@@ -3,10 +3,10 @@ const { assert,initDoc } = require('../helpers');
   describe('#now()', () => {
     const doc = initDoc('');
 
-    // REVIEW: ODK spec says:
-    // Deviates from XForms 1.0 in that it returns the current date and time
-    // including timezone offset (i.e. not normalized to UTC) as described under
-    // the dateTime datatype.
+    // ODK spec says:
+    // > Deviates from XForms 1.0 in that it returns the current date and time
+    // > including timezone offset (i.e. not normalized to UTC) as described
+    // > under the dateTime datatype.
     it('should return a timestamp for this instant', () => {
       // this check might fail if run at precisely midnight ;-)
 

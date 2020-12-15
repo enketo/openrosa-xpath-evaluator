@@ -126,8 +126,5 @@ describe('#min()', () => {
 
     node = doc.getElementById('FunctionNumberCaseNotNumberMultiple');
     assertNumberValue(node, null, 'min(node())', NaN);
-
-    //assertNumberValue('min(//*[@id="FunctionMinCase"]/*[position()=1], //*[@id="FunctionMinCase"]/*[position()=2], //*[@id="FunctionMinCase"]/*[position()=3])', 0);
-    // REVIEW min() only accepts a single nodeset as arguments at https://www.w3.org/TR/2003/REC-xforms-20031014/slice7.html#fn-min
   });
 });

@@ -167,7 +167,6 @@ const filterAttributes = (attributes) => {
   var i, name, specifiedAttributes = [];
 
   for(i = 0; i < attributes.length; i++) {
-    // REVIEW: Attr.specified is _always_ true - see https://developer.mozilla.org/en-US/docs/Web/API/Attr
     name = attributes[i].nodeName.split(':');
     if (name[0] === 'xmlns') {
       // ignore namespaces

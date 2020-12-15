@@ -72,10 +72,6 @@ describe('#max()', () => {
     node = doc.getElementById('FunctionMaxCase');
     assertNumberValue(node, null, 'max(*)', 0);
 
-    node = doc.getElementById('FunctionMaxCase');
-    //assertNumberValue(node, null, 'max(//*[@id="FunctionMaxCase"]/*[position()=1], //*[@id="FunctionMaxCase"]/*[position()=2], //*[@id="FunctionMaxCase"]/*[position()=3])', 0);
-    // REVIEW max() only accepts a single nodeset as arguments at https://www.w3.org/TR/2003/REC-xforms-20031014/slice7.html#fn-max
-
     node = doc.getElementById('FunctionMaxMinWithEmpty');
     assertNumberValue(node, null, 'max(*)', NaN);
   });

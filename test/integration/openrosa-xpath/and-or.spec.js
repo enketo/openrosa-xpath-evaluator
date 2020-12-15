@@ -47,7 +47,6 @@ describe('and/or operators', () => {
   });
 
   it('and laziness', () => {
-    // REVIEW: we're not currently supporting $variables, so I've changed these to calls to calling substring() without an arg (this would throw an error if actually run)
     assertFalse("false() and substring()");
     assertFalse("false() and substring() and true()");
     assertFalse("true() and false() and substring()");
@@ -102,7 +101,6 @@ describe('and/or operators', () => {
   });
 
   it('or laziness', () => {
-    // REVIEW: we're not currently supporting $variables, so I've changed these to calls to calling substring() without an arg (this would throw an error if actually run)
     [
       [ "true() or substring()", true ],
       [ "true() or substring() and true()", true ],

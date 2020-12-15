@@ -196,7 +196,7 @@ describe('native string functions', () => {
       [ "substring('12345', -1)", '12345' ],
       [ "substring('12345', 1 div 0)", '' ],
       [ "substring('12345', 0 div 0)", '' ],
-      [ "substring('12345', -1 div 0)", '12345' ], // REVIEW this diverges from Firefox and Chrome implementations, but seems to follow the spec
+      [ "substring('12345', -1 div 0)", '12345' ], // this diverges from Firefox and Chrome implementations, but seems to follow the spec
       [ "substring('12345', 1.5, 2.6)", '234' ],
       [ "substring('12345', 1.3, 2.3)", '12' ],
       [ "substring('12345', 0, 3)", '12' ],

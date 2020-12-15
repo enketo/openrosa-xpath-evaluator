@@ -13,17 +13,14 @@ describe('once()', () => {
     const node = doc.getElementById('FunctionSelectedCaseEmpty');
 
     it('should set value to a string', () => {
-      // given
       assertStringValue(node, null, 'once("aa")', 'aa');
     });
 
     it('should set value to NaN', () => {
-      // REVIEW no idea why this is controversial
       assertStringValue(node, null, 'once(. * 10)', 'NaN');
     });
 
     it('should set value to Inifity', () => {
-      // REVIEW no idea why this is controversial
       assertStringValue(node, null, 'once(1 div 0)', 'Infinity');
     });
   });

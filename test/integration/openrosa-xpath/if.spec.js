@@ -27,8 +27,6 @@ describe('#if()', () => {
     });
 
     it(`should evaluate a non-existing node as false`, () => {
-      // REVIEW the doc.getElementById() call for an unmatched ID returns null, which xEval() then converts into the document
-      // REVIEW supplying an XPath which doesn't match anything will actually test what was intended
       assertStringValue(null, null, 'if(/unreal, "exists", "does not exist")', 'does not exist');
     });
   });
