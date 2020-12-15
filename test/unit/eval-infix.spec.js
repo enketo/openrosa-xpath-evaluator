@@ -334,6 +334,21 @@ describe('evalInfix()', () => {
 
   // see https://www.w3.org/TR/1999/REC-xpath-19991116/#numbers
   describe('numbers', () => {
+    singleOpTestsFor('+',
+      [ 1, 1, 2 ],
+    );
+    singleOpTestsFor('-',
+      [ 2, 1, 1 ],
+    );
+    singleOpTestsFor('*',
+      [ 2, 3, 6 ],
+    );
+    singleOpTestsFor('%',
+      [ 4, 3, 1 ],
+    );
+    singleOpTestsFor('/',
+      [ 8, 4, 2 ],
+    );
   });
 });
 
