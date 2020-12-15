@@ -1,4 +1,4 @@
-const { initDoc, filterAttributes, assertThrow, assertTrue, assertFalse } = require('../helpers');
+const { initDoc, assertThrow, assertTrue, assertFalse } = require('../helpers');
 
 describe('lang functions', () => {
   let doc;
@@ -38,16 +38,6 @@ describe('lang functions', () => {
 
       node = doc.getElementById('testLang3');
       assertTrue(node, null, "lang('sl')");
-    });
-
-    it.skip('should work on an attribute (pt-br)', () => {
-      // REVIEW there was previously a hack for this in extended-xpath, around line 130:
-      // if(/^lang\(/.test(input) && cN.nodeType === 2) cN = cN.ownerElement;
-      // if it doesn't work natively in chrome or FF, do we really need it?
-      // attribute node check
-      const atts = doc.getElementById('testLang4').attributes;
-      const node = filterAttributes(atts)[0];
-      assertTrue(node, null, "lang('pt-BR')");
     });
   });
 

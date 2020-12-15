@@ -178,18 +178,6 @@ const filterAttributes = (attributes) => {
   return specifiedAttributes;
 };
 
-const assertNodesNamespace = (expr, node, expected) => {
-  const result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
-  assert.equal(result.snapshotLength, expected.length);
-  expected = sortedNamespaces(expected);
-  for(let j = 0; j < result.snapshotLength; j++) {
-    const item = result.snapshotItem(j);
-    assert.equal(item.nodeName, '#namespace');
-    assert.equal(item.localName, expected[j][0]);
-    assert.equal(item.namespaceURI, expected[j][1]);
-  }
-};
-
 const assertNodes = (expr, node, expected, nsr) => {
   var result = xEval(expr, node, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, nsr);
   assert.equal(result.snapshotLength, expected.length);
@@ -203,14 +191,6 @@ const sorted = (nodes) => {
   return nodes.sort((a, b) => {
     if (a.nodeName > b.nodeName) return 1;
     if (a.nodeName < b.nodeName) return -1;
-    return 0;
-  });
-};
-
-const sortedNamespaces = (namespaces) => {
-  return namespaces.sort((ns1, ns2) => {
-    if(ns1[0] > ns2[0]) {return 1;}
-    if(ns1[0] < ns2[0]) {return -1;}
     return 0;
   });
 };
@@ -231,22 +211,6 @@ const assertUnorderedNodes = (expr, node, expected) => {
   const expectedNodes = sorted(expected);
   for(let j = 0; j < resultNodes.length; j++) {
     assert.equal(resultNodes[j].nodeName, expectedNodes[j].nodeName);
-  }
-};
-
-const parseNamespacesFromAttributes = (attributes, namespaces) => {
-  var i, name;
-
-  for (i = attributes.length - 1; i >= 0; i--) {
-    name = attributes.item(i).nodeName.split(':');
-
-    if (name[0] === 'xmlns') {
-      if (name.length == 1) {
-        namespaces.unshift(['', attributes.item(i).nodeValue]);
-      } else {
-        namespaces.push([name[1], attributes.item(i).nodeValue]);
-      }
-    }
   }
 };
 
@@ -276,8 +240,6 @@ module.exports = {
   getAllNodes,
   snapshotToArray,
   setAttribute,
-  parseNamespacesFromAttributes,
-  sortedNamespaces,
   assert,
   assertThrow,
   assertNumberValue,
@@ -291,6 +253,5 @@ module.exports = {
   assertFalse,
   assertTrue,
   assertNodes,
-  assertNodesNamespace,
   assertUnorderedNodes
 };

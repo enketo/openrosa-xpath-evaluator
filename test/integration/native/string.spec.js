@@ -99,7 +99,6 @@ describe('native string functions', () => {
       </html>`);
     const node = doc.getElementById('FunctionStringCaseStringNodesetNamespace');
     assertStringValue(node, null, "string(namespace-uri(/*))", "http://www.w3.org/1999/xhtml");
-    //assertStringValue(node, null, "string(namespace::node())", "http://www.w3.org/1999/xhtml"); REVIEW: support for namespace dropped
   });
 
   it('string conversion fails when too many arguments are provided', () => {
