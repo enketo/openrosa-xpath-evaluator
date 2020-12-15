@@ -9,9 +9,7 @@
     "ecmaVersion": 6
   },
   "rules": {
-    "semi": [ "error", "always" ],
-    "no-console": 0,
-    "no-fallthrough": 0,
-    "no-prototype-builtins": 0
+    "no-console": "error",
+    "semi": [ "error", "always" ]
   }
 }

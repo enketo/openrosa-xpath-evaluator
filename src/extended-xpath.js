@@ -49,12 +49,14 @@ module.exports = function(wrapped, extensions) {
         case XPathResult.STRING_TYPE:  return { t:'str',  v:r.stringValue  };
         case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
           ordrd = true;
+          /* falls through */
         case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
           v = [];
           while((i = r.iterateNext())) v.push(i);
           return { t:'arr', v, ordrd };
         case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
           ordrd = true;
+          /* falls through */
         case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
           v = [];
           for(i=0; i<r.snapshotLength; ++i) {
@@ -139,7 +141,7 @@ module.exports = function(wrapped, extensions) {
           } else args.push(supplied[i]);
         }
 
-        if(extendedFuncs.hasOwnProperty(name)) {
+        if(Object.prototype.hasOwnProperty.call(extendedFuncs, name)) {
           return extendedFuncs[name].apply({ cN, contextSize, contextPosition }, args);
         }
 

@@ -64,6 +64,7 @@ function wrapVal(v) {
       if(v instanceof Date) {
         return { t:'date', v };
       }
+      /* falls through */
     default: throw new Error(`No handling for type: ${typeof v}`);
   }
 }
