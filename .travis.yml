@@ -9,4 +9,4 @@ before_script:
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
 
-script: npm run travis
+script: yarn travis
