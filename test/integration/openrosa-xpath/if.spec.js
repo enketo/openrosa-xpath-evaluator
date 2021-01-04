@@ -57,10 +57,14 @@ describe('#if()', () => {
       assertStringValue(node, null, 'if(. = "0" or /div/div[@id="FunctionCheckListCaseEmpty"] != "", "yes", "no")', 'yes');
     });
     
-    // TODO: fails with 'no' in Chrome (and does not fail in Firefox)
     it(`should evaluate an "or" expression that checks values of nodes (3)`, () => {
       const node = doc.getElementById('FunctionChecklistCase0');
       assertStringValue(node, null, 'if(. != "0" or /div/div[@id="FunctionChecklistCaseNo"] ="no", "yes", "no")', 'yes');
+    });
+
+    it(`should evaluate true and false outcomes`, () => {
+      const node = doc.getElementById('FunctionChecklistCase0');
+      assertStringValue(node, null, 'if(false(), "yes", concat(/div/div[@id="FunctionChecklistCaseNo"], "-no"))', 'no-no');
     });
 
   });
