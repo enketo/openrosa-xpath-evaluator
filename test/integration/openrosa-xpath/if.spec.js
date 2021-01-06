@@ -51,7 +51,6 @@ describe('#if()', () => {
       assertStringValue(node, null, 'if(. != "0" or /div/div[@id="FunctionCheckListCaseEmpty"] != "", "yes", "no")', 'no');
     });
 
-    // TODO: fails with exception 'r' is undefined (Firefox) and 't' is undefined (Chrome)
     it(`should evaluate an "or" expression that checks values of nodes (2)`, () => {
       const node = doc.getElementById('FunctionChecklistCase0');
       assertStringValue(node, null, 'if(. = "0" or /div/div[@id="FunctionCheckListCaseEmpty"] != "", "yes", "no")', 'yes');
