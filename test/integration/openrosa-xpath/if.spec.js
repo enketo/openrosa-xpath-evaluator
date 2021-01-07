@@ -97,7 +97,7 @@ describe('#if()', () => {
       assertStringValue(doc, null, 'if( /data/a ="1" and /data/b ="1", "Eligible", if( /data/a ="0" or /data/d ="0", "Not-Eligible", "nothing"))', 'Not-Eligible'); 
     });
 
-    it(`sequence of "and" clauses and nested if() with sequence of "or" clauses (4)`, () => {
+    it(`sequence of "and" clauses and nested if() with sequence of "or" clauses (5)`, () => {
       assertStringValue(doc, null, 'if( /data/a ="1" and /data/b ="1", "Eligible", if( /data/d ="0" or /data/b ="0", "Not-Eligible", "nothing"))', 'Not-Eligible'); 
     });
 
