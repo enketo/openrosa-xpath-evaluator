@@ -86,6 +86,16 @@ describe('#if()', () => {
           'true' ],
       [ 'if( false() and explode-a(), "A", if(true() or explode-b(), false() and explode-c(), true() or explode-d()) )',
           'false' ],
+      [ 'if( true() or true() and false(), "A", if(true() or true() and false(), true() or true() and false(), "B") )',
+          'A' ],
+      [ 'if( true() or true() and false(), "A", if(true() or true() and false(), true() or true() and false(), true() or true() and explode-d()) )',
+          'A' ],
+      [ 'if( true() or true() and false(), "A", if(true() or true() and false(), true() or true() and explode-c(), true() or true() and explode-d()) )',
+          'A' ],
+      [ 'if( true() or true() and false(), "A", if(true() or true() and explode-b(), true() or true() and explode-c(), true() or true() and explode-d()) )',
+          'A' ],
+      [ 'if( true() or true() and explode-a(), "A", if(true() or true() and explode-b(), true() or true() and explode-c(), true() or true() and explode-d()) )',
+          'A' ],
     ].forEach(([ expr, expected ]) => {
       it(`should evaluate "${expr}" as "${expected}"`, () => {
         assertStringValue(expr, expected);
