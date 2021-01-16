@@ -134,7 +134,7 @@ module.exports = function(wrapped, extensions) {
         tokens.push({ t:'op', v:t });
 
         if(t <= AND) {
-          if((t === OR ? prev : !prev) && peeked.t === 'fn') tokens.push(D);
+          if(t === OR ? prev : !prev) tokens.push(D);
         }
 
         newCurrent();
@@ -201,7 +201,7 @@ module.exports = function(wrapped, extensions) {
 
         if(tokens.length < 2) return;
 
-        if(tokens[2] === D) {
+        if(tokens[2] === D && tokens[1].v >= lastOp) {
           const endExpr = tokens.indexOf(',', 2);
           tokens.splice(0, endExpr === -1 ? tokens.length : endExpr, { t:'bool', v:asBoolean(tokens[0]) });
         }
@@ -219,7 +219,6 @@ module.exports = function(wrapped, extensions) {
       },
       handleXpathExpr = function() {
         if(peek().dead) {
-          peek().tokens.push(D);
           newCurrent();
           return;
         }
@@ -299,11 +298,11 @@ module.exports = function(wrapped, extensions) {
             cur.v += c;
           } else {
             const head = peek();
-            if(head.dead) {
+            const { tokens } = head;
+            if(head.dead || tokens[2] === D) {
               newCurrent();
               continue;
             }
-            const { tokens } = head;
             let contextNodes;
             if(tokens.length && tokens[tokens.length-1].t === 'arr') {
               contextNodes = tokens[tokens.length-1].v;
