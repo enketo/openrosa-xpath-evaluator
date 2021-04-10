@@ -372,7 +372,7 @@ module.exports = function(wrapped, extensions) {
             pushToken(D);
           } else if(cur.v) {
             if(cur.v.charAt(0) === '/') {
-              if(cur.tokens.length) err('Unexpected args for axis function!'); // TODO check wording here is accurate
+              if(cur.tokens.length) err('Unexpected args for node test function!');
               cur.v += '()';
               handleXpathExpr();
             } else {
