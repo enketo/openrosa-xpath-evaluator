@@ -191,8 +191,8 @@ const openrosa_xpath_extensions = function() {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       return XPR.number(distance(asGeopoints(r)));
     },
-    exp: function(r) { return XPR.number(Math.exp(r.v)); },
-    exp10: function(r) { return XPR.number(Math.pow(10, r.v)); },
+    exp: function(r) { return XPR.number(Math.exp(asNumber(r))); },
+    exp10: function(r) { return XPR.number(Math.pow(10, asNumber(r))); },
     'false': function() {
       if(arguments.length) throw TOO_MANY_ARGS;
       return XPR.boolean(false);
@@ -206,7 +206,7 @@ const openrosa_xpath_extensions = function() {
     'ends-with': function(a, b) {
       if(arguments.length > 2) throw TOO_MANY_ARGS;
       if(arguments.length < 2) throw TOO_FEW_ARGS;
-      return XPR.boolean(a.v.endsWith(b.v));
+      return XPR.boolean(asString(a).endsWith(asString(b)));
     },
     int: function(v) {
       return XPR.number(asInteger(v));
@@ -235,8 +235,8 @@ const openrosa_xpath_extensions = function() {
       // See: https://www.w3.org/TR/1999/REC-xpath-19991116/#function-name
       return XPR.string(getNodeName(this, r));
     },
-    log: function(r) { return XPR.number(Math.log(r.v)); },
-    log10: function(r) { return XPR.number(Math.log10(r.v)); },
+    log: function(r) { return XPR.number(Math.log(asNumber(r))); },
+    log10: function(r) { return XPR.number(Math.log10(asNumber(r))); },
     max: function(...args) {
       const nums = mapFn(asNumber, ...args);
       if(!nums.length || nums.some(v => isNaN(v))) return XPR.number(NaN);
@@ -284,7 +284,7 @@ const openrosa_xpath_extensions = function() {
     not: function(r) {
       if(arguments.length === 0) throw TOO_FEW_ARGS;
       if(arguments.length > 1) throw TOO_MANY_ARGS;
-      return XPR.boolean(!r.v);
+      return XPR.boolean(!asBoolean(r));
     },
     now: function() {
       return XPR.date(new Date());
@@ -339,6 +339,8 @@ const openrosa_xpath_extensions = function() {
     randomize: function(r, seed) {
       if(!arguments.length) throw TOO_FEW_ARGS;//only rT passed
       if(arguments.length > 2) throw TOO_MANY_ARGS;
+      if(!r || r.t !== 'arr') throw new Error('randomize() must be called on a nodeset');
+
 
       seed = seed && asNumber(seed);
 
@@ -369,7 +371,7 @@ const openrosa_xpath_extensions = function() {
       return XPR.string(asString(list).split(' ')[asInteger(index)] || '');
     },
     sin: function(r) { return XPR.number(Math.sin(asNumber(r))); },
-    sqrt: function(r) { return XPR.number(Math.sqrt(r.v)); },
+    sqrt: function(r) { return XPR.number(Math.sqrt(asNumber(r))); },
     string: function(r) {
       if(arguments.length > 1) throw new Error(`string() passed wrong arg count (expected 0 or 1, but got ${arguments.length})`);
       return XPR.string(asString(r || this.cN));
@@ -395,7 +397,7 @@ const openrosa_xpath_extensions = function() {
       return XPR.boolean(true);
     },
     uuid: function(r) {
-      if(r && r.v) return XPR.string(randomToken(r.v));
+      if(r && r.v) return XPR.string(randomToken(asNumber(r)));
       return XPR.string(uuid());
     },
     'weighted-checklist': function(min, max, ...list) {
