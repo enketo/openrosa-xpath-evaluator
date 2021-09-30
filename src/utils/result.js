@@ -3,8 +3,8 @@ var sortByDocumentOrder = require('./sort-by-document-order');
 module.exports = { toSnapshotResult };
 
 function toSnapshotResult(arr, resultType, singleItem) {
-  if( resultType === XPathResult.ORDERED_NODE_ITERATOR_TYPE ||
-      resultType === XPathResult.ORDERED_NODE_SNAPSHOT_TYPE) {
+  if( resultType !== XPathResult.ORDERED_NODE_ITERATOR_TYPE ||
+      resultType !== XPathResult.ORDERED_NODE_SNAPSHOT_TYPE) {
     sortByDocumentOrder(arr);
   }
 
