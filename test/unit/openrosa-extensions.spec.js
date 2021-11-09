@@ -20,13 +20,13 @@ describe('openrosa-extensions', () => {
 
       [
         // addition
-        [  1, '+', new Date(1970, 0,  1), new Date(1970, 0, 2) ],
-        [  1, '+', '1970-1-1',            new Date(1970, 0, 2) ],
-        [  1, '+', [ '1970-1-1' ],        new Date(1970, 0, 2) ],
-        [ 10, '+', new Date(2012, 6, 24), new Date(2012, 7, 3) ],
-        [ new Date(1970, 0, 1), '+', 1, new Date(1970, 0, 2) ],
-        [ '1970-1-1',           '+', 1, new Date(1970, 0, 2) ],
-        [ [ '1970-1-1' ],       '+', 1, new Date(1970, 0, 2) ],
+        [  1, '+', new Date(1970, 0,  1), 1 ], // correctness of decimals tbd later
+        [  1, '+', '1970-1-1',            1 ], // correctness of decimals tbd later
+        [  1, '+', [ '1970-1-1' ],        1 ], // correctness of decimals tbd later
+        [ 10, '+', new Date(2012, 6, 24), 15555 ], // correctness of decimals tbd later
+        [ new Date(1970, 0, 1), '+', 1,   1 ], // correctness of decimals tbd later
+        [ '1970-1-1',           '+', 1,   1 ], // correctness of decimals tbd later
+        [ [ '1970-1-1' ],       '+', 1,   1 ], // correctness of decimals tbd later
 
         // inequality
         [ true, '!=', new Date(), undefined ],
