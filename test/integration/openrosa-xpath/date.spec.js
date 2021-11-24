@@ -59,7 +59,7 @@ describe('#date()', () => {
         assertStringValue('"2021-11-30" + 1', '18962.291666666668'); // correctness of decimals tbd later
       });
       it('example 5', () => {
-        assertStringValue('"2021-11-30" - "2021-11-29"', '1.2916666666666667');
+        assertStringValue('"2021-11-30" - "2021-11-29"', '1.2916666666666667');  // correctness of decimals tbd later
       });
 
       [
@@ -241,6 +241,25 @@ describe('#date()', () => {
         assertBoolean(expr, expected);
       });
     });
+  });
+
+  // Actual and/or statements with dates like `'1969-12-30' or today()` don't seem to be useful so we don't worry about those.
+  describe('and/or statements involving date comparisons to the left or right', () => {
+    [
+      ["('2001-12-26' > '2001-12-25') or false()", true],
+      ["false() or ('2001-12-26' > '2001-12-25')", true],
+      ["('2001-12-26' < '2001-12-25') or false()", false],
+      ["false() or ('2001-12-26' < '2001-12-25')", false],
+      ["('2001-12-26' < '2001-12-25') and true()", false],
+      ["true() and ('2001-12-26' < '2001-12-25')", false],
+      ["('2001-12-26' > '2001-12-25') and true()", true],
+      ["true() and ('2001-12-26' > '2001-12-25')", true]
+    ].forEach(([expr, expected]) => {
+      it(`should convert ${expr} to ${expected}`, () => {
+        assertBoolean(expr, expected);
+      });
+    });
+
   });
 
   describe('datestring comparisons (date detection)', () => {
