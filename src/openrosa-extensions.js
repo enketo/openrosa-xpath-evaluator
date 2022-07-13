@@ -154,7 +154,7 @@ const openrosa_xpath_extensions = function() {
     'decimal-date-time': function(r) {
       if(arguments.length > 1) throw TOO_MANY_ARGS;
 
-      const days = r.t === 'num' ? asNumber(r) : dateStringToDays(asString(r));
+      const days = r.t === 'num' ? asNumber(r) : dateToDays(asDate(r));
 
       return XPR.number(days);
     },

@@ -43,8 +43,19 @@ describe('#decimal-date-time()', () => {
     assertThrow('decimal-date-time("1970-01-01T00:00:00.000Z", 2)');
   });
 
-  it('different format', () => {
-    // assertNumberRounded('decimal-date-time("2018-04-24T15:30:00.000+06:00")', 17645.396, 1000);
-    assertNumberValue('decimal-date-time("2018-04-24T15:30:00.000+06:00")', 17645.395833333332);
+  describe('different formats', () => {
+    it('should convert decimal-date-time("2018-04-24T15:30:00.000+06:00") into 17645.395833333332', () => {
+      assertNumberValue('decimal-date-time("2018-04-24T15:30:00.000+06:00")', 17645.395833333332);
+    });
+
+    [
+      ['decimal-date-time("1970/01/01")', 0.291667],
+      ['decimal-date-time("01/01/1970")', 0.291667],
+      ['decimal-date-time("Jan 01, 1970")', 0.291667],
+    ].forEach( ([expr, expectedDaysSinceEpoch]) => {
+      it('should convert ' + expr + ' into ' + expectedDaysSinceEpoch, () => {
+        assertNumberRounded(expr, expectedDaysSinceEpoch, 1000000);
+      });
+    });
   });
 });
