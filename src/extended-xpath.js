@@ -112,6 +112,7 @@ module.exports = function(wrapped, extensions) {
     };
 
   /**
+   * @type {typeof document.evaluate}
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate
    */
   const evaluate = this.evaluate = function(input, cN, nR, rT, _, contextSize=1, contextPosition=1) {
@@ -245,7 +246,13 @@ module.exports = function(wrapped, extensions) {
           });
           prev.v = newNodeset;
         } else {
-          pushToken(toInternalResult(wrapped.evaluate(expr, cN, nR, XPathResult.ANY_TYPE, null)));
+          const contextNode = (
+            cN?.nodeType === Node.ATTRIBUTE_NODE && (expr === '/model/instance' || expr.startsWith('/model/instance/'))
+              ? cN.ownerDocument
+              : cN
+          );
+
+          pushToken(toInternalResult(wrapped.evaluate(expr, contextNode, nR, XPathResult.ANY_TYPE, null)));
         }
 
         newCurrent();
