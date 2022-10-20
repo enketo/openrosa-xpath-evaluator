@@ -97,4 +97,18 @@ describe('Attribute context nodes', () => {
 
     assert.equal(value, 'But testing it just in case!');
   });
+
+  it('evaluates an absolute nodeset referencing a wildcard node', () => {
+    const attr = getAttr('q1attr');
+    const value = document.evaluate('/*/*/*/*', attr, null, XPathResult.STRING_TYPE).stringValue;
+
+    assert.equal(value, 'q1 value');
+  });
+
+  it('evaluates a descendant nodeset', () => {
+    const attr = getAttr('q1attr');
+    const value = document.evaluate('//q1', attr, null, XPathResult.STRING_TYPE).stringValue;
+
+    assert.equal(value, 'q1 value');
+  });
 });

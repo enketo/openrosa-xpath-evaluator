@@ -247,7 +247,7 @@ module.exports = function(wrapped, extensions) {
           prev.v = newNodeset;
         } else {
           const contextNode = (
-            cN?.nodeType === Node.ATTRIBUTE_NODE && (expr === '/model/instance' || expr.startsWith('/model/instance/'))
+            cN?.nodeType === Node.ATTRIBUTE_NODE && expr.startsWith('/')
               ? cN.ownerDocument
               : cN
           );
