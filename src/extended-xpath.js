@@ -246,6 +246,11 @@ module.exports = function(wrapped, extensions) {
           });
           prev.v = newNodeset;
         } else {
+          // This addresses a bug in Chrome and Safari, where an absolute
+          // nodeset expression evaluated with an attribute contex node
+          // does not evaluate to that nodeset as expected. Using the
+          // attribute's owner document evaluates the expression correctly,
+          // ensuring consistent behavior between Chrome, Safari and Firefox.
           const contextNode = (
             cN?.nodeType === Node.ATTRIBUTE_NODE && expr.startsWith('/')
               ? cN.ownerDocument
