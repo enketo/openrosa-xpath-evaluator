@@ -19,7 +19,7 @@ jobs:
         id: cache
         with:
           path: node_modules
-          key: ${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ matrix.node }}-${{ hashFiles('**/package-lock.json', '**/.puppeteerrc.js') }}
       - uses: volta-cli/action@v4
         with:
           node-version: ${{ matrix.node }}
