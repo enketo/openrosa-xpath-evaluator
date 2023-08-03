@@ -27,7 +27,7 @@ jobs:
       - if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - run: npm test
-      - if: github.event_name == 'release' && github.event.action == 'published' && matrix.node == '16'
+      - if: github.event_name == 'release' && github.event.action == 'published' && matrix.node == '20'
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
