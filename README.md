@@ -58,6 +58,8 @@ your project.
 
 # Development
 
+[Volta](https://volta.sh/) is recommended (but not required) for managing the Node and NPM versions used in development.
+
 ## Useful resources
 
 * https://www.w3.org/TR/1999/REC-xpath-19991116/
