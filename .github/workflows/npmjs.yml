@@ -14,16 +14,16 @@ jobs:
       matrix:
         node: [ '16', '18', '20' ]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
         id: cache
         with:
           path: node_modules
           key: ${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-      - uses: actions/setup-node@v2
+      - uses: volta-cli/action@v4
         with:
           node-version: ${{ matrix.node }}
-          registry-url: https://registry.npmjs.org/
+          npm-version: 6
       - if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - run: npm test
