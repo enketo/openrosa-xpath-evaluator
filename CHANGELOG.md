@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.0.13] - 2022-10-26
 ----------------------
 
+- Update dependencies
+
+[2.0.13] - 2022-10-26
+----------------------
+
 ##### Fixed
 
 - Correctly evaluate absolute nodeset expressions with an attribute context node in any browser
